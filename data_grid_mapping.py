@@ -40,7 +40,7 @@ def map(data_path):
 	print(tensor.shape)
 	return tensor
 
-data_path = "data/sms-call-internet-mi-2013-11-01.txt" # "data/mini_data.txt" 
+data_path = "data/sms-call-internet-mi-2013-11-01.txt" # "data/mini_data.dat" 
 save_path = "data/11-01_mapped.npy"
 
 def map_and_save():

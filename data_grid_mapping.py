@@ -4,6 +4,7 @@ import pandas as pd
 import milano_grid
 
 from datetime import datetime
+import os
 
 def map_to_tensor(data, grid_size):
 	# returns a 3D tensor of size (T, grid_height, grid_length)
@@ -69,8 +70,29 @@ def print_times(data_path):
 			print("{0}, indx: {1}".format(timestamp_string(timestamp), indx))
 			indx += 1
 
-data_path = "data/sms-call-internet-mi-2013-11-01.txt" # "data/mini_data.dat" 
-save_path = "data/11-01_mapped.npy"
+# data_path = "data/sms-call-internet-mi-2013-11-01.txt" # "data/mini_data.dat" 
+# save_path = "data/11-01_mapped.npy"
 
-# map(data_path)
+def map_december():
+	input_folder = "data/december_input"
+	output_folder = "data/december_mapped"
+	map_month(input_folder, output_folder, "2013-12", 31)
+
+year_month_string = "2013-12"
+
+def map_month(input_folder, output_folder, year_month_string, number_of_days, start_from = 1):
+	print("Mapping all december files")
+
+	os.system(f"mkdir {output_folder}")
+	file_name_template = f"sms-call-internet-mi-{year_month_string}-"
+
+	for i in range(start_from, number_of_days + 1):
+		two_digit_i = "{:02d}".format(i)
+		input_file = f"{input_folder}/{file_name_template}{two_digit_i}.txt"
+		output_file = f"{output_folder}/{year_month_string}-i.npy"
+		map_and_save(input_file, output_file)
+
+map_december()
+# TODO: map november
+# TODO: map 2014-01-01
 

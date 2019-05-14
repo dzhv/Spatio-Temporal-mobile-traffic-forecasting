@@ -70,9 +70,6 @@ def print_times(data_path):
 			print("{0}, indx: {1}".format(timestamp_string(timestamp), indx))
 			indx += 1
 
-# data_path = "data/sms-call-internet-mi-2013-11-01.txt" # "data/mini_data.dat" 
-# save_path = "data/11-01_mapped.npy"
-
 def map_december():
 	input_folder = "data/december_input"
 	output_folder = "data/december_mapped"
@@ -89,7 +86,7 @@ def map_month(input_folder, output_folder, year_month_string, number_of_days, st
 	for i in range(start_from, number_of_days + 1):
 		two_digit_i = "{:02d}".format(i)
 		input_file = f"{input_folder}/{file_name_template}{two_digit_i}.txt"
-		output_file = f"{output_folder}/{year_month_string}-i.npy"
+		output_file = f"{output_folder}/{year_month_string}-{two_digit_i}.npy"
 		map_and_save(input_file, output_file)
 
 map_december()

@@ -1,5 +1,6 @@
 # sliding_window_view taken from: https://gist.github.com/meowklaski/4bda7c86c6168f3557657d5fb0b5395a
-import numpy as np                                                                    
+import numpy as np
+from numpy.lib.stride_tricks import as_strided                 
 
 def sliding_window_view(arr, window_shape, steps):
     """ Produce a view from a sliding, striding window over `arr`.
@@ -59,8 +60,6 @@ def sliding_window_view(arr, window_shape, steps):
         # (F, H', W', N) -> (N, F, H', W')
         >>> conv_out = conv_out.transpose([3,0,1,2])
          """
-    import numpy as np
-    from numpy.lib.stride_tricks import as_strided
     in_shape = np.array(arr.shape[-len(steps):])  # [x, (...), z]
     window_shape = np.array(window_shape)  # [Wx, (...), Wz]
     steps = np.array(steps)  # [Sx, (...), Sz]
@@ -87,9 +86,9 @@ def get_windowed_data(data, window_size):
 			window_size - the size of the sliding window (int - assumed square)
 
 		RETURNS:
-			a 4-dimensional numpy array (T, K, W, H)
-				T - the time dimension (remains the same as for input)
+			a 4-dimensional numpy array (K, T, W, H)
 				K - dimension with all windows for one grid map
+				T - the time dimension (remains the same as for input)
 				W, H - window width and height
 	"""
 	assert window_size % 2 == 1, "window size should be odd"
@@ -99,7 +98,7 @@ def get_windowed_data(data, window_size):
 
 	# returns (1, number_of_windows, number_of_windows, T, window_size, window_size) size array
 	windowed_data = sliding_window_view(padded_data, (padded_data.shape[0], window_size, window_size), 
-		steps=[0, 1, 1])
+		steps=[1, 1, 1])
 
 	# remove the first dimension
 	squeezed = np.squeeze(windowed_data)
@@ -110,11 +109,66 @@ def get_windowed_data(data, window_size):
 	                       squeezed.shape[3], squeezed.shape[4])
 	# print(reshaped.shape)
 
-	# make the T dimension as the first one
-	reordered = np.moveaxis(reshaped, 1, 0)
-	# print(reordered.shape)
-	
-	return reordered
+	return reshaped
 
+	# make the T dimension as the first one
+	# reordered = np.moveaxis(reshaped, 1, 0)
+	# # print(reordered.shape)
+	
+	# return reordered
+
+
+def get_windowed_segmented_data(data, window_size, segment_size):
+	"""
+		INPUTS:
+			data - a 3-dimensional numpy array (T, W, H)
+				T - the time dimension
+				W, H - width and height
+			window_size - size of the sliding window (int - assumed square)
+			segment_size - length of temporal segments
+
+		RETURNS:
+			a touple (inputs, targets)
+				where inputs is a 4-dimensional numpy array (N, S, W, H)
+					N - number of data points (segments)
+					S - segment length
+					W, H - window width and height
+				targets - a length N array with next time step amplitudes for each segment
+	"""
+
+	# (K, T, W, H)
+	windowed_data = get_windowed_data(data, window_size)
+	shape = windowed_data.shape
+
+	# slide through the time axis and get segments
+	segmented = sliding_window_view(windowed_data, 
+		window_shape=[shape[0], segment_size, shape[2], shape[3]], steps=[1, 1, 1, 1])
+	segmented = np.squeeze(segmented)
+
+	reordered = np.moveaxis(segmented, 0, 1)
+	# (10000, 133, 12, 11, 11)
+	# (grid points, number of segments, segment length, window width, window height)
+	print(f"reorderd shape: {reordered.shape}")
+
+	# dropping the last segments as they will not have a target
+	trimmed = reordered[:, :(reordered.shape[1] - 1), :, :, :]
+	tshape = trimmed.shape
+	print(f"trimmed shape: {tshape}")
+
+	reshaped = trimmed.reshape(tshape[0] * tshape[1], tshape[2], tshape[3], tshape[4])
+	print(f"reshaped shape: {reshaped.shape}")
+
+	dshape = data.shape
+	target_data = data[segment_size:, :, :]
+	reordered_targets = np.transpose(target_data, (1, 2, 0))
+	targets = reordered_targets.reshape((dshape[0] - segment_size) * dshape[1] * dshape[2])
+	print(f"targets shape: {targets.shape}")
+
+
+	# -> kiekvienam is (12, 11, 11) reikia targeto
+	#    gal paimt visus raw data pointus nuo [segment_size:] ir suflatint
+	#	 tada reikia kazkaip suziuret, kad targetu ir datos eiliskumas sutaptu
+
+	return reshaped, targets
 
 

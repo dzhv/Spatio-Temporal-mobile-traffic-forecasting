@@ -5,79 +5,169 @@ sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 
 from data_providers import window_slider
 
-def test(data, expected_windows1, expected_windows2, window_size):
+# def assert_window_exists(window, tensor):
+# 	assert (tensor == window).all()
+
+def get_windowed_data_test():
+	# 2 x 4 x 4
+	data = np.array([
+		[[2, 3, 4],
+		 [3, 4, 5],
+		 [4, 5, 6]],
+
+		[[3, 2, 1],
+		 [0, 3, 4],
+		 [6, 5, 4]]
+		])
+
+	window_size = 3
+
+	expected_windows1 = np.array([
+		[[0, 0, 0],
+		 [0, 2, 3],
+		 [0, 3, 4]],
+
+		[[0, 0, 0],
+		 [2, 3, 4],
+		 [3, 4, 5]],
+
+		 [[0, 0, 0],
+		 [3, 4, 0],
+		 [4, 5, 0]],
+
+		[[0, 2, 3],
+		 [0, 3, 4],
+		 [0, 4, 5]],
+
+		 [[2, 3, 4],
+		 [3, 4, 5],
+		 [4, 5, 6]],
+
+		[[3, 4, 0],
+		 [4, 5, 0],
+		 [5, 6, 0]],
+
+		 [[0, 3, 4],
+		 [0, 4, 5],
+		 [0, 0, 0]],
+
+		[[3, 4, 5],
+		 [4, 5, 6],
+		 [0, 0, 0]],
+
+		 [[4, 5, 0],
+		 [5, 6, 0],
+		 [0, 0, 0]]
+	 ])
+
+	expected_windows2 = np.array([
+		[[3, 2, 1],
+		 [0, 3, 4],
+		 [6, 5, 4]],
+
+		[[2, 1, 0],
+		 [3, 4, 0],
+		 [5, 4, 0]]
+	])
+
+
 	actual = window_slider.get_windowed_data(data, window_size)
 
 	for window in expected_windows1:		
-		assert (actual[0] == window).all((1, 2)).any(), f"window:\n{window}\nwas not found in the output"
+		assert (actual[:, 0, :, :] == window).all((1, 2)).any(), \
+			f"window:\n{window}\nwas not found in the output"
 
-	assert len(actual[1]) == 9
+	assert len(actual[:, 1, :, :]) == 9
 
 	for window in expected_windows2:
-		assert (actual[1] == window).all((1, 2)).any(), f"window:\n{window}\nwas not found in the output"		
+		assert (actual[:, 1, :, :] == window).all((1, 2)).any(), \
+			f"window:\n{window}\nwas not found in the output"		
 
 	print("test passed")
 
-# 2 x 4 x 4
-data = np.array([
-	[[2, 3, 4],
-	 [3, 4, 5],
-	 [4, 5, 6]],
+def find_segment(tensor, segment):
+	search_flags = (tensor == segment).all((1, 2, 3))
 
-	[[3, 2, 1],
-	 [0, 3, 4],
-	 [6, 5, 4]]
+	# assert it exists
+	assert search_flags.any(), f"segment:\n{segment}\nwas not found in the output"
+
+	# return the index of the segment
+	return np.where(search_flags == True)[0]
+
+def get_windowed_segmented_data_test():
+
+	data = np.array([
+		[[2, 3, 4],
+		 [3, 4, 5],
+		 [4, 5, 6]],
+
+		[[3, 2, 1],
+		 [0, 3, 4],
+		 [6, 5, 4]],
+
+		[[4, 1, 8],
+		 [0, 2, 5],
+		 [3, 3, 0]],
+
+		[[9, 9, 6],
+		 [1, 4, 3],
+		 [2, 2, 7]]
 	])
 
-window_size = 3
+	window_size = 3
+	segment_size = 2
 
-expected_windows1 = np.array([
-	[[0, 0, 0],
-	 [0, 2, 3],
-	 [0, 3, 4]],
+	actual_inputs, actual_targets = window_slider.get_windowed_segmented_data(data, window_size, segment_size)
 
-	[[0, 0, 0],
-	 [2, 3, 4],
-	 [3, 4, 5]],
+	expected_input_1 = np.array([
+		[[2, 3, 4],
+		 [3, 4, 5],
+		 [4, 5, 6]],
 
-	 [[0, 0, 0],
-	 [3, 4, 0],
-	 [4, 5, 0]],
+		[[3, 2, 1],
+		 [0, 3, 4],
+		 [6, 5, 4]],		 
+	])
+	expected_target_1 = 2
 
-	[[0, 2, 3],
-	 [0, 3, 4],
-	 [0, 4, 5]],
+	expected_input_2 = np.array([		# lower right corner
+		[[3, 4, 0],
+		 [5, 4, 0],
+		 [0, 0, 0]],
 
-	 [[2, 3, 4],
-	 [3, 4, 5],
-	 [4, 5, 6]],
+		[[2, 5, 0],
+		 [3, 0, 0],
+		 [0, 0, 0]],		 
+	])
+	expected_target_2 = 7
 
-	[[3, 4, 0],
-	 [4, 5, 0],
-	 [5, 6, 0]],
+	expected_input_3 = np.array([		# 2 last rows
+		[[0, 3, 4],
+		 [6, 5, 4],
+		 [0, 0, 0]],
 
-	 [[0, 3, 4],
-	 [0, 4, 5],
-	 [0, 0, 0]],
+		[[0, 2, 5],
+		 [3, 3, 0],
+		 [0, 0, 0]],		 
+	])
+	expected_target_3 = 2
 
-	[[3, 4, 5],
-	 [4, 5, 6],
-	 [0, 0, 0]],
+	test_cases = [(expected_input_1, expected_target_1), (expected_input_2, expected_target_2), 
+		(expected_input_3, expected_target_3)]
 
-	 [[4, 5, 0],
-	 [5, 6, 0],
-	 [0, 0, 0]]
- ])
+	for expected_input, expected_target in test_cases:		
+		index = find_segment(actual_inputs, expected_input)
 
-expected_windows2 = np.array([
-	[[3, 2, 1],
-	 [0, 3, 4],
-	 [6, 5, 4]],
+		# assert the target is correct for the segment	
+		assert actual_targets[index] == expected_target, \
+			f"The target for segment:\n{expected_input}\n {actual_targets[index]}" + \
+				f"does not match the expected: {expected_target}"
 
-	[[2, 1, 0],
-	 [3, 4, 0],
-	 [5, 4, 0]]
-])
+		print("test case passed")
 
-test(data, expected_windows1, expected_windows2, window_size)
+	print("TEST SUCCESSFUL")
+
+
+
+get_windowed_segmented_data_test()
 

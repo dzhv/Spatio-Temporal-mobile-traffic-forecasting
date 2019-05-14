@@ -106,3 +106,6 @@ venv.bak/
 *.npy
 data/*.txt
 data/*.geojson
+data/**/*
+
+

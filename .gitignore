@@ -109,3 +109,6 @@ data/*.geojson
 data/**/*
 
 
+**/__init__.py
+
+

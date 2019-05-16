@@ -1,6 +1,14 @@
+import sys
+from os import path
+import os
+parent_folder = path.dirname(path.dirname(path.abspath(__file__)))
+sys.path.append(parent_folder)
+
+import numpy as np
+
 class SingleFileReader(object):
-	def __init__(self, which_set='train'):
-		assert which_set in ['train', 'valid', 'test'], (
+    def __init__(self, which_set='train'):
+        assert which_set in ['train', 'valid', 'test'], (
             'Expected which_set to be either train, valid or eval. '
             'Got {0}'.format(which_set)
         )
@@ -22,5 +30,5 @@ class SingleFileReader(object):
         self.loaded_data = np.load(data_path)
         print(f"loaded data with shape: {self.loaded_data.shape}")
 
-	def next():
-		return self.loaded_data
+    def next(self):
+        return self.loaded_data

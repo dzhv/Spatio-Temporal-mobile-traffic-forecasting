@@ -31,7 +31,10 @@ class MiniDataProvider(object):
         self.shuffle_order = shuffle_order
         if rng is None:
             rng = np.random.RandomState(DEFAULT_SEED)
-        self.rng = rng        
+        self.rng = rng
+
+        # used only for progress bars
+        self.num_batches = (144 - self.segment_size) * 100 * 100 // batch_size
 
         self.loaded_data = data_reader.next()
 

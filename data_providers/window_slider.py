@@ -150,7 +150,7 @@ def get_windowed_segmented_data(data, window_size, segment_size):
 	# (grid points, number of segments, segment length, window width, window height)
 	print(f"reorderd shape: {reordered.shape}")
 
-	# dropping the last segments as they will not have a target
+	# dropping last segments as they will not have a target
 	trimmed = reordered[:, :(reordered.shape[1] - 1), :, :, :]
 	tshape = trimmed.shape
 	print(f"trimmed shape: {tshape}")
@@ -164,10 +164,6 @@ def get_windowed_segmented_data(data, window_size, segment_size):
 	targets = reordered_targets.reshape((dshape[0] - segment_size) * dshape[1] * dshape[2])
 	print(f"targets shape: {targets.shape}")
 
-
-	# -> kiekvienam is (12, 11, 11) reikia targeto
-	#    gal paimt visus raw data pointus nuo [segment_size:] ir suflatint
-	#	 tada reikia kazkaip suziuret, kad targetu ir datos eiliskumas sutaptu
 
 	return reshaped, targets
 

@@ -17,6 +17,9 @@ class Model(object):
 	def forward(self, x):  # compute model output with x inputs
 		pass
 
+	def evaluate(self, x, y): # compute predictions and loss w.r.t. targets
+		return 0	# return loss
+
 	def loss(self, predictions, targets):
 		pass
 

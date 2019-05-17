@@ -5,7 +5,7 @@ sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 import numpy as np
 
 from experiment_builder import ExperimentBuilder
-from models.losses import nrmse
+from models.losses import nrmse_keras as nrmse
 from models.lstm import LSTM
 
 from data_providers.mini_data_provider import MiniDataProvider
@@ -14,7 +14,7 @@ from data_providers.data_reader import SingleFileReader
 DEFAULT_SEED = 12013094
 rng = np.random.RandomState(DEFAULT_SEED)
 
-batch_size = 10
+batch_size = 100
 window_size = 11
 segment_size = 12
 segment_batch_size = 30

@@ -33,10 +33,13 @@ class MiniDataProvider(object):
             rng = np.random.RandomState(DEFAULT_SEED)
         self.rng = rng
 
-        # used only for progress bars
-        self.num_batches = (144 - self.segment_size) * 100 * 100 // batch_size
 
-        self.loaded_data = data_reader.next()
+        num_timesteps = 61   # limiting the data for this *mini* data provider
+        
+        # used only for progress bars
+        self.num_batches = (num_timesteps - self.segment_size) * 100 * 100 // batch_size
+
+        self.loaded_data = data_reader.next()[:num_timesteps]
 
     def next(self):
         read_index = 0

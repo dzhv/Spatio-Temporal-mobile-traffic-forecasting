@@ -108,7 +108,7 @@ class ExperimentBuilder(object):
         # self.optimizer.step()  # update network parameters
 
         # return loss.data.detach().cpu().numpy()
-
+        
         return loss
 
     def run_evaluation_iter(self, x, y):
@@ -119,12 +119,8 @@ class ExperimentBuilder(object):
         :return: the loss for this batch
         """
         self.model.eval_mode()  # sets the system to validation mode
-                
-        out = self.model.forward(x)  # forward the data in the model
-        
-        loss = self.loss(out, y)  # compute loss
-                
-        return loss
+
+        return self.model.evaluate(x, y)
 
     def save_model(self, model_save_dir, model_save_name, model_idx, state):
         """

@@ -2,6 +2,7 @@ import tqdm
 import os
 import numpy as np
 import time
+parent_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 from storage_utils import save_statistics
 
@@ -46,9 +47,10 @@ class ExperimentBuilder(object):
         #                             weight_decay=weight_decay_coefficient)
 
         # Generate the directory names
-        self.experiment_folder = os.path.abspath(experiment_name)
-        self.experiment_logs = os.path.abspath(os.path.join(self.experiment_folder, "result_outputs"))
-        self.experiment_saved_models = os.path.abspath(os.path.join(self.experiment_folder, "saved_models"))
+
+        self.experiment_folder = os.path.join(parent_folder, "results", experiment_name)
+        self.experiment_logs = os.path.join(self.experiment_folder, "result_outputs")
+        self.experiment_saved_models = os.path.join(self.experiment_folder, "saved_models")
         print(self.experiment_folder, self.experiment_logs)
         # Set best models to be at 0 since we are just starting
         self.best_val_model_idx = 0
@@ -98,11 +100,7 @@ class ExperimentBuilder(object):
         """
         self.model.train_mode()
 
-        out = self.model.forward(x)  # forward the data in the model
-        
-        # TODO: 
-
-        loss = self.loss(out, y)
+        loss = self.model.train(x, y)
 
         # self.optimizer.zero_grad()  # set all weight grads from previous training iters to 0
         # loss.backward()  # backpropagate to compute gradients for current iter loss

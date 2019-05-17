@@ -48,7 +48,11 @@ class MiniDataProvider(object):
             inputs, targets = window_slider.get_windowed_segmented_data(
                 segment_batch, self.window_size, self.segment_size)
 
-            # TODO: shuffle
+            if self.shuffle_order:
+                perm = self.rng.permutation(inputs.shape[0])
+                inputs = inputs[perm]
+                targets = targets[perm]
+
             batch_index = 0
             while batch_index + self.batch_size <= inputs.shape[0]:
                 yield inputs[batch_index:batch_index + self.batch_size], \

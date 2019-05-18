@@ -71,15 +71,20 @@ def print_times(data_path):
 			indx += 1
 
 def map_december():
+	print("Mapping all December files")
+
 	input_folder = "data/december_input"
 	output_folder = "data/december_mapped"
 	map_month(input_folder, output_folder, "2013-12", 31)
 
-year_month_string = "2013-12"
+def map_november():
+	print("Mapping all November files")
 
-def map_month(input_folder, output_folder, year_month_string, number_of_days, start_from = 1):
-	print("Mapping all december files")
+	input_folder = "data/november_input"
+	output_folder = "data/november_mapped"
+	map_month(input_folder, output_folder, "2013-11", 30, start_from=8)
 
+def map_month(input_folder, output_folder, year_month_string, number_of_days, start_from = 1):	
 	os.system(f"mkdir {output_folder}")
 	file_name_template = f"sms-call-internet-mi-{year_month_string}-"
 
@@ -89,7 +94,10 @@ def map_month(input_folder, output_folder, year_month_string, number_of_days, st
 		output_file = f"{output_folder}/{year_month_string}-{two_digit_i}.npy"
 		map_and_save(input_file, output_file)
 
-map_december()
+# map_december()
+# map_november()
+map_and_save(data_path="data/december_input/sms-call-internet-mi-2014-01-01.txt",
+	save_path="data/2014-01-01.npy")
 # TODO: map november
 # TODO: map 2014-01-01
 

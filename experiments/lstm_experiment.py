@@ -17,7 +17,7 @@ rng = np.random.RandomState(DEFAULT_SEED)
 batch_size = 100
 window_size = 11
 segment_size = 12
-segment_batch_size = 30
+segment_chunk_size = 30
 hidden_size = 100
 
 experiment_builder = ExperimentBuilder(
@@ -28,10 +28,10 @@ experiment_builder = ExperimentBuilder(
 	num_epochs = 5,
 	train_data = MiniDataProvider(data_reader = SingleFileReader('train'), 
 			window_size=window_size, segment_size=segment_size, batch_size=batch_size,
-			segment_batch_size=segment_batch_size, shuffle_order=True, rng=rng),
+			segment_chunk_size=segment_chunk_size, shuffle_order=True, rng=rng),
 	val_data = MiniDataProvider(data_reader = SingleFileReader('valid'), 
 			window_size=window_size, segment_size=segment_size, batch_size=batch_size,
-			segment_batch_size=segment_batch_size, shuffle_order=True, rng=rng),
+			segment_chunk_size=segment_chunk_size, shuffle_order=True, rng=rng),
 )
 
 experiment_builder.run_experiment()

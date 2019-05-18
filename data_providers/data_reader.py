@@ -14,13 +14,13 @@ class SingleFileReader(object):
         )
         
         files = { 
-            "train": "2013-12-01.npy",
-            "valid": "2013-12-02.npy",
-            "test": "2013-12-03.npy",
+            "train": "2013-11-01.npy",
+            "valid": "2013-11-02.npy",
+            "test": "2013-11-03.npy",
         }
         file = files.get(which_set)
 
-        data_path = os.path.join(parent_folder, "data", "december_mapped", file)
+        data_path = os.path.join(parent_folder, "data", file)
         assert os.path.isfile(data_path), (
             'Data file does not exist at expected path: ' + data_path
         )

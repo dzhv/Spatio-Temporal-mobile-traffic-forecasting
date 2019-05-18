@@ -2,8 +2,10 @@ import sys
 from os import path
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 
-from data_providers.mini_data_provider import MiniDataProvider
+from data_providers.mini_data_provider2 import MiniDataProvider
+from data_providers.data_reader import SingleFileReader
 from mock_data_reader import MockDataReader
+
 
 import numpy as np
 
@@ -30,7 +32,7 @@ segment_size = 2
 data_reader = MockDataReader(data)
 batch_size = 3
 sut = MiniDataProvider(data_reader, window_size=window_size, segment_size=segment_size,
-        batch_size=batch_size, segment_chunk_size=4, shuffle_order=False)	
+        batch_size=batch_size, shuffle_order=False)	
 
 def shape_test():
 	for inputs, outputs in sut.next():
@@ -44,20 +46,22 @@ def shape_test():
 		print(inputs)
 		print(outputs)
 
-	print("TEST PASSED")
-
 def number_of_samples_test():
 	n_samples = len(list(sut.next())) * batch_size
-
 	expected = 18
 
 	assert n_samples == expected, f"expected {expected} samples, got: {n_samples}"
 
-	print("TEST PASSED")
+def test():
+	dr = SingleFileReader()
+	sut = MiniDataProvider(dr, window_size=11, segment_size=12,
+            batch_size=1000, shuffle_order=False)	
 
-number_of_samples_test()
+	for x, y in sut.next():
+		print(f"{x.shape} , {y.shape}")
 
+shape_test()
 
-
+print("TEST PASSED")
 
 	

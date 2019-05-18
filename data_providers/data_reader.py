@@ -1,26 +1,19 @@
 import sys
 from os import path
 import os
-parent_folder = path.dirname(path.dirname(path.abspath(__file__)))
-sys.path.append(parent_folder)
 
 import numpy as np
 
-class SingleFileReader(object):
-    def __init__(self, which_set='train'):
+class DataReader(object):
+    def __init__(self, data_folder, file_dict, which_set):
         assert which_set in ['train', 'valid', 'test'], (
             'Expected which_set to be either train, valid or eval. '
             'Got {0}'.format(which_set)
         )
         
-        files = { 
-            "train": "2013-11-01.npy",
-            "valid": "2013-11-02.npy",
-            "test": "2013-11-03.npy",
-        }
-        file = files.get(which_set)
+        file = file_dict.get(which_set)
 
-        data_path = os.path.join(parent_folder, "data", file)
+        data_path = os.path.join(data_folder, file)
         assert os.path.isfile(data_path), (
             'Data file does not exist at expected path: ' + data_path
         )
@@ -32,3 +25,23 @@ class SingleFileReader(object):
 
     def next(self):
         return self.loaded_data
+
+class MiniDataReader(DataReader):
+    def __init__(self, data_folder, which_set='train'):
+        files = { 
+            "train": "mini_train.npy",
+            "valid": "mini_val.npy",
+            "test": "mini_test.npy",
+        }
+        
+        super(MiniDataReader, self).__init__(data_folder, files, which_set)    
+
+class FullDataReader(DataReader):
+    def __init__(self, data_folder, which_set='train'):
+        files = { 
+            "train": "train.npy",
+            "valid": "val.npy",
+            "test": "test.npy",
+        }
+        
+        super(FullDataReader, self).__init__(data_folder, files, which_set)    

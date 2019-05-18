@@ -34,7 +34,7 @@ class LSTM(Model):
 		"""		
 
 		x_reshaped = self.reshape_inputs(x)
-		history = self.model.fit(x_reshaped, y, batch_size=self.batch_size, epochs=1)
+		history = self.model.fit(x_reshaped, y, batch_size=self.batch_size, epochs=1)		
 		return history.history["loss"][0]
 
 	def evaluate(self, x, y):

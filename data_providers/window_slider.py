@@ -148,21 +148,21 @@ def get_windowed_segmented_data(data, window_size, segment_size):
 	reordered = np.moveaxis(segmented, 0, 1)
 	# (10000, 133, 12, 11, 11)
 	# (grid points, number of segments, segment length, window width, window height)
-	print(f"reorderd shape: {reordered.shape}")
+	# print(f"reorderd shape: {reordered.shape}")
 
 	# dropping last segments as they will not have a target
 	trimmed = reordered[:, :(reordered.shape[1] - 1), :, :, :]
 	tshape = trimmed.shape
-	print(f"trimmed shape: {tshape}")
+	# print(f"trimmed shape: {tshape}")
 
 	reshaped = trimmed.reshape(tshape[0] * tshape[1], tshape[2], tshape[3], tshape[4])
-	print(f"reshaped shape: {reshaped.shape}")
+	# print(f"reshaped shape: {reshaped.shape}")
 
 	dshape = data.shape
 	target_data = data[segment_size:, :, :]
 	reordered_targets = np.transpose(target_data, (1, 2, 0))
 	targets = reordered_targets.reshape((dshape[0] - segment_size) * dshape[1] * dshape[2])
-	print(f"targets shape: {targets.shape}")
+	# print(f"targets shape: {targets.shape}")
 
 
 	return reshaped, targets

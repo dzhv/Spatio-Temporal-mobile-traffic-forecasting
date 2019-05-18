@@ -39,8 +39,8 @@ class WindowedDataProvider(object):
             inputs, targets = window_slider.get_windowed_segmented_data(
                 segment, self.window_size, self.segment_size)
 
-            print(f"inputs shape: {inputs.shape}")
-            print(f"targets shape: {targets.shape}")
+            # print(f"inputs shape: {inputs.shape}")
+            # print(f"targets shape: {targets.shape}")
 
             assert inputs.shape[0] % self.batch_size == 0, f"batch_size needs to be a divider of {inputs.shape[0]}"
 

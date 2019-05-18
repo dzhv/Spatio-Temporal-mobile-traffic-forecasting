@@ -30,7 +30,7 @@ experiment_builder = ExperimentBuilder(
 		num_features=window_size**2, hidden_size=hidden_size), 
 	loss = nrmse, 
 	experiment_name = "lstm",
-	num_epochs = 2,
+	num_epochs = args.num_epochs,
 	train_data = WindowedDataProvider(data_reader = MiniDataReader(data_folder=args.data_path, which_set='train'), 
 			window_size=window_size, segment_size=segment_size, batch_size=batch_size,
 			shuffle_order=True, rng=rng),

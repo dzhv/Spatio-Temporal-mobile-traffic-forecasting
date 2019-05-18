@@ -24,7 +24,7 @@ def get_args():
                         help='segment size of 1 training/validation sample')
     parser.add_argument('--element_size', nargs="?", type=int, default=1000,
                         help='size of the segment elements')
-    parser.add_argument('--num_epochs', nargs="?", type=int, default=30, help='The experiment\'s epoch budget')
+    parser.add_argument('--num_epochs', nargs="?", type=int, default=100, help='The experiment\'s epoch budget')
     parser.add_argument('--experiment_name', nargs="?", type=str, default="exp_1",
                         help='Experiment name - to be used for building the experiment folder')
     parser.add_argument('--data_path', nargs="?", type=str, default="data",

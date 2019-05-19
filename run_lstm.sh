@@ -2,7 +2,7 @@
 #SBATCH -N 1	  # nodes requested
 #SBATCH -n 1	  # tasks requested
 #SBATCH --partition=Standard
-#SBATCH --gres=gpu:4
+#SBATCH --gres=gpu:1
 #SBATCH --mem=12000  # memory in Mb
 #SBATCH --time=0-08:00:00
 
@@ -26,5 +26,5 @@ export PYTHON_PATH=$PATH
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
 python experiments/lstm_experiment.py --data_path /home/${STUDENT_ID}/msc_project/data \
 									  --experiment_name "lstm_full" \
-									  --gpus 4 \
-									  --batch_size 50000
+									  --gpus 1 \
+									  --batch_size 10000

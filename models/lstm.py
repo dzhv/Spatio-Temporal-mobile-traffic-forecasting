@@ -18,18 +18,17 @@ class LSTM(Model):
 			self.model.add(CuDNNLSTM(hidden_size, input_shape=input_shape))
 			self.model.add(Dense(1))
 
-			# try:
-			self.model = multi_gpu_model(self.model, gpus=gpus)
-			print("\nUsing multiple gpus\n")
-
-			self.model.compile(loss=mean_squared_error, optimizer='adam')
-			# except:
-			# 	print("\nUsing single GPU\n")
+			try:
+				self.model = multi_gpu_model(self.model, gpus=gpus)
+				print("\nUsing multiple gpus\n")
+			except:
+				print("\nUsing single GPU\n")
 		else:
 			print("\nUsing CPU LSTM!\n")
 			self.model.add(CpuLSTM(hidden_size, input_shape=input_shape))
 			self.model.add(Dense(1))
-			self.model.compile(loss=mean_squared_error, optimizer='adam')
+
+		self.model.compile(loss=mean_squared_error, optimizer='adam')
 
 		self.batch_size = batch_size
 

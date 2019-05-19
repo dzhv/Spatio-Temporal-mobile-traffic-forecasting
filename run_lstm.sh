@@ -26,4 +26,5 @@ export PYTHON_PATH=$PATH
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
 python experiments/lstm_experiment.py --data_path /home/${STUDENT_ID}/msc_project/data \
 									  --experiment_name "lstm_full" \
-									  --gpus 4
+									  --gpus 4 \
+									  --batch_size 50000

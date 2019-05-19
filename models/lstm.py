@@ -7,6 +7,7 @@ from tensorflow.test import is_gpu_available
 from models.losses import nrmse_keras as nrmse
 from models.model import Model
 
+import sys
 
 class LSTM(Model):
 
@@ -21,6 +22,7 @@ class LSTM(Model):
 				self.model = multi_gpu_model(self.model)
 				print("using multiple gpus")
 			except:
+				print("Error when trying to use multiple GPUs:", sys.exc_info()[0])
 				print("Using single GPU")
 		else:
 			print("\nUsing CPU LSTM!\n")

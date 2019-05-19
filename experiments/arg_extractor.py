@@ -32,7 +32,8 @@ def get_args():
         help="A flag indicating whether to use mini data set [use only for testing the setup]")
     parser.add_argument('--gpus', nargs="?", type=int, default=0, 
         help="Number of gpus available")
-    
+    parser.add_argument('--num_layers', nargs="?", type=int, default=2, help='Number of layers')    
+
     parser.add_argument('--continue_from_epoch', nargs="?", type=int, default=-1, help='Batch_size for experiment')
     parser.add_argument('--use_gpu', nargs="?", type=str2bool, default=False,
                         help='A flag indicating whether we will use GPU acceleration or not')
@@ -43,7 +44,6 @@ def get_args():
     parser.add_argument('--gpu_id', type=str, default="None", help="A string indicating the gpu to use")
     parser.add_argument('--learning_rate', nargs="?", type=float, default=1e-3,
                         help='Learning rate passed to the optimizer')
-    parser.add_argument('--num_layers', nargs="?", type=int, default=2, help='Number of layers')    
 
     args = parser.parse_args()
 

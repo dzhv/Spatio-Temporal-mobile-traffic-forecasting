@@ -19,7 +19,7 @@ def combine_train():
 	expected_shape = (144 * num_files, 100, 100)
 	assert data.shape == expected_shape, f"Expected data shape of {expected_shape}, got: {data.shape}"
 
-	np.save("data/train.npy", data)
+	np.save("data/train_raw.npy", data)
 
 
 def combine_val():
@@ -40,7 +40,7 @@ def combine_val():
 	expected_shape = (144 * num_files, 100, 100)
 	assert data.shape == expected_shape, f"Expected data shape of {expected_shape}, got: {data.shape}"
 
-	np.save("data/val.npy", data)
+	np.save("data/val_raw.npy", data)
 
 def combine_test():
 	path = "data/test/"
@@ -62,6 +62,6 @@ def combine_test():
 	expected_shape = (144 * num_files, 100, 100)
 	assert data.shape == expected_shape, f"Expected data shape of {expected_shape}, got: {data.shape}"
 
-	np.save("data/test.npy", data)
+	np.save("data/test_raw.npy", data)
 
-combine_test()
+combine_val()

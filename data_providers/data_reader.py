@@ -7,7 +7,7 @@ import numpy as np
 class DataReader(object):
     def __init__(self, data_folder, file_dict, which_set):
         assert which_set in ['train', 'valid', 'test'], (
-            'Expected which_set to be either train, valid or eval. '
+            'Expected which_set to be either train, valid or test. '
             'Got {0}'.format(which_set)
         )
         

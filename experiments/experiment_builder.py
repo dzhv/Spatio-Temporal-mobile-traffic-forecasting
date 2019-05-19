@@ -7,7 +7,7 @@ parent_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 from storage_utils import save_statistics
 
 class ExperimentBuilder(object):
-    def __init__(self, model, experiment_name, num_epochs, train_data, val_data,
+    def __init__(self, args, model, experiment_name, num_epochs, train_data, val_data,
                  continue_from_epoch=-1):
         """
         Initializes an ExperimentBuilder object. Such an object takes care of running training and evaluation
@@ -37,8 +37,7 @@ class ExperimentBuilder(object):
             #     self.model = nn.DataParallel(module=self.model)
             # else:
             #     self.model.to(self.device)  # sends the model from the cpu to the gpu
-
-          # re-initialize network parameters
+          
         self.train_data = train_data
         self.val_data = val_data
 
@@ -64,6 +63,11 @@ class ExperimentBuilder(object):
         if not os.path.exists(self.experiment_saved_models):
             os.mkdir(self.experiment_saved_models)  # create the experiment saved models directory
 
+        # save args
+        with open(os.path.join(self.experiment_folder, "arguments.txt"), "w") as file:
+            file.write(str(args))
+
+
         self.num_epochs = num_epochs
 
         # self.criterion = nn.CrossEntropyLoss().to(self.device)  # send the loss computation to the GPU
@@ -88,7 +92,7 @@ class ExperimentBuilder(object):
             self.starting_epoch = self.state['current_epoch_idx']
         else:
             self.starting_epoch = 0
-            self.state = dict()
+            self.state = dict()        
 
     def run_train_iter(self, x, y):
         """

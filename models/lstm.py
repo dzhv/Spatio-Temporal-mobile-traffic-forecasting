@@ -6,27 +6,31 @@ from tensorflow.keras.utils import multi_gpu_model
 from tensorflow.test import is_gpu_available
 from models.losses import nrmse_keras as nrmse
 from models.model import Model
+import tensorflow as tf
 
 import sys
 
 class LSTM(Model):
 
 	def __init__(self, gpus, batch_size, segment_size, num_features, hidden_size=100):
-		self.model = Sequential()
-		input_shape = (segment_size, num_features)
-		if is_gpu_available():
-			self.model.add(CuDNNLSTM(hidden_size, input_shape=input_shape))
-			self.model.add(Dense(1))
 
+		with tf.device('/cpu:0'):
+			self.model = Sequential()
+			input_shape = (segment_size, num_features)
+			if is_gpu_available():
+				self.model.add(CuDNNLSTM(hidden_size, input_shape=input_shape))
+				self.model.add(Dense(1))				
+			else:
+				print("\nUsing CPU LSTM!\n")
+				self.model.add(CpuLSTM(hidden_size, input_shape=input_shape))
+				self.model.add(Dense(1))
+
+		if is_gpu_available():
 			try:
 				self.model = multi_gpu_model(self.model, gpus=gpus)
 				print("\nUsing multiple gpus\n")
 			except:
 				print("\nUsing single GPU\n")
-		else:
-			print("\nUsing CPU LSTM!\n")
-			self.model.add(CpuLSTM(hidden_size, input_shape=input_shape))
-			self.model.add(Dense(1))
 
 		self.model.compile(loss=mean_squared_error, optimizer='adam')
 

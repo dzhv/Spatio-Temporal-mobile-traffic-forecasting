@@ -5,7 +5,6 @@ sys.path.append(parent_folder)
 import numpy as np
 
 from experiment_builder import ExperimentBuilder
-from models.losses import nrmse_keras as nrmse
 from models.lstm import LSTM
 
 from data_providers.windowed_data_provider import WindowedDataProvider
@@ -15,27 +14,21 @@ import time
 
 from arg_extractor import get_args
 
-DEFAULT_SEED = 12013094
-rng = np.random.RandomState(DEFAULT_SEED)
-
-batch_size = 1000
-window_size = 11
-segment_size = 12
-hidden_size = 100
-
 args = get_args() 
+rng = np.random.RandomState(args.seed)
+
+data_reader = MiniDataReader if args.use_mini_data else FullDataReader
 
 experiment_builder = ExperimentBuilder(
-	model = LSTM(batch_size=batch_size, segment_size=segment_size, 
-		num_features=window_size**2, hidden_size=hidden_size), 
-	loss = nrmse, 
-	experiment_name = "lstm",
+	model = LSTM(batch_size=args.batch_size, segment_size=args.segment_size, 
+		num_features=args.window_size**2, hidden_size=args.hidden_size), 
+	experiment_name = args.experiment_name,
 	num_epochs = args.num_epochs,
-	train_data = WindowedDataProvider(data_reader = MiniDataReader(data_folder=args.data_path, which_set='train'), 
-			window_size=window_size, segment_size=segment_size, batch_size=batch_size,
+	train_data = WindowedDataProvider(data_reader = data_reader(data_folder=args.data_path, which_set='train'), 
+			window_size=args.window_size, segment_size=args.segment_size, batch_size=args.batch_size,
 			shuffle_order=True, rng=rng),
-	val_data = WindowedDataProvider(data_reader = MiniDataReader(data_folder=args.data_path, which_set='valid'), 
-			window_size=window_size, segment_size=segment_size, batch_size=batch_size,
+	val_data = WindowedDataProvider(data_reader = data_reader(data_folder=args.data_path, which_set='valid'), 
+			window_size=args.window_size, segment_size=args.segment_size, batch_size=args.batch_size,
 			shuffle_order=True, rng=rng),
 )
 

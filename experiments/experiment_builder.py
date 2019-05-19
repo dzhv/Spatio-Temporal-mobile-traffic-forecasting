@@ -7,7 +7,7 @@ parent_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 from storage_utils import save_statistics
 
 class ExperimentBuilder(object):
-    def __init__(self, model, loss, experiment_name, num_epochs, train_data, val_data,
+    def __init__(self, model, experiment_name, num_epochs, train_data, val_data,
                  continue_from_epoch=-1):
         """
         Initializes an ExperimentBuilder object. Such an object takes care of running training and evaluation
@@ -30,7 +30,6 @@ class ExperimentBuilder(object):
         self.experiment_name = experiment_name
         self.model = model
         self.model.reset_parameters()
-        self.loss = loss
 
         # TODO:
             # if torch.cuda.device_count() > 1:

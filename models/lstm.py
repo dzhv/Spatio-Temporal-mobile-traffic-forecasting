@@ -14,11 +14,10 @@ class LSTM(Model):
 	def __init__(self, gpus, batch_size, segment_size, num_features, hidden_size=100):
 		self.model = Sequential()
 		if is_gpu_available():
-			self.model.add(CuDNNLSTM(hidden_size))
+			self.model.add(CuDNNLSTM(input_shape=(batch_size, segment_size, num_features), hidden_size))
 			self.model.add(Dense(1))
 
 			# try:
-			self.model.compile(loss=mean_squared_error, optimizer='adam')
 			self.model = multi_gpu_model(self.model, gpus=gpus)
 			print("\nUsing multiple gpus\n")
 
@@ -27,7 +26,7 @@ class LSTM(Model):
 			# 	print("\nUsing single GPU\n")
 		else:
 			print("\nUsing CPU LSTM!\n")
-			self.model.add(CpuLSTM(hidden_size))
+			self.model.add(CpuLSTM(input_shape=(batch_size, segment_size, num_features), hidden_size))
 			self.model.compile(loss=mean_squared_error, optimizer='adam')
 
 		

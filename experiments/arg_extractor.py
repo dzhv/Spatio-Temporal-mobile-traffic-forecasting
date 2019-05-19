@@ -30,6 +30,8 @@ def get_args():
                         help='Path to the folder with the datasets')
     parser.add_argument('--use_mini_data', nargs="?", type=str2bool, default=False, 
         help="A flag indicating whether to use mini data set [use only for testing the setup]")
+    parser.add_argument('--gpus', nargs="?", type=int, default=0, 
+        help="Number of gpus available")
     
     parser.add_argument('--continue_from_epoch', nargs="?", type=int, default=-1, help='Batch_size for experiment')
     parser.add_argument('--use_gpu', nargs="?", type=str2bool, default=False,

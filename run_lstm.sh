@@ -25,4 +25,5 @@ export PYTHON_PATH=$PATH
 # Activate the relevant virtual environment:
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
 python experiments/lstm_experiment.py --data_path /home/${STUDENT_ID}/msc_project/data \
-									  --experiment_name "lstm_full"
+									  --experiment_name "lstm_full" \
+									  --gpus 4

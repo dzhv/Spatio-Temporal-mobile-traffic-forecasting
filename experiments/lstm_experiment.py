@@ -20,7 +20,7 @@ rng = np.random.RandomState(args.seed)
 data_reader = MiniDataReader if args.use_mini_data else FullDataReader
 
 experiment_builder = ExperimentBuilder(
-	model = LSTM(batch_size=args.batch_size, segment_size=args.segment_size, 
+	model = LSTM(gpus=args.gpus, batch_size=args.batch_size, segment_size=args.segment_size, 
 		num_features=args.window_size**2, hidden_size=args.hidden_size), 
 	experiment_name = args.experiment_name,
 	num_epochs = args.num_epochs,

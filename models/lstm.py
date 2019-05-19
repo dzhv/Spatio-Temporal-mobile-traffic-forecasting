@@ -18,15 +18,19 @@ class LSTM(Model):
 			self.model.add(Dense(1))
 
 			# try:
+			self.model.compile(loss=mean_squared_error, optimizer='adam')
 			self.model = multi_gpu_model(self.model, gpus=gpus)
 			print("\nUsing multiple gpus\n")
+
+			self.model.compile(loss=mean_squared_error, optimizer='adam')
 			# except:
 			# 	print("\nUsing single GPU\n")
 		else:
 			print("\nUsing CPU LSTM!\n")
 			self.model.add(CpuLSTM(hidden_size))
+			self.model.compile(loss=mean_squared_error, optimizer='adam')
 
-		self.model.compile(loss=mean_squared_error, optimizer='adam')
+		
 
 		self.batch_size = batch_size
 

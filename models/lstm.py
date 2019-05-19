@@ -16,7 +16,12 @@ class LSTM(Model):
 			print("\nUsing CuDNNLSTM!\n")
 			self.model.add(CuDNNLSTM(hidden_size))
 			self.model.add(Dense(1))
-			self.model = multi_gpu_model(self.model)
+
+			try:
+				self.model = multi_gpu_model(self.model)
+				print("using multiple gpus")
+			except:
+				print("Using single GPU")
 		else:
 			print("\nUsing CPU LSTM!\n")
 			self.model.add(CpuLSTM(hidden_size))

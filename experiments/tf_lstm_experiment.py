@@ -1,3 +1,7 @@
+
+import os
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
+
 import sys
 from os import path
 parent_folder = path.dirname(path.dirname(path.abspath(__file__)))

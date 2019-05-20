@@ -5,6 +5,8 @@ import time
 parent_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 from storage_utils import save_statistics
+from models.losses import mse
+from models.losses import nrmse_numpy as nrmse
 
 class ExperimentBuilder(object):
     def __init__(self, args, model, experiment_name, num_epochs, train_data, val_data,
@@ -29,13 +31,6 @@ class ExperimentBuilder(object):
 
         self.experiment_name = experiment_name
         self.model = model
-
-        # TODO:
-            # if torch.cuda.device_count() > 1:
-            #     self.model.to(self.device)
-            #     self.model = nn.DataParallel(module=self.model)
-            # else:
-            #     self.model.to(self.device)  # sends the model from the cpu to the gpu
           
         self.train_data = train_data
         self.val_data = val_data
@@ -66,6 +61,8 @@ class ExperimentBuilder(object):
         with open(os.path.join(self.experiment_folder, "arguments.txt"), "w") as file:
             file.write(str(args))
 
+        self.train_mean = args.train_mean
+        self.train_std = args.train_std
 
         self.num_epochs = num_epochs
         self.continue_from_epoch = continue_from_epoch
@@ -121,8 +118,17 @@ class ExperimentBuilder(object):
         :return: the loss for this batch
         """
         self.model.eval_mode()  # sets the system to validation mode
+        out = self.model.forward(x)
+        mse_loss = mse(y, out)
+        predictions = out * self.train_std + self.train_mean 
+        targets = y * self.train_std + self.train_mean
+        nrmse_loss = nrmse(targets, predictions)
 
-        return self.model.evaluate(x, y)
+        print(f"mse loss: {mse_loss}")
+        print(f"nrmse loss: {nrmse_loss}")
+
+        return mse_loss, nrmse_loss
+        
 
     def save_model(self, model_save_dir, model_save_name, model_idx, state):
         """
@@ -167,10 +173,10 @@ class ExperimentBuilder(object):
 
 
         # initialize a dict to keep the per-epoch metrics        
-        total_losses = {"train_loss": [], "val_loss": [], "curr_epoch": []}  
+        total_losses = {"train_loss": [], "val_loss": [], "val_nrmse_loss": [], "curr_epoch": []}  
         for i, epoch_idx in enumerate(range(self.starting_epoch, self.num_epochs)):
             epoch_start_time = time.time()
-            current_epoch_losses = {"train_loss": [], "val_loss": []}
+            current_epoch_losses = {"train_loss": [], "val_loss": [], "val_nrmse_loss": []}
 
             with tqdm.tqdm(total=self.train_data.num_batches) as pbar_train:  # create a progress bar for training
                 for idx, (x, y) in enumerate(self.train_data):  # get data batches
@@ -181,8 +187,9 @@ class ExperimentBuilder(object):
 
             with tqdm.tqdm(total=self.val_data.num_batches) as pbar_val:  # create a progress bar for validation
                 for x, y in self.val_data:  # get data batches
-                    loss = self.run_evaluation_iter(x=x, y=y)  # run a validation iter
-                    current_epoch_losses["val_loss"].append(loss)  # add current iter loss to val loss list.
+                    mse_loss, nrmse_loss = self.run_evaluation_iter(x=x, y=y)  # run a validation iter
+                    current_epoch_losses["val_loss"].append(mse_loss)  # add current iter loss to val loss list.
+                    current_epoch_losses["val_nrmse_loss"].append(nrmse_loss)  # add current iter loss to val loss list.
                     pbar_val.update(1)  # add 1 step to the progress bar
                     pbar_val.set_description("loss: {:.4f}".format(loss))
             

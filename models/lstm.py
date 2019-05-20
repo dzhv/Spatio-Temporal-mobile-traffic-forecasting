@@ -12,7 +12,14 @@ import sys
 
 class LSTM(Model):
 
-	def __init__(self, gpus, batch_size, segment_size, num_features, num_layers=2, hidden_size=100):
+	def __init__(self, gpus=0, batch_size=100, segment_size=12, num_features=121, 
+		num_layers=2, hidden_size=100, model=None):
+
+		self.batch_size = batch_size
+
+		if not model is None:
+			self.model = model
+			return
 
 		lstm_cell = CuDNNLSTM if is_gpu_available() else CpuLSTM
 
@@ -38,8 +45,6 @@ class LSTM(Model):
 		self.model.compile(loss=mean_squared_error, optimizer='adam')
 
 		print(self.model.summary())
-
-		self.batch_size = batch_size
 
 	def reshape_inputs(self, x):
 		return x.reshape(x.shape[0], x.shape[1], x.shape[2] * x.shape[3])

@@ -136,10 +136,8 @@ class ExperimentBuilder(object):
         :param state: The dictionary containing the system state.
 
         """
-        # TODO
-
-        print("WARNING: model saving is not implemented")
-
+        path = os.path.join(model_save_dir, f"{model_save_name}_{model_idx}")
+        self.model.save(path)
 
         # state['network'] = self.state_dict()  # save network parameter and other variables.
         # torch.save(state, f=os.path.join(model_save_dir, "{}_{}".format(model_save_name, str(

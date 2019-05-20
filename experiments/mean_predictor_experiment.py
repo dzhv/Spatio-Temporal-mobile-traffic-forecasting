@@ -8,18 +8,22 @@ from models.mean_predictor import MeanPredictor
 
 from data_providers.windowed_data_provider import WindowedDataProvider
 from data_providers.data_reader import MiniDataReader
+import numpy as np
+from arg_extractor import get_args
 
-rng = np.random.RandomState(DEFAULT_SEED)
+args = get_args() 
+
+rng = np.random.RandomState(args.seed)
 
 experiment_builder = ExperimentBuilder(
-	model = MeanPredictor(mean=57.277), 
-	loss = nrmse, 
+	args = args,
+	model = MeanPredictor(mean=0),
 	experiment_name = "mean_predictor",
-	num_epochs = 2, 
-	train_data = WindowedDataProvider(data_reader = MiniDataReader('train'), 
+	num_epochs = 1,
+	train_data = WindowedDataProvider(data_reader=MiniDataReader(args.data_path, 'train'), 
 			window_size=11, segment_size=12,
             batch_size=10, shuffle_order=True, rng=rng),
-	val_data = WindowedDataProvider(data_reader = MiniDataReader('valid'), 
+	val_data = WindowedDataProvider(data_reader=MiniDataReader(args.data_path, 'valid'), 
 			window_size=11, segment_size=12,
             batch_size=10, shuffle_order=True, rng=rng),
     continue_from_epoch=-1)

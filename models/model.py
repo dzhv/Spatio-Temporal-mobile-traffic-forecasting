@@ -23,3 +23,6 @@ class Model(object):
 	def loss(self, predictions, targets):
 		pass
 
+	def save(self, path): # save the model to a file, path is without extension
+		pass
+

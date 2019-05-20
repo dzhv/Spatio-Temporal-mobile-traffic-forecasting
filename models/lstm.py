@@ -62,3 +62,6 @@ class LSTM(Model):
 	def evaluate(self, x, y):
 		x_reshaped = self.reshape_inputs(x)
 		return self.model.evaluate(x_reshaped, y, batch_size=y.shape[0])
+
+	def save(self, path):
+		self.model.save(path + ".h5")

@@ -15,3 +15,7 @@ def nrmse_numpy(targets, predictions):
 	mse = np.mean(np.square(error))
 	rmse = np.sqrt(mse)
 	return rmse / np.mean(targets)
+
+def mse(targets, predictions):
+	error = predictions - targets	
+	return np.mean(np.square(error))

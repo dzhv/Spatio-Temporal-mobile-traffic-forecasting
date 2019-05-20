@@ -14,8 +14,7 @@ import sys
 class LSTM(Model):
 
 	def __init__(self, gpus=0, batch_size=100, segment_size=12, num_features=121, 
-		num_layers=2, hidden_size=100, model=None):
-
+		num_layers=2, hidden_size=100, learning_rate=0.0001, model=None):
 		self.batch_size = batch_size
 
 		if not model is None:
@@ -43,7 +42,8 @@ class LSTM(Model):
 		else:
 			print("\nUsing CPU LSTM!\n")
 
-		self.model.compile(loss=mean_squared_error, optimizer='adam')
+		optimizer = Adam(lr=learning_rate)
+		self.model.compile(loss=mean_squared_error, optimizer=optimizer)
 
 		print(self.model.summary())
 

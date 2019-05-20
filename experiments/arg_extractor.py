@@ -41,17 +41,18 @@ def get_args():
                         help='File path for the saved model')
     parser.add_argument('--fraction_of_data', nargs="?", type=float, default=1,
                         help='Fraction of data to use for training')
+    parser.add_argument('--learning_rate', nargs="?", type=float, default=1e-4,
+                        help='Learning rate passed to the optimizer')
 
     parser.add_argument('--continue_from_epoch', nargs="?", type=int, default=-1, help='Batch_size for experiment')
     parser.add_argument('--use_gpu', nargs="?", type=str2bool, default=False,
                         help='A flag indicating whether we will use GPU acceleration or not')
-    parser.add_argument('--weight_decay_coefficient', nargs="?", type=float, default=1e-05,
+    parser.add_argument('--weight_decay', nargs="?", type=float, default=1e-05,
                         help='Weight decay to use for Adam')
     parser.add_argument('--dropout', nargs="?", type=float, default=0,
                         help='Dropout rate for the model')
     parser.add_argument('--gpu_id', type=str, default="None", help="A string indicating the gpu to use")
-    parser.add_argument('--learning_rate', nargs="?", type=float, default=1e-3,
-                        help='Learning rate passed to the optimizer')
+    
 
     args = parser.parse_args()
 

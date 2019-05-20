@@ -1,5 +1,9 @@
 import os
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
+from os import path
+import sys
+parent_folder = path.dirname(path.dirname(path.abspath(__file__)))
+sys.path.append(parent_folder)
 
 from tensorflow.keras.models import load_model
 from arg_extractor import get_args

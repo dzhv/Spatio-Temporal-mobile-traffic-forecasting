@@ -39,6 +39,8 @@ def get_args():
                         help='Standard deviation of the initial training data')
     parser.add_argument('--model_file', nargs="?", type=str, default="none",
                         help='File path for the saved model')
+    parser.add_argument('--fraction_of_data', nargs="?", type=float, default=1,
+                        help='Fraction of data to use for training')
 
     parser.add_argument('--continue_from_epoch', nargs="?", type=int, default=-1, help='Batch_size for experiment')
     parser.add_argument('--use_gpu', nargs="?", type=str2bool, default=False,

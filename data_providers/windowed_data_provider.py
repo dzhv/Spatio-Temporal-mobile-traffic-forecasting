@@ -12,7 +12,7 @@ DEFAULT_SEED = 20112018
 
 class WindowedDataProvider(object):
     def __init__(self, data_reader, window_size=11, segment_size=12,
-            batch_size=1000, shuffle_order=True, rng=None):
+            batch_size=1000, shuffle_order=True, rng=None, fraction_of_data=1):
                 
         self.window_size = window_size
         self.segment_size = segment_size
@@ -21,11 +21,13 @@ class WindowedDataProvider(object):
         if rng is None:
             rng = np.random.RandomState(DEFAULT_SEED)
         self.rng = rng        
-        
-        self.data = data_reader.next()
+        self.fraction_of_data = fraction_of_data
 
+        self.data = data_reader.next()
+        
         # used only for progress bars
-        self.num_batches = (self.data.shape[0] - self.segment_size) * self.data.shape[-1]**2 // batch_size
+        self.num_batches = (self.data.shape[0] - self.segment_size) * self.data.shape[-1]**2 // batch_size \
+            * self.fraction_of_data
 
     def next(self):
         # discarding last segments, which will not have a target
@@ -49,7 +51,7 @@ class WindowedDataProvider(object):
                 inputs = inputs[perm]
                 targets = targets[perm]
 
-            for batch_indx in range(0, inputs.shape[0], self.batch_size):
+            for batch_indx in range(0, int(inputs.shape[0] * self.fraction_of_data), self.batch_size):
                 yield (inputs[batch_indx:(batch_indx + self.batch_size)],
                     targets[batch_indx:(batch_indx + self.batch_size)])
 

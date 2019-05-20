@@ -3,6 +3,7 @@ from tensorflow.keras.layers import Dense, CuDNNLSTM
 from tensorflow.keras.layers import LSTM as CpuLSTM
 from tensorflow.keras.losses import mean_squared_error
 from tensorflow.keras.utils import multi_gpu_model
+from tensorflow.keras.optimizers import Adam
 from tensorflow.test import is_gpu_available
 from models.losses import nrmse_keras as nrmse
 from models.model import Model

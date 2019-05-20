@@ -1,10 +1,10 @@
 #!/bin/sh
 #SBATCH -N 1	  # nodes requested
 #SBATCH -n 1	  # tasks requested
-#SBATCH --partition=LongJobs
+#SBATCH --partition=Standard
 #SBATCH --gres=gpu:1
 #SBATCH --mem=12000  # memory in Mb
-#SBATCH --time=0-20:00:00
+#SBATCH --time=0-08:00:00
 
 export CUDA_HOME=/opt/cuda-9.0.176.1/
 
@@ -25,7 +25,9 @@ export PYTHON_PATH=$PATH
 # Activate the relevant virtual environment:
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
 python experiments/lstm_experiment.py --data_path /home/${STUDENT_ID}/msc_project/data \
-									  --experiment_name "lstm_1" \
+									  --experiment_name "lstm_2layers" \
 									  --gpus 1 --batch_size 1000 \
-									  --num_layers 1
+									  --num_layers 2 --use_mini_data "true" \
+									  --num_epochs 50
+
 									  

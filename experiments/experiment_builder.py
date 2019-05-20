@@ -29,7 +29,6 @@ class ExperimentBuilder(object):
 
         self.experiment_name = experiment_name
         self.model = model
-        self.model.reset_parameters()
 
         # TODO:
             # if torch.cuda.device_count() > 1:
@@ -69,7 +68,7 @@ class ExperimentBuilder(object):
 
 
         self.num_epochs = num_epochs
-
+        self.continue_from_epoch = continue_from_epoch
         # self.criterion = nn.CrossEntropyLoss().to(self.device)  # send the loss computation to the GPU
 
         if continue_from_epoch == -2:
@@ -163,7 +162,11 @@ class ExperimentBuilder(object):
             and val model accuracy after each epoch
         :return: The summary current_epoch_losses from starting epoch to total_epochs.
         """
-        # initialize a dict to keep the per-epoch metrics
+        if self.continue_from_epoch == -1:
+            self.model.reset_parameters()
+
+
+        # initialize a dict to keep the per-epoch metrics        
         total_losses = {"train_loss": [], "val_loss": [], "curr_epoch": []}  
         for i, epoch_idx in enumerate(range(self.starting_epoch, self.num_epochs)):
             epoch_start_time = time.time()

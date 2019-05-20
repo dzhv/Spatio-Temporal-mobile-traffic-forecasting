@@ -25,9 +25,9 @@ export PYTHON_PATH=$PATH
 # Activate the relevant virtual environment:
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
 python experiments/lstm_experiment.py --data_path /home/${STUDENT_ID}/msc_project/data \
-									  --experiment_name "lstm_2layers" \
+									  --experiment_name "lstm_2layers_full" \
 									  --gpus 1 --batch_size 1000 \
-									  --num_layers 2 --use_mini_data "true" \
+									  --num_layers 2 \
 									  --num_epochs 50
 
 									  

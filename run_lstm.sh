@@ -25,7 +25,7 @@ export PYTHON_PATH=$PATH
 # Activate the relevant virtual environment:
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
 python experiments/lstm_experiment.py --data_path /home/${STUDENT_ID}/msc_project/data \
-									  --experiment_name "lstm_1layer_025data_4lr" \
+									  --experiment_name "lstm_train_val_swapped" \
 									  --gpus 1 --batch_size 1000 \
-									  --num_layers 1 --learning_rate 0.0001 \
-									  --num_epochs 50 --fraction_of_data 0.25
+									  --num_layers 2 --learning_rate 0.0001 \
+									  --num_epochs 50

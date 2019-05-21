@@ -29,10 +29,10 @@ experiment_builder = ExperimentBuilder(
 		learning_rate=args.learning_rate), 
 	experiment_name = args.experiment_name,
 	num_epochs = args.num_epochs,
-	train_data = WindowedDataProvider(data_reader = data_reader(data_folder=args.data_path, which_set='train'), 
+	train_data = WindowedDataProvider(data_reader = data_reader(data_folder=args.data_path, which_set='valid'), 
 			window_size=args.window_size, segment_size=args.segment_size, batch_size=args.batch_size,
-			shuffle_order=True, rng=rng, fraction_of_data=args.fraction_of_data),
-	val_data = WindowedDataProvider(data_reader = data_reader(data_folder=args.data_path, which_set='valid'), 
+			shuffle_order=True, rng=rng),
+	val_data = WindowedDataProvider(data_reader = data_reader(data_folder=args.data_path, which_set='train'), 
 			window_size=args.window_size, segment_size=args.segment_size, batch_size=args.batch_size,
 			shuffle_order=True, rng=rng),
 )

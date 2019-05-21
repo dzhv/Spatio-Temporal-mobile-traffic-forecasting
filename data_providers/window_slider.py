@@ -172,7 +172,7 @@ def get_sequential_inputs_and_targets(data, window_size, segment_size):
 
   windowed_data = get_windowed_data(data[:segment_size], window_size)
   shape = windowed_data.shape
-  print(f"windowed_data shape: {shape}")
+  # print(f"windowed_data shape: {shape}")
 
   # slide through the time axis and get segments
   segmented = sliding_window_view(windowed_data, 
@@ -180,13 +180,13 @@ def get_sequential_inputs_and_targets(data, window_size, segment_size):
   inputs = np.squeeze(segmented)
 
   # (10000, 12, 11, 11)
-  print(f"inputs shape: {inputs.shape}")
+  # print(f"inputs shape: {inputs.shape}")
 
   target_data = data[segment_size:]
-  print(f"target_data shape: {target_data.shape}")
+  # print(f"target_data shape: {target_data.shape}")
   reshaped_targets = target_data.reshape(target_data.shape[0], target_data.shape[1] * target_data.shape[2])
-  print(f"reshaped_targets shape: {reshaped_targets.shape}")
+  # print(f"reshaped_targets shape: {reshaped_targets.shape}")
   targets = reshaped_targets.T
-  print(f"targets shape: {targets.shape}")
+  # print(f"targets shape: {targets.shape}")
 
   return inputs, targets

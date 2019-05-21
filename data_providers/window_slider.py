@@ -1,7 +1,7 @@
-# sliding_window_view taken from: https://gist.github.com/meowklaski/4bda7c86c6168f3557657d5fb0b5395a
 import numpy as np
 from numpy.lib.stride_tricks import as_strided                 
 
+# sliding_window_view taken from: https://gist.github.com/meowklaski/4bda7c86c6168f3557657d5fb0b5395a
 def sliding_window_view(arr, window_shape, steps):
     """ Produce a view from a sliding, striding window over `arr`.
         The window is only placed in 'valid' positions - no overlapping
@@ -167,4 +167,26 @@ def get_windowed_segmented_data(data, window_size, segment_size):
 
 	return reshaped, targets
 
+def get_sequential_inputs_and_targets(data, window_size, segment_size):
+  assert data.shape[0] == segment_size * 2, "Data should include 2 segments worth of data"
 
+  windowed_data = get_windowed_data(data[:segment_size], window_size)
+  shape = windowed_data.shape
+  print(f"windowed_data shape: {shape}")
+
+  # slide through the time axis and get segments
+  segmented = sliding_window_view(windowed_data, 
+    window_shape=[shape[0], segment_size, shape[2], shape[3]], steps=[1, 1, 1, 1])
+  inputs = np.squeeze(segmented)
+
+  # (10000, 12, 11, 11)
+  print(f"inputs shape: {inputs.shape}")
+
+  target_data = data[segment_size:]
+  print(f"target_data shape: {target_data.shape}")
+  reshaped_targets = target_data.reshape(target_data.shape[0], target_data.shape[1] * target_data.shape[2])
+  print(f"reshaped_targets shape: {reshaped_targets.shape}")
+  targets = reshaped_targets.T
+  print(f"targets shape: {targets.shape}")
+
+  return inputs, targets

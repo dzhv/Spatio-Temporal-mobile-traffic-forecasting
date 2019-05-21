@@ -167,7 +167,39 @@ def get_windowed_segmented_data_test():
 
 	print("TEST SUCCESSFUL")
 
+def get_sequential_inputs_and_targets_test():
+	data = np.array([
+		[[2, 3, 4],
+		 [3, 4, 5],
+		 [4, 5, 6]],
+
+		[[3, 2, 1],
+		 [0, 3, 4],
+		 [6, 5, 4]],
+
+		[[4, 1, 8],
+		 [0, 2, 5],
+		 [3, 3, 0]],
+
+		[[9, 9, 6],
+		 [1, 4, 3],
+		 [2, 2, 7]]
+	])
+
+	inputs, targets = window_slider.get_sequential_inputs_and_targets(data, 3, 2)
+
+	expected_input_shape = (9, 2, 3, 3)
+	assert inputs.shape == expected_input_shape, \
+		f"expected input shape to be {expected_input_shape}, was: {inputs.shape}"
+	expected_targets_shape = (9, 2)
+	assert targets.shape == expected_targets_shape, \
+		f"expected targets shape to be {expected_targets_shape}, was: {targets.shape}"
+
+		
+	print(inputs)
+	print("---------")
+	print(targets)
 
 
-get_windowed_segmented_data_test()
+get_sequential_inputs_and_targets_test()
 

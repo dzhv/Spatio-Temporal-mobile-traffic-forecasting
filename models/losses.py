@@ -10,12 +10,18 @@ def nrmse_keras(targets, predictions):
 	return rmse / K.mean(targets)
 	
 
-def nrmse_numpy(targets, predictions):	
+def nrmse_numpy(targets, predictions):
+	targets = np.squeeze(targets)
+	predictions = np.squeeze(predictions)
+	
 	error = predictions - targets	
 	mse = np.mean(np.square(error))
 	rmse = np.sqrt(mse)
 	return rmse / np.mean(targets)
 
 def mse(targets, predictions):
-	error = predictions - targets	
+	targets = np.squeeze(targets)
+	predictions = np.squeeze(predictions)
+
+	error = predictions - targets
 	return np.mean(np.square(error))

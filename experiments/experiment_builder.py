@@ -189,7 +189,7 @@ class ExperimentBuilder(object):
                 for x, y in self.val_data:  # get data batches
                     mse_loss, nrmse_loss = self.run_evaluation_iter(x=x, y=y)  # run a validation iter
                     current_epoch_losses["val_loss"].append(mse_loss)  # add current iter loss to val loss list.
-                    current_epoch_losses["val_nrmse_loss"].append(nrmse_loss)  # add current iter loss to val loss list.
+                    current_epoch_losses["val_nrmse_loss"].append(nrmse_loss)
                     pbar_val.update(1)  # add 1 step to the progress bar
                     pbar_val.set_description("loss: {:.4f}".format(loss))
             

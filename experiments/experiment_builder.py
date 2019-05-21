@@ -122,7 +122,11 @@ class ExperimentBuilder(object):
         mse_loss = mse(y, out)
         predictions = out * self.train_std + self.train_mean 
         targets = y * self.train_std + self.train_mean
-        nrmse_loss = nrmse(targets, predictions)
+
+        if len(y.shape) == 1 or y.shape[-1] == 1:     # if this is a 1 step prediction
+            nrmse_loss = nrmse(targets, predictions)
+        else:                                   # if this is a multi step prediction
+            nrmse_loss = nrmse(targets[:, -1], predictions[:, -1])
 
         print(f"mse loss: {mse_loss}")
         print(f"nrmse loss: {nrmse_loss}")

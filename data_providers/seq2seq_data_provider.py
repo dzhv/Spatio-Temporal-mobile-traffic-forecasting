@@ -26,10 +26,8 @@ class Seq2SeqDataProvider(object):
         self.data = data_reader.next()
         
         # used only for progress bars
-        self.num_batches = (self.data.shape[0] - self.segment_size) * self.data.shape[-1]**2 // batch_size \
+        self.num_batches = (self.data.shape[0] - self.segment_size*2 +1) * self.data.shape[-1]**2 // batch_size \
             * self.fraction_of_data
-
-
 
     def next(self):
         # discarding last segments, which will not have a target
@@ -37,7 +35,7 @@ class Seq2SeqDataProvider(object):
 
         indexes = self.rng.permutation(num_segments) if self.shuffle_order else np.arange(num_segments)
 
-        for i in indexes:
+        for i in indexes:            
             segment = self.data[i:i + self.segment_size * 2]  # *2 is to include the target data
 
             inputs, targets = window_slider.get_sequential_inputs_and_targets(
@@ -53,7 +51,7 @@ class Seq2SeqDataProvider(object):
                 inputs = inputs[perm]
                 targets = targets[perm]
 
-            for batch_indx in range(0, int(inputs.shape[0] * self.fraction_of_data), self.batch_size):
+            for batch_indx in range(0, int(inputs.shape[0] * self.fraction_of_data), self.batch_size):                
                 yield (inputs[batch_indx:(batch_indx + self.batch_size)],
                     targets[batch_indx:(batch_indx + self.batch_size)])
 

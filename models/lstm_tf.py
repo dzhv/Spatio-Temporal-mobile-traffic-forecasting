@@ -73,5 +73,3 @@ class LSTM(Model):
 	def reset_parameters(self):
 		self.session_holder.sess.run(tf.global_variables_initializer())
 
-
-

@@ -4,6 +4,7 @@ from tensorflow.keras.layers import LSTM as CpuLSTM
 from tensorflow.keras.losses import mean_squared_error
 from tensorflow.keras.utils import multi_gpu_model
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.models import load_model
 from tensorflow.test import is_gpu_available
 from models.model import Model
 import tensorflow as tf
@@ -13,12 +14,8 @@ import sys
 class LSTM(Model):
 
 	def __init__(self, gpus=0, batch_size=100, segment_size=12, num_features=121, 
-		num_layers=2, hidden_size=100, learning_rate=0.0001, model=None):
-		self.batch_size = batch_size
-
-		if not model is None:
-			self.model = model
-			return
+		num_layers=2, hidden_size=100, learning_rate=0.0001):
+		self.batch_size = batch_size		
 
 		lstm_cell = CuDNNLSTM if is_gpu_available() else CpuLSTM
 
@@ -70,3 +67,6 @@ class LSTM(Model):
 
 	def save(self, path):
 		self.model.save(path + ".h5")
+
+	def load(self, path):
+		self.model = load_model(path)

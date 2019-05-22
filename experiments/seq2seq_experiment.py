@@ -24,9 +24,9 @@ data_reader = MiniDataReader if args.use_mini_data else FullDataReader
 
 experiment_builder = ExperimentBuilder(
 	args = args,
-	model = LstmSeq2Seq(gpus=args.gpus, batch_size=args.batch_size, segment_size=args.segment_size, 
+	model = LstmSeq2Seq(batch_size=args.batch_size, segment_size=args.segment_size, 
 		num_features=args.window_size**2, num_layers=args.num_layers, hidden_size=args.hidden_size,
-		learning_rate=args.learning_rate), 
+		learning_rate=args.learning_rate),  # if you change something here, remember to change it in evaluator
 	experiment_name = args.experiment_name,
 	num_epochs = args.num_epochs,
 	train_data = Seq2SeqDataProvider(data_reader = data_reader(data_folder=args.data_path, which_set='train'), 

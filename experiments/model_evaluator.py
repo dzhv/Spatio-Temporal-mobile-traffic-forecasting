@@ -11,6 +11,7 @@ from data_providers.data_reader import FullDataReader
 from data_providers.windowed_data_provider import WindowedDataProvider
 from models.losses import nrmse_numpy as nrmse
 from models.lstm import LSTM
+from models.lstm_seq2seq import LstmSeq2Seq
 
 import numpy as np
 
@@ -19,11 +20,15 @@ args = get_args()
 def calculate_loss(predictions, targets):
 	predictions = predictions * args.train_std + args.train_mean 
 	targets = targets * args.train_std + args.train_mean
-	return nrmse(targets, predictions)
 
-def evaluate():	
-	print(f"loading model: {args.model_file}")
-	model = LSTM(model=load_model(args.model_file), batch_size=args.batch_size)
+	if len(y.shape) == 1 or y.shape[-1] == 1:     # if this is a 1 step prediction
+		return nrmse(targets, predictions)
+
+	# if this is a multi step prediction
+	return nrmse(targets[:, -1], predictions[:, -1]) 	
+
+def evaluate():
+	model = model_factory(args.model_name, args.model_file, args.batch_size)
 	print("model loaded")
 	
 	data = WindowedDataProvider(data_reader = FullDataReader(data_folder=args.data_path, which_set='test'), 
@@ -41,6 +46,23 @@ def evaluate():
 		print(f"mean: {np.array(losses).mean()}")
 
 	print(losses)
+
+def model_factory(model_name, model_file, batch_size):
+	model_name = model_name.lower()
+
+	print(f"loading model: {model_name} from {args.model_file}")
+
+	if model_name == "lstm":
+		model = LSTM(batch_size=args.batch_size)
+	elif model_name == "seq2seq":
+		model = LstmSeq2Seq(batch_size=args.batch_size, segment_size=args.segment_size, 
+		num_features=args.window_size**2, num_layers=args.num_layers, hidden_size=args.hidden_size,
+		learning_rate=args.learning_rate)
+	else:
+		raise ValueError(f"unknown model: {model_name}")
+
+		model.load(model_file)
+		return model
 
 evaluate()
 

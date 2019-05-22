@@ -8,6 +8,10 @@ class LstmSeq2Seq(Model):
 		num_layers=2, hidden_size=10, depth=2, learning_rate=0.0001, model=None):
 
 		self.batch_size = batch_size
+
+		if model is not None:
+			self.model = model
+			return
 		
 		self.model = Seq2Seq(
 			batch_input_shape=(batch_size, segment_size, num_features), 
@@ -34,7 +38,7 @@ class LstmSeq2Seq(Model):
 		x_reshaped = self.reshape_inputs(x)
 		y = y[:, :, None]
 		history = self.model.fit(x_reshaped, y, batch_size=self.batch_size, epochs=1)
-		# print(history.history)
+		print(history.history)
 		return history.history["loss"][0]
 
 	def evaluate(self, x, y):
@@ -42,4 +46,7 @@ class LstmSeq2Seq(Model):
 		return self.model.evaluate(x_reshaped, y, batch_size=y.shape[0])
 
 	def save(self, path):
-		self.model.save(path + ".h5")
+		self.model.save_weights(path + ".h5")
+
+	def load(self, path):
+		self.model.load_weights(path)

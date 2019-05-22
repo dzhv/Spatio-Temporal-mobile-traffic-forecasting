@@ -44,6 +44,10 @@ def get_args():
     parser.add_argument('--learning_rate', nargs="?", type=float, default=1e-4,
                         help='Learning rate passed to the optimizer')
 
+    # Model evaluator specific arguments
+    parser.add_argument('--model_name', nargs="?", type=str, default="lstm",
+                        help='Name of the model being evaluated. Possible values: [lstm, seq2seq]')
+
     parser.add_argument('--continue_from_epoch', nargs="?", type=int, default=-1, help='Batch_size for experiment')
     parser.add_argument('--use_gpu', nargs="?", type=str2bool, default=False,
                         help='A flag indicating whether we will use GPU acceleration or not')

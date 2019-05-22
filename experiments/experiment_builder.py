@@ -59,7 +59,7 @@ class ExperimentBuilder(object):
 
         # save args
         with open(os.path.join(self.experiment_folder, "arguments.txt"), "w") as file:
-            file.write(str(args))
+            file.write(str(args) + "\n")
 
         self.train_mean = args.train_mean
         self.train_std = args.train_std

@@ -5,7 +5,7 @@ from keras.optimizers import Adam
 
 class LstmSeq2Seq(Model):
 	def __init__(self, gpus=0, batch_size=100, segment_size=12, num_features=121, 
-		num_layers=2, hidden_size=10, depth=2, learning_rate=0.0001, model=None):
+		num_layers=2, hidden_size=10, learning_rate=0.0001, model=None):
 
 		self.batch_size = batch_size
 
@@ -15,7 +15,7 @@ class LstmSeq2Seq(Model):
 		
 		self.model = Seq2Seq(
 			batch_input_shape=(batch_size, segment_size, num_features), 
-			hidden_dim=hidden_size, output_length=segment_size, output_dim=1, depth=depth
+			hidden_dim=hidden_size, output_length=segment_size, output_dim=1, depth=num_layers
 		)
 		optimizer = Adam(lr=learning_rate)
 		self.model.compile(loss='mse', optimizer=optimizer)

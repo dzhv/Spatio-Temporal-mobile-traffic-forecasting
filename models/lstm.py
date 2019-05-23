@@ -14,7 +14,7 @@ import sys
 class LSTM(Model):
 
 	def __init__(self, gpus=0, batch_size=100, segment_size=12, num_features=121, 
-		num_layers=2, hidden_size=100, learning_rate=0.0001):
+		num_layers=2, hidden_size=100, learning_rate=0.0001, output_dim=1):
 		self.batch_size = batch_size		
 
 		lstm_cell = CuDNNLSTM if is_gpu_available() else CpuLSTM
@@ -27,7 +27,7 @@ class LSTM(Model):
 				self.model.add(lstm_cell(hidden_size, input_shape=input_shape, return_sequences=True))
 			self.model.add(lstm_cell(hidden_size, input_shape=input_shape))
 
-			self.model.add(Dense(1))
+			self.model.add(Dense(output_dim))
 
 		if is_gpu_available():
 			try:

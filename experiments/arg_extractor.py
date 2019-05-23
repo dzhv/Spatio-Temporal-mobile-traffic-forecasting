@@ -43,6 +43,8 @@ def get_args():
                         help='Fraction of data to use for training')
     parser.add_argument('--learning_rate', nargs="?", type=float, default=1e-4,
                         help='Learning rate passed to the optimizer')
+    parser.add_argument('--shuffle_order', nargs="?", type=str2bool, default=True, 
+        help="A flag indicating whether to shuffle the data samples [use 'False' only for testing the setup]")
 
     # Model evaluator specific arguments
     parser.add_argument('--model_name', nargs="?", type=str, default="lstm",

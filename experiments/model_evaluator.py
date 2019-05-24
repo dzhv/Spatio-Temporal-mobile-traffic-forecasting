@@ -25,15 +25,20 @@ def calculate_loss(predictions, targets):
 		return nrmse(targets, predictions)
 
 	# if this is a multi step prediction
-	return nrmse(targets[:, -1], predictions[:, -1]) 	
+	return nrmse(targets[:, -1], predictions[:, -1])
 
-def evaluate():
+def get_essentials():
 	model = model_factory(args.model_name, args.model_file, args.batch_size)
 	print("model loaded")
 	
 	data = WindowedDataProvider(data_reader = FullDataReader(data_folder=args.data_path, which_set='test'), 
 		window_size=args.window_size, segment_size=args.segment_size, batch_size=args.batch_size,
 		shuffle_order=True)
+
+	return model, data
+
+def evaluate():
+	model, data = get_essentials()
 
 	print("Errors for all testing data")
 	print("---------------------------")
@@ -56,6 +61,28 @@ def report_error(sample_generator, model):
 
 	print(f"std: {np.std(losses)}")
 
+def prediction_analysis():
+	model, data = get_essentials()
+
+	indexes = [0, 25, 50, 75]	
+	results = []
+
+	print(f"\nPredictions for {len(indexes)} samples are going to be saved in results.npy\n")
+	for i, batch in enumerate(data.enumerate_data(indexes)):
+		print(f"evaluating sample {i}")
+		x, y = batch
+		predictions = model.forward(x)
+
+		result_item = {
+			'inputs': x,
+			'targets': y,
+			'predictions': predictions
+		}
+		results.append(result_item)
+
+	np.save("results.npy", results)
+
+
 def model_factory(model_name, model_file, batch_size):
 	model_name = model_name.lower()
 
@@ -70,8 +97,9 @@ def model_factory(model_name, model_file, batch_size):
 	else:
 		raise ValueError(f"unknown model: {model_name}")
 
-	# model.load(model_file)
+	model.load(model_file)
 	return model
 
 evaluate()
+prediction_analysis()
 

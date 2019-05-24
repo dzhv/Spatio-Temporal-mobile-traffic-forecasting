@@ -8,6 +8,7 @@ from storage_utils import save_statistics
 from models.losses import mse
 from models.losses import nrmse_numpy as nrmse
 
+
 class ExperimentBuilder(object):
     def __init__(self, args, model, experiment_name, num_epochs, train_data, val_data,
                  continue_from_epoch=-1):
@@ -88,7 +89,7 @@ class ExperimentBuilder(object):
             self.starting_epoch = self.state['current_epoch_idx']
         else:
             self.starting_epoch = 0
-            self.state = dict()        
+            self.state = dict()
 
     def run_train_iter(self, x, y):
         """
@@ -100,13 +101,6 @@ class ExperimentBuilder(object):
         self.model.train_mode()
 
         loss = self.model.train(x, y)
-
-        # self.optimizer.zero_grad()  # set all weight grads from previous training iters to 0
-        # loss.backward()  # backpropagate to compute gradients for current iter loss
-
-        # self.optimizer.step()  # update network parameters
-
-        # return loss.data.detach().cpu().numpy()
         
         return loss
 
@@ -148,10 +142,6 @@ class ExperimentBuilder(object):
         path = os.path.join(model_save_dir, f"{model_save_name}_{model_idx}")
         self.model.save(path)
 
-        # state['network'] = self.state_dict()  # save network parameter and other variables.
-        # torch.save(state, f=os.path.join(model_save_dir, "{}_{}".format(model_save_name, str(
-        #     model_idx))))  # save state at prespecified filepath
-
     def load_model(self, model_save_dir, model_save_name, model_idx):
         """
         Load the network parameter state and the best val model idx and best val acc to be compared 
@@ -174,7 +164,6 @@ class ExperimentBuilder(object):
         """
         if self.continue_from_epoch == -1:
             self.model.reset_parameters()
-
 
         # initialize a dict to keep the per-epoch metrics        
         total_losses = {"train_loss": [], "val_loss": [], "val_nrmse_loss": [], "curr_epoch": []}  

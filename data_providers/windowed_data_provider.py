@@ -24,17 +24,26 @@ class WindowedDataProvider(object):
         self.fraction_of_data = fraction_of_data
 
         self.data = data_reader.next()
+
+        # number of time points which can be used to form inputs-targets pairs
+        # the last segments are discarded as they cannot have a target
+        self.num_segments = self.data.shape[0] - self.segment_size  
         
         # used only for progress bars
         self.num_batches = (self.data.shape[0] - self.segment_size) * self.data.shape[-1]**2 // batch_size \
             * self.fraction_of_data
 
     def next(self):
-        # discarding last segments, which will not have a target
-        num_segments = self.data.shape[0] - self.segment_size  
+        indexes = self.rng.permutation(self.num_segments) if self.shuffle_order else np.arange(self.num_segments)
+        return self.enumerate_data(indexes)
 
-        indexes = self.rng.permutation(num_segments) if self.shuffle_order else np.arange(num_segments)
+    def get_random_samples(self, n_samples):
+        assert n_samples <= self.num_segments, f"Cannot provide more than {self.num_segments} samples"
+        # returns samples from n_samples different starting time points
+        indexes = self.rng.permutation(self.num_segments)[:n_samples]
+        return self.enumerate_data(indexes)
 
+    def enumerate_data(self, indexes):
         for i in indexes:
             segment = self.data[i:i + self.segment_size + 1]  # +1 is to include the target grid
 

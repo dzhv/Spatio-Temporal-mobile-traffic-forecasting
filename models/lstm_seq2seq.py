@@ -13,10 +13,9 @@ class LstmSeq2Seq(Model):
 			self.model = model
 			return
 		
-		self.model = Seq2Seq(
-			batch_input_shape=(batch_size, segment_size, num_features), 
-			hidden_dim=hidden_size, output_length=segment_size, output_dim=1, depth=num_layers
-		)
+		self.model = Seq2Seq(batch_input_shape=(batch_size, segment_size, num_features), 
+			hidden_dim=hidden_size, output_length=segment_size, output_dim=1, depth=num_layers)
+
 		optimizer = Adam(lr=learning_rate)
 		self.model.compile(loss='mse', optimizer=optimizer)
 
@@ -38,7 +37,6 @@ class LstmSeq2Seq(Model):
 		x_reshaped = self.reshape_inputs(x)
 		y = y[:, :, None]
 		history = self.model.fit(x_reshaped, y, batch_size=self.batch_size, epochs=1)
-		print(history.history)
 		return history.history["loss"][0]
 
 	def evaluate(self, x, y):

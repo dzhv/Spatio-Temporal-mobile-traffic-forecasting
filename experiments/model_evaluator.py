@@ -21,7 +21,7 @@ def calculate_loss(predictions, targets):
 	predictions = predictions * args.train_std + args.train_mean 
 	targets = targets * args.train_std + args.train_mean
 
-	if len(y.shape) == 1 or y.shape[-1] == 1:     # if this is a 1 step prediction
+	if len(targets.shape) == 1 or targets.shape[-1] == 1:     # if this is a 1 step prediction
 		return nrmse(targets, predictions)
 
 	# if this is a multi step prediction
@@ -33,19 +33,28 @@ def evaluate():
 	
 	data = WindowedDataProvider(data_reader = FullDataReader(data_folder=args.data_path, which_set='test'), 
 		window_size=args.window_size, segment_size=args.segment_size, batch_size=args.batch_size,
-		shuffle_order=False)
+		shuffle_order=True)
 
+	print("Errors for all testing data")
+	print("---------------------------")
+	report_error(data, model)
+	print("\n")
+
+	print("Trying 10 random samples:")
+	print("---------------------------")
+	report_error(data.get_random_samples(10), model)
+
+def report_error(sample_generator, model):
 	losses = []
-	i = 0
-	for x, y in data:
+	for x, y in sample_generator:
 		predictions = model.forward(x)
 		loss = calculate_loss(predictions, y)
 		losses.append(loss)
 
 		print(loss)
-		print(f"mean: {np.array(losses).mean()}")
+		print(f"mean: {np.mean(losses)}")
 
-	print(losses)
+	print(f"std: {np.std(losses)}")
 
 def model_factory(model_name, model_file, batch_size):
 	model_name = model_name.lower()
@@ -61,8 +70,8 @@ def model_factory(model_name, model_file, batch_size):
 	else:
 		raise ValueError(f"unknown model: {model_name}")
 
-		model.load(model_file)
-		return model
+	# model.load(model_file)
+	return model
 
 evaluate()
 

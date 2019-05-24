@@ -33,7 +33,7 @@ def get_essentials():
 	
 	data = WindowedDataProvider(data_reader = FullDataReader(data_folder=args.data_path, which_set='test'), 
 		window_size=args.window_size, segment_size=args.segment_size, batch_size=args.batch_size,
-		shuffle_order=True)
+		shuffle_order=False)
 
 	return model, data
 

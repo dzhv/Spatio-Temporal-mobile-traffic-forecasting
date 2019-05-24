@@ -26,5 +26,5 @@ export PYTHON_PATH=$PATH
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
 
 python experiments/model_evaluator.py --data_path /home/${STUDENT_ID}/msc_project/data \
-									  --model_file results/lstm_2layers/saved_models/train_model_12.h5 \
+									  --model_file results/lstm_2layer_025data_4lr/saved_models/train_model_10.h5 \
 									  --batch_size 10000

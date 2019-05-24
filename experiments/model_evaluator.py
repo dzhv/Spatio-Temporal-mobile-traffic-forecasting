@@ -74,10 +74,10 @@ def prediction_analysis():
 		predictions = model.forward(x)
 
 		result_item = {
-			'inputs': x,
 			'targets': y,
 			'predictions': predictions
 		}
+
 		results.append(result_item)
 
 	np.save("results.npy", results)

@@ -33,4 +33,4 @@ python experiments/lstm_experiment.py --data_path /home/${STUDENT_ID}/msc_projec
 									  --experiment_name $experiment_name \
 									  --gpus 1 --batch_size 1000 \
 									  --num_layers $num_layers --learning_rate $lr \
-									  --num_epochs 50 --hiden_size $hidden_size
+									  --num_epochs 50 --hidden_size $hidden_size

@@ -49,11 +49,9 @@ class Seq2SeqDataProvider(object):
                 targets = targets[perm]
 
             for batch_indx in range(0, inputs.shape[0], self.batch_size):
-                print(f"batch_indx: {batch_indx}")    
                 yield (inputs[batch_indx:(batch_indx + self.batch_size)],
                     targets[batch_indx:(batch_indx + self.batch_size)])
 
-            print(f"count: {count}, threshold: {len(indexes) * self.fraction_of_data:}")
             if count + 1 > len(indexes) * self.fraction_of_data:
                 break
 

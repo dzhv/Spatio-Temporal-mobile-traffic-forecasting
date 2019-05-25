@@ -1,12 +1,12 @@
 import seq2seq
-from seq2seq.models import Seq2Seq
+from seq2seq.models import SimpleSeq2Seq
 from models.model import Model
 from keras.optimizers import Adam
 import keras.backend as K
 from keras.models import Sequential
 from keras.callbacks import TensorBoard
 
-class LstmSeq2Seq(Model):
+class LstmSimpleSeq2Seq(Model):
 	def __init__(self, gpus=0, batch_size=100, segment_size=12, num_features=121, 
 		num_layers=2, hidden_size=10, learning_rate=0.0001, dropout=0, model=None,
 		create_tensorboard=False):
@@ -17,7 +17,7 @@ class LstmSeq2Seq(Model):
 			self.model = model
 			return
 		
-		self.model = Seq2Seq(batch_input_shape=(batch_size, segment_size, num_features), 
+		self.model = SimpleSeq2Seq(batch_input_shape=(batch_size, segment_size, num_features), 
 			hidden_dim=hidden_size, output_length=segment_size, output_dim=1, depth=num_layers, dropout=dropout)
 
 		optimizer = Adam(lr=learning_rate)

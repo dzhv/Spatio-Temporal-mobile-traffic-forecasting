@@ -69,4 +69,6 @@ class LSTM(Model):
 		self.model.save(path + ".h5")
 
 	def load(self, path):
-		self.model = load_model(path)
+		full_path = path + ".h5"
+		print(f"Loading LSTM model from {full_path}\n")
+		self.model = load_model(full_path)

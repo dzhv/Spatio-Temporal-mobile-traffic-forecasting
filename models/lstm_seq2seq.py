@@ -60,7 +60,7 @@ class LstmSeq2Seq(Model):
 		callbacks = []
 		if self.create_tensorboard:
 			callbacks.append(TensorBoard(log_dir='logs/seq2seq_2', 
-			histogram_freq=1, write_grads=True, write_graph=False, write_images=True))
+			write_grads=True, write_graph=False, write_images=True))
 
 		history = self.model.fit(x_reshaped, y, batch_size=self.batch_size, epochs=self.step_num + 1,
 			callbacks=callbacks, initial_epoch=self.step_num)
@@ -84,4 +84,4 @@ class LstmSeq2Seq(Model):
 		self.model.save_weights(path + ".h5")
 
 	def load(self, path):
-		self.model.load_weights(path)
+		self.model.load_weights(path + ".h5")

@@ -50,7 +50,7 @@ def save_statistics(experiment_log_dir, filename, stats_dict, current_epoch,
     return summary_filename
 
 
-def load_statistics(experiment_log_dir, filename):
+def load_statistics(filepath):
     """
     Loads a statistics csv file into a dictionary
     :param experiment_log_dir: the log folder dir filepath
@@ -58,16 +58,15 @@ def load_statistics(experiment_log_dir, filename):
     :return: A dictionary containing the stats in the csv file. Header entries are converted into 
         keys and columns of a particular header are converted into values of a key in a list format.
     """
-    summary_filename = os.path.join(experiment_log_dir, filename)
 
-    with open(summary_filename, 'r+') as f:
+    with open(filepath, 'r+') as f:
         lines = f.readlines()
 
-    keys = lines[0].split(",")
+    keys = [key.strip() for key in lines[0].split(",")]
     stats = {key: [] for key in keys}
     for line in lines[1:]:
         values = line.split(",")
         for idx, value in enumerate(values):
-            stats[keys[idx]].append(value)
+            stats[keys[idx]].append(value.strip())
 
     return stats

@@ -40,6 +40,7 @@ experiment_builder = ExperimentBuilder(
 	val_data = WindowedDataProvider(data_reader = data_reader(data_folder=args.data_path, which_set='valid'), 
 			window_size=args.window_size, segment_size=args.segment_size, batch_size=args.batch_size,
 			shuffle_order=True, rng=rng),
+	continue_from_epoch=args.continue_from_epoch
 )
 
 with tf.Session() as sess:

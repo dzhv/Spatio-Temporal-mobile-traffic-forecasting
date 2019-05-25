@@ -4,7 +4,7 @@ import numpy as np
 import time
 parent_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-from storage_utils import save_statistics
+from storage_utils import save_statistics, load_statistics
 from models.losses import mse
 from models.losses import nrmse_numpy as nrmse
 
@@ -43,6 +43,7 @@ class ExperimentBuilder(object):
 
         self.experiment_folder = os.path.join(parent_folder, "results", experiment_name)
         self.experiment_logs = os.path.join(self.experiment_folder, "result_outputs")
+        self.summary_file = os.path.join(self.experiment_logs, "summary.csv")
         self.experiment_saved_models = os.path.join(self.experiment_folder, "saved_models")
         print(self.experiment_folder, self.experiment_logs)
         # Set best models to be at 0 since we are just starting
@@ -67,29 +68,33 @@ class ExperimentBuilder(object):
 
         self.num_epochs = num_epochs
         self.continue_from_epoch = continue_from_epoch
-        # self.criterion = nn.CrossEntropyLoss().to(self.device)  # send the loss computation to the GPU
+        self.state = dict()
 
         if continue_from_epoch == -2:
-            try:
-                self.best_val_model_idx, self.best_val_model_loss, self.state = self.load_model(
-                    model_save_dir=self.experiment_saved_models, model_save_name="train_model",
-                    model_idx='latest')  # reload existing model from epoch and return best val model index
-                # and the best val acc of that model
-                self.starting_epoch = self.state['current_epoch_idx']
-            except:
-                print("Model objects cannot be found, initializing a new model and starting from scratch")
-                self.starting_epoch = 0
-                self.state = dict()
+            # try:
+            self.best_val_model_idx, self.best_val_model_loss, current_epoch, metrics = self.load_model(
+                model_save_dir=self.experiment_saved_models, model_save_name="train_model",
+                model_idx='latest')  # reload existing model from epoch and return best val model index
+            # and the best val acc of that model
+            self.starting_epoch = current_epoch
+            print(f"current epoch: {current_epoch}")
+            self.metrics = metrics
+            # except:
+            #     print("Model objects cannot be found, initializing a new model and starting from scratch")
+            #     self.starting_epoch = 0
+            #     self.state = dict()
 
         elif continue_from_epoch != -1:  # if continue from epoch is not -1 then
-            self.best_val_model_idx, self.best_val_model_loss, self.state = self.load_model(
+            self.best_val_model_idx, self.best_val_model_loss, current_epoch, metrics = self.load_model(
                 model_save_dir=self.experiment_saved_models, model_save_name="train_model",
                 model_idx=continue_from_epoch)  # reload existing model from epoch and return best val model index
             # and the best val acc of that model
-            self.starting_epoch = self.state['current_epoch_idx']
+            self.starting_epoch = current_epoch
+            self.metrics = metrics
         else:
             self.starting_epoch = 0
-            self.state = dict()
+            self.metrics = self.empty_metrics()
+            
 
     def run_train_iter(self, x, y):
         """
@@ -152,9 +157,21 @@ class ExperimentBuilder(object):
         :return: best val idx and best val model acc, also it loads the network state 
                  into the system state without returning it
         """
-        state = torch.load(f=os.path.join(model_save_dir, "{}_{}".format(model_save_name, str(model_idx))))
-        self.load_state_dict(state_dict=state['network'])
-        return state['best_val_model_idx'], state['best_val_model_loss'], state
+        print(f"\nLoading model: {model_save_name} {model_idx}, from: {model_save_dir}\n")
+
+        path = os.path.join(model_save_dir, "{}_{}".format(model_save_name, str(model_idx)))
+        self.model.load(path)
+
+        stats = load_statistics(self.summary_file)
+        val_losses = np.array(stats['val_loss']).astype(np.float)
+        best_val_loss = np.min(val_losses)
+        best_val_model_id = np.argmin(val_losses)
+        curr_epoch = int(stats['curr_epoch'][-1]) + 1
+
+        return best_val_model_id, best_val_loss, curr_epoch, stats
+
+    def empty_metrics(self):
+        return {"train_loss": [], "val_loss": [], "val_nrmse_loss": [], "curr_epoch": []}
 
     def run_experiment(self):
         """
@@ -164,9 +181,7 @@ class ExperimentBuilder(object):
         """
         if self.continue_from_epoch == -1:
             self.model.reset_parameters()
-
-        # initialize a dict to keep the per-epoch metrics        
-        total_losses = {"train_loss": [], "val_loss": [], "val_nrmse_loss": [], "curr_epoch": []}  
+        
         for i, epoch_idx in enumerate(range(self.starting_epoch, self.num_epochs)):
             epoch_start_time = time.time()
             current_epoch_losses = {"train_loss": [], "val_loss": [], "val_nrmse_loss": []}
@@ -197,11 +212,11 @@ class ExperimentBuilder(object):
             # get mean of all metrics of current epoch metrics dict, 
             # to get them ready for storage and output on the terminal.
             for key, value in current_epoch_losses.items():
-                total_losses[key].append(np.mean(value))  
+                self.metrics[key].append(np.mean(value))
 
-            total_losses['curr_epoch'].append(epoch_idx)
+            self.metrics['curr_epoch'].append(epoch_idx)
             save_statistics(experiment_log_dir=self.experiment_logs, filename='summary.csv',
-                            stats_dict=total_losses, current_epoch=i,
+                            stats_dict=self.metrics, current_epoch=epoch_idx,
                             continue_from_mode=True if (self.starting_epoch != 0 or i > 0) else False)
 
             # How to load a csv file if you need to

@@ -27,7 +27,8 @@ experiment_builder = ExperimentBuilder(
 	# if you change something here, remember to change it in evaluator
 	model = LstmSeq2Seq(batch_size=args.batch_size, segment_size=args.segment_size, 
 		num_features=args.window_size**2, num_layers=args.num_layers, hidden_size=args.hidden_size,
-		learning_rate=args.learning_rate, dropout=args.dropout, gpus=args.gpus),
+		learning_rate=args.learning_rate, dropout=args.dropout, gpus=args.gpus, 
+		create_tensorboard=args.create_tensorboard),
 	experiment_name = args.experiment_name,
 	num_epochs = args.num_epochs,
 	train_data = Seq2SeqDataProvider(data_reader = data_reader(data_folder=args.data_path, which_set='train'), 
@@ -36,6 +37,7 @@ experiment_builder = ExperimentBuilder(
 	val_data = Seq2SeqDataProvider(data_reader = data_reader(data_folder=args.data_path, which_set='valid'), 
 			window_size=args.window_size, segment_size=args.segment_size, batch_size=args.batch_size,
 			shuffle_order=args.shuffle_order, rng=rng, fraction_of_data=args.fraction_of_val),
+	continue_from_epoch=args.continue_from_epoch
 )
 
 experiment_builder.run_experiment()

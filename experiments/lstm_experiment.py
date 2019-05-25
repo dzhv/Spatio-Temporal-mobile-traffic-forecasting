@@ -34,7 +34,8 @@ experiment_builder = ExperimentBuilder(
 			shuffle_order=True, rng=rng, fraction_of_data=args.fraction_of_data),
 	val_data = WindowedDataProvider(data_reader = data_reader(data_folder=args.data_path, which_set='valid'), 
 			window_size=args.window_size, segment_size=args.segment_size, batch_size=args.batch_size,
-			shuffle_order=True, rng=rng),
+			shuffle_order=True, rng=rng, fraction_of_data=args.fraction_of_val),
+	continue_from_epoch=args.continue_from_epoch
 )
 
 experiment_builder.run_experiment()

@@ -48,6 +48,8 @@ def get_args():
     parser.add_argument('--shuffle_order', nargs="?", type=str2bool, default=True, 
         help="A flag indicating whether to shuffle the data samples [use 'False' only for testing the setup]")
     parser.add_argument('--dropout', nargs="?", type=float, default=0, help='Dropout rate for the model')
+    parser.add_argument('--create_tensorboard', nargs="?", type=str2bool, default=True, 
+        help="A flag indicating whether logs for tensorboard should be collected (applicable only for certain models)")
 
     # Model evaluator specific arguments
     parser.add_argument('--model_name', nargs="?", type=str, default="lstm",

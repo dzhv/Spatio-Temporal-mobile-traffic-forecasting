@@ -24,25 +24,22 @@ class Seq2SeqDataProvider(object):
         self.fraction_of_data = fraction_of_data
 
         self.data = data_reader.next()
+
+        # number of time points which can be used to form inputs-targets pairs
+        # the last segments are discarded as they cannot have a target
+        self.num_segments = self.data.shape[0] - self.segment_size * 2 + 1  
         
         # used only for progress bars
-        self.num_batches = (self.data.shape[0] - self.segment_size*2 +1) * self.data.shape[-1]**2 // batch_size \
-            * self.fraction_of_data
+        self.num_batches = np.ceil(self.num_segments * self.fraction_of_data) * (self.data.shape[-1]**2 // batch_size)
 
     def next(self):
-        # discarding last segments, which will not have a target
-        num_segments = self.data.shape[0] - self.segment_size * 2 + 1  
+        indexes = self.rng.permutation(self.num_segments) if self.shuffle_order else np.arange(self.num_segments)
 
-        indexes = self.rng.permutation(num_segments) if self.shuffle_order else np.arange(num_segments)
-
-        for i in indexes:            
+        for count, i in enumerate(indexes):
             segment = self.data[i:i + self.segment_size * 2]  # *2 is to include the target data
 
             inputs, targets = window_slider.get_sequential_inputs_and_targets(
                 segment, self.window_size, self.segment_size)
-
-            # print(f"inputs shape: {inputs.shape}")
-            # print(f"targets shape: {targets.shape}")
 
             assert inputs.shape[0] % self.batch_size == 0, f"batch_size needs to be a divider of {inputs.shape[0]}"
 
@@ -51,9 +48,14 @@ class Seq2SeqDataProvider(object):
                 inputs = inputs[perm]
                 targets = targets[perm]
 
-            for batch_indx in range(0, int(inputs.shape[0] * self.fraction_of_data), self.batch_size):                
+            for batch_indx in range(0, inputs.shape[0], self.batch_size):
+                print(f"batch_indx: {batch_indx}")    
                 yield (inputs[batch_indx:(batch_indx + self.batch_size)],
                     targets[batch_indx:(batch_indx + self.batch_size)])
+
+            print(f"count: {count}, threshold: {len(indexes) * self.fraction_of_data:}")
+            if count + 1 > len(indexes) * self.fraction_of_data:
+                break
 
 
     def __iter__(self):

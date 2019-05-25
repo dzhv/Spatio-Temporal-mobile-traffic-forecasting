@@ -47,6 +47,7 @@ def get_args():
                         help='Learning rate passed to the optimizer')
     parser.add_argument('--shuffle_order', nargs="?", type=str2bool, default=True, 
         help="A flag indicating whether to shuffle the data samples [use 'False' only for testing the setup]")
+    parser.add_argument('--dropout', nargs="?", type=float, default=0, help='Dropout rate for the model')
 
     # Model evaluator specific arguments
     parser.add_argument('--model_name', nargs="?", type=str, default="lstm",
@@ -57,8 +58,6 @@ def get_args():
                         help='A flag indicating whether we will use GPU acceleration or not')
     parser.add_argument('--weight_decay', nargs="?", type=float, default=1e-05,
                         help='Weight decay to use for Adam')
-    parser.add_argument('--dropout', nargs="?", type=float, default=0,
-                        help='Dropout rate for the model')
     parser.add_argument('--gpu_id', type=str, default="None", help="A string indicating the gpu to use")
     
 

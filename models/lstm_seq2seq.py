@@ -2,10 +2,13 @@ import seq2seq
 from seq2seq.models import Seq2Seq
 from models.model import Model
 from keras.optimizers import Adam
+import keras.backend as K
+from keras.callbacks import TensorBoard
 
 class LstmSeq2Seq(Model):
 	def __init__(self, gpus=0, batch_size=100, segment_size=12, num_features=121, 
-		num_layers=2, hidden_size=10, learning_rate=0.0001, model=None):
+		num_layers=2, hidden_size=10, learning_rate=0.0001, dropout=0, model=None,
+		create_tensorboard=False):
 
 		self.batch_size = batch_size
 
@@ -14,10 +17,13 @@ class LstmSeq2Seq(Model):
 			return
 		
 		self.model = Seq2Seq(batch_input_shape=(batch_size, segment_size, num_features), 
-			hidden_dim=hidden_size, output_length=segment_size, output_dim=1, depth=num_layers)
+			hidden_dim=hidden_size, output_length=segment_size, output_dim=1, depth=num_layers, dropout=dropout)
 
 		optimizer = Adam(lr=learning_rate)
-		self.model.compile(loss='mse', optimizer=optimizer)
+		self.model.compile(loss='mse', optimizer=optimizer)		
+
+		self.create_tensorboard = create_tensorboard
+		self.step_num = 0
 
 		print(self.model.summary())
 
@@ -36,7 +42,24 @@ class LstmSeq2Seq(Model):
 
 		x_reshaped = self.reshape_inputs(x)
 		y = y[:, :, None]
-		history = self.model.fit(x_reshaped, y, batch_size=self.batch_size, epochs=1)
+
+		callbacks = []
+		if self.create_tensorboard:
+			callbacks.append(TensorBoard(log_dir='logs/seq2seq', 
+			histogram_freq=0, write_graph=True, write_images=False))
+
+		history = self.model.fit(x_reshaped, y, batch_size=self.batch_size, epochs=self.step_num + 1,
+			callbacks=callbacks, initial_epoch=self.step_num)
+
+		self.step_num += 1
+
+		# gradients = K.gradients(self.model.output, self.model.input)  
+		# sess = K.get_session()
+		# evaluated_gradients = sess.run(gradients[0], feed_dict={self.model.input: x_reshaped})
+		# print("\nHere be gradients:")
+		# print(evaluated_gradients)
+		# print("")
+
 		return history.history["loss"][0]
 
 	def evaluate(self, x, y):

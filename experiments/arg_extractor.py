@@ -41,6 +41,8 @@ def get_args():
                         help='File path for the saved model')
     parser.add_argument('--fraction_of_data', nargs="?", type=float, default=1,
                         help='Fraction of data to use for training')
+    parser.add_argument('--fraction_of_val', nargs="?", type=float, default=1,
+                        help='Fraction of validation samples to use for val evaluations')
     parser.add_argument('--learning_rate', nargs="?", type=float, default=1e-4,
                         help='Learning rate passed to the optimizer')
     parser.add_argument('--shuffle_order', nargs="?", type=str2bool, default=True, 

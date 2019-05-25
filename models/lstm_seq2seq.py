@@ -5,11 +5,14 @@ from keras.optimizers import Adam
 import keras.backend as K
 from keras.models import Sequential
 from keras.callbacks import TensorBoard
+from tensorflow.keras.utils import multi_gpu_model
+import tensorflow as tf
+from tensorflow.test import is_gpu_available
 
 class LstmSeq2Seq(Model):
 	def __init__(self, gpus=0, batch_size=100, segment_size=12, num_features=121, 
 		num_layers=2, hidden_size=10, learning_rate=0.0001, dropout=0, model=None,
-		create_tensorboard=False):
+		create_tensorboard=True):
 
 		self.batch_size = batch_size
 
@@ -17,8 +20,18 @@ class LstmSeq2Seq(Model):
 			self.model = model
 			return
 		
-		self.model = Seq2Seq(batch_input_shape=(batch_size, segment_size, num_features), 
-			hidden_dim=hidden_size, output_length=segment_size, output_dim=1, depth=num_layers, dropout=dropout)
+		with tf.device('/cpu:0'):
+			self.model = Seq2Seq(batch_input_shape=(batch_size, segment_size, num_features), 
+				hidden_dim=hidden_size, output_length=segment_size, output_dim=1, depth=num_layers, dropout=dropout)
+
+		if is_gpu_available():
+			try:
+				self.model = multi_gpu_model(self.model, gpus=gpus)
+				print("\nUsing multiple gpus\n")
+			except:
+				print("\nUsing single GPU\n")
+		else:
+			print("\nUsing CPU\n")
 
 		optimizer = Adam(lr=learning_rate)
 		self.model.compile(loss='mse', optimizer=optimizer)		
@@ -46,8 +59,8 @@ class LstmSeq2Seq(Model):
 
 		callbacks = []
 		if self.create_tensorboard:
-			callbacks.append(TensorBoard(log_dir='logs/seq2seq', 
-			histogram_freq=0, write_graph=True, write_images=False))
+			callbacks.append(TensorBoard(log_dir='logs/seq2seq_2', 
+			histogram_freq=1, write_grads=True, write_graph=False, write_images=True))
 
 		history = self.model.fit(x_reshaped, y, batch_size=self.batch_size, epochs=self.step_num + 1,
 			callbacks=callbacks, initial_epoch=self.step_num)

@@ -12,7 +12,7 @@ from tensorflow.test import is_gpu_available
 class LstmSeq2Seq(Model):
 	def __init__(self, gpus=0, batch_size=100, segment_size=12, num_features=121, 
 		num_layers=2, hidden_size=10, learning_rate=0.0001, dropout=0, model=None,
-		create_tensorboard=True):
+		create_tensorboard=False):
 
 		self.batch_size = batch_size
 

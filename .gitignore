@@ -112,3 +112,5 @@ data/**/*
 **/__init__.py
 
 
+slurm-*.out
+

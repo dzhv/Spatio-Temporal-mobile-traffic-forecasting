@@ -20,12 +20,8 @@ args = get_args()
 def calculate_loss(predictions, targets):
 	predictions = predictions * args.train_std + args.train_mean 
 	targets = targets * args.train_std + args.train_mean
-
-	if len(targets.shape) == 1 or targets.shape[-1] == 1:     # if this is a 1 step prediction
-		return nrmse(targets, predictions)
-
-	# if this is a multi step prediction
-	return nrmse(targets[:, -1], predictions[:, -1])
+	
+	return nrmse(targets, predictions)
 
 def get_essentials():
 	model = model_factory(args.model_name, args.model_file, args.batch_size)

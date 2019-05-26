@@ -122,16 +122,14 @@ class ExperimentBuilder(object):
         predictions = out * self.train_std + self.train_mean 
         targets = y * self.train_std + self.train_mean
 
-        if len(y.shape) == 1 or y.shape[-1] == 1:     # if this is a 1 step prediction
-            nrmse_loss = nrmse(targets, predictions)
-        else:                                   # if this is a multi step prediction
-            nrmse_loss = nrmse(targets[:, -1], predictions[:, -1])
+        nrmse_loss = nrmse(targets, predictions)
+        last_target_nrmse_loss = nrmse(targets[:, -1], predictions[:, -1])
 
         print(f"mse loss: {mse_loss}")
         print(f"nrmse loss: {nrmse_loss}")
+        print(f"last target nrmse loss: {last_target_nrmse_loss}")
 
         return mse_loss, nrmse_loss
-        
 
     def save_model(self, model_save_dir, model_save_name, model_idx, state):
         """

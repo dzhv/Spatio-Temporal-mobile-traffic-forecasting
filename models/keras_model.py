@@ -1,5 +1,7 @@
 from models.model import Model
 import abc
+from keras.callbacks import TensorBoard
+
 class KerasModel(Model):
 	# A wrapper class for Keras Models
 	# containing common functionality

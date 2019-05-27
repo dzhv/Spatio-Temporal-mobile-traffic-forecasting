@@ -1,16 +1,17 @@
 # Code adapted from: https://github.com/LukeTonin/keras-seq-2-seq-signal-prediction
 
 from keras.layers import Input, LSTMCell, RNN, Dense
-from models.model import Model
-from keras.models import Model as KerasModel
+from keras.models import Model
 from keras.optimizers import Adam
 import numpy as np
 
-class KerasSeq2Seq(Model):
+from models.keras_model import KerasModel
+from models import model_device_adapter
+
+class KerasSeq2Seq(KerasModel):
 	def __init__(self, gpus=0, batch_size=100, segment_size=12, num_features=121, 
 		num_layers=2, hidden_size=10, learning_rate=0.0001, dropout=0, create_tensorboard=False):
 
-		self.batch_size = batch_size
 		self.segment_size = segment_size
 
 		# create encoder and decoder LSTM towers/stacks
@@ -48,13 +49,15 @@ class KerasSeq2Seq(Model):
 
 		decoder_outputs = decoder_dense(decoder_outputs)
 
-		self.model = KerasModel(inputs=[encoder_inputs, decoder_inputs], outputs=decoder_outputs)
+		self.model = Model(inputs=[encoder_inputs, decoder_inputs], outputs=decoder_outputs)
+		self.model = model_device_adapter.get_device_specific_model(self.model, gpus)
 		
 		optimizer = Adam(lr=learning_rate)
 		self.model.compile(loss='mse', optimizer=optimizer)
 
 		print(self.model.summary())
 
+		super(KerasSeq2Seq, self).__init__(batch_size=batch_size, create_tensorboard=create_tensorboard)
 
 	def create_stacked_lstms(self, hidden_size, num_layers, return_sequences, return_state):
 		# Create a list of RNN Cells, these are then concatenated into a single layer
@@ -65,55 +68,11 @@ class KerasSeq2Seq(Model):
 
 		return RNN(cells, return_sequences=return_sequences, return_state=return_state)
 
-	def reshape_inputs(self, x):
-		return x.reshape(x.shape[0], x.shape[1], x.shape[2] * x.shape[3])
+	def form_model_inputs(self, x):
+		encoder_input = x.reshape(x.shape[0], x.shape[1], x.shape[2] * x.shape[3])
+		# (batch_size, segment_size, arbitrary input dimension)
+		decoder_input = np.zeros((encoder_input.shape[0], self.segment_size, 1))
+		return [encoder_input, decoder_input]
 
-	def forward(self, x):
-		x_reshaped = self.reshape_inputs(x)
-		decoder_input = np.zeros((x_reshaped.shape[0], self.segment_size, 1))
-		return self.model.predict([x_reshaped, decoder_input], batch_size=self.batch_size)
-
-	def train(self, x, y):
-		""" inputs:
-				x - (batch_size, segment_size, window_width, window_height)
-				y - (batch_size,)
-		"""		
-
-		x_reshaped = self.reshape_inputs(x)
-		y = y[:, :, None]
-
-		callbacks = []
-		# if self.create_tensorboard:
-		# 	callbacks.append(TensorBoard(log_dir='logs/seq2seq_2', 
-		# 	write_grads=True, write_graph=False, write_images=True))
-
-		# (batch_size, segment_length, 1)
-		# print(y.shape)
-
-		# (input batch size, segment_size, number of features FOR each prediction time step)
-		decoder_input = np.zeros((y.shape[0], self.segment_size, 1))
-		history = self.model.fit([x_reshaped, decoder_input], y, batch_size=self.batch_size, epochs=1,
-			callbacks=callbacks)
-
-		# self.step_num += 1
-
-		# gradients = K.gradients(self.model.output, self.model.input)  
-		# sess = K.get_session()
-		# evaluated_gradients = sess.run(gradients[0], feed_dict={self.model.input: x_reshaped})
-		# print("\nHere be gradients:")
-		# print(evaluated_gradients)
-		# print("")
-
-		print(history.history)
-		return history.history["loss"][0]
-
-	def evaluate(self, x, y):
-		x_reshaped = self.reshape_inputs(x)
-		decoder_input = np.zeros((y.shape[0], self.segment_size, 1))
-		return self.model.evaluate([x_reshaped, decoder_input], y, batch_size=y.shape[0])
-
-	def save(self, path):
-		self.model.save_weights(path + ".h5")
-
-	def load(self, path):
-		self.model.load_weights(path + ".h5")
+	def form_targets(self, y):
+		return y[:, :, None]

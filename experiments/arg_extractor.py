@@ -35,7 +35,7 @@ def get_args():
         help="Number of gpus available")
     parser.add_argument('--model_file', nargs="?", type=str, default="none",
                         help='File path for the saved model')
-    parser.add_argument('--create_tensorboard', nargs="?", type=str2bool, default=True, 
+    parser.add_argument('--create_tensorboard', nargs="?", type=str2bool, default=False, 
         help="A flag indicating whether logs for tensorboard should be collected (applicable only for certain models)")
     parser.add_argument('--continue_from_epoch', nargs="?", type=int, default=-1, help='Batch_size for experiment')
 

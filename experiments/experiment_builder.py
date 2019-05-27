@@ -119,15 +119,13 @@ class ExperimentBuilder(object):
         self.model.eval_mode()  # sets the system to validation mode
         out = self.model.forward(x)
         mse_loss = mse(y, out)
+        print(f"mse loss: {mse_loss}")
+
         predictions = out * self.train_std + self.train_mean 
         targets = y * self.train_std + self.train_mean
 
-        nrmse_loss = nrmse(targets, predictions)
-        last_target_nrmse_loss = nrmse(targets[:, -1], predictions[:, -1])
-
-        print(f"mse loss: {mse_loss}")
+        nrmse_loss = nrmse(targets, predictions)        
         print(f"nrmse loss: {nrmse_loss}")
-        print(f"last target nrmse loss: {last_target_nrmse_loss}")
 
         return mse_loss, nrmse_loss
 

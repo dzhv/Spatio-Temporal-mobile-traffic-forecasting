@@ -1,22 +1,17 @@
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, CuDNNLSTM
-from tensorflow.keras.layers import LSTM as CpuLSTM
-from tensorflow.keras.losses import mean_squared_error
-from tensorflow.keras.utils import multi_gpu_model
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.models import load_model
-from tensorflow.test import is_gpu_available
-from models.model import Model
-import tensorflow as tf
-
 import sys
+from tensorflow.keras.models import Sequential, load_model
+from tensorflow.keras.layers import Dense, CuDNNLSTM, LSTM as CpuLSTM
+from tensorflow.keras.optimizers import Adam
+import tensorflow as tf
+from tensorflow.test import is_gpu_available
 
-class LSTM(Model):
+from models.keras_model import KerasModel
+from models import model_device_adapter
+
+class LSTM(KerasModel):
 
 	def __init__(self, gpus=0, batch_size=100, segment_size=12, num_features=121, 
 		num_layers=2, hidden_size=100, learning_rate=0.0001, output_dim=1):
-		self.batch_size = batch_size		
-
 		lstm_cell = CuDNNLSTM if is_gpu_available() else CpuLSTM
 
 		with tf.device('/cpu:0'):
@@ -29,46 +24,14 @@ class LSTM(Model):
 
 			self.model.add(Dense(output_dim))
 
-		if is_gpu_available():
-			try:
-				self.model = multi_gpu_model(self.model, gpus=gpus)
-				print("\nUsing multiple gpus\n")
-			except:
-				print("\nUsing single GPU\n")
-		else:
-			print("\nUsing CPU LSTM!\n")
+		self.model = model_device_adapter.get_device_specific_model(self.model, gpus)
 
 		optimizer = Adam(lr=learning_rate)
-		self.model.compile(loss=mean_squared_error, optimizer=optimizer)
+		self.model.compile(loss='mse', optimizer=optimizer)
 
 		print(self.model.summary())
 
-	def reshape_inputs(self, x):
+		super(LSTM, self).__init__(batch_size=batch_size)
+
+	def form_model_inputs(self, x):
 		return x.reshape(x.shape[0], x.shape[1], x.shape[2] * x.shape[3])
-
-	def forward(self, x):
-		x_reshaped = self.reshape_inputs(x)
-		return self.model.predict(x_reshaped, batch_size=self.batch_size)
-
-	def train(self, x, y):
-		""" inputs:
-				x - (batch_size, segment_size, window_width, window_height)
-				y - (batch_size,)
-		"""		
-
-		x_reshaped = self.reshape_inputs(x)
-		history = self.model.fit(x_reshaped, y, batch_size=self.batch_size, epochs=1)
-		# print(history.history)
-		return history.history["loss"][0]
-
-	def evaluate(self, x, y):
-		x_reshaped = self.reshape_inputs(x)
-		return self.model.evaluate(x_reshaped, y, batch_size=y.shape[0])
-
-	def save(self, path):
-		self.model.save(path + ".h5")
-
-	def load(self, path):
-		full_path = path + ".h5"
-		print(f"Loading LSTM model from {full_path}\n")
-		self.model = load_model(full_path)

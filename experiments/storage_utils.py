@@ -70,3 +70,11 @@ def load_statistics(filepath):
             stats[keys[idx]].append(value.strip())
 
     return stats
+
+def save_best_val_scores(experiment_log_dir, filename, best_val_loss, best_val_model_idx, best_val_nrmse_loss, 
+                best_val_nrmse_model_idx):
+    save_path = os.path.join(experiment_log_dir, filename)
+    with open(save_path, 'w') as f:
+        f.write(f"Best validation mse loss: {best_val_loss}, epoch: {best_val_model_idx}\n")
+        f.write(f"Best validation nrmse loss: {best_val_nrmse_loss}, epoch: {best_val_nrmse_model_idx}\n")
+

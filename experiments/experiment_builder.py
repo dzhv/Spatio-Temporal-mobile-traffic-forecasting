@@ -4,7 +4,7 @@ import numpy as np
 import time
 parent_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-from storage_utils import save_statistics, load_statistics
+from storage_utils import save_statistics, load_statistics, save_best_val_scores
 from models.losses import mse
 from models.losses import nrmse_numpy as nrmse
 
@@ -54,7 +54,9 @@ class ExperimentBuilder(object):
 
         # Set best models to be at 0 since we are just starting
         self.best_val_model_idx = 0
-        self.best_val_model_loss = float("inf")
+        self.best_val_loss = float("inf")
+        self.best_val_nrmse_model_idx = 0
+        self.best_val_nrmse_loss = float("inf")
 
         # save experiment arguments for traceability
         with open(os.path.join(self.experiment_folder, "arguments.txt"), "w") as file:
@@ -67,20 +69,12 @@ class ExperimentBuilder(object):
         self.continue_from_epoch = continue_from_epoch
 
         if continue_from_epoch == -2:  # load the last saved model from the experiment_saved_models directory
-            self.best_val_model_idx, self.best_val_model_loss, current_epoch, metrics = self.load_model(
-                model_save_dir=self.experiment_saved_models, model_save_name="train_model",
+            self.load_model(model_save_dir=self.experiment_saved_models, model_save_name="train_model",
                 model_idx='latest')
-            self.starting_epoch = current_epoch
-            print(f"current epoch: {current_epoch}")
-            self.metrics = metrics      # previously saved losses
 
         elif continue_from_epoch != -1:  # if continue from epoch is not -1 then
-            self.best_val_model_idx, self.best_val_model_loss, current_epoch, metrics = self.load_model(
-                model_save_dir=self.experiment_saved_models, model_save_name="train_model",
-                model_idx=continue_from_epoch)  # reload existing model from epoch and return best val model index
-            # and the best val acc of that model
-            self.starting_epoch = current_epoch
-            self.metrics = metrics
+            self.load_model(model_save_dir=self.experiment_saved_models, model_save_name="train_model",
+                model_idx=continue_from_epoch)            
         else:
             self.starting_epoch = 0
             self.metrics = self.empty_metrics()
@@ -148,12 +142,19 @@ class ExperimentBuilder(object):
         self.model.load(path)
 
         stats = load_statistics(self.summary_file)
-        val_losses = np.array(stats['val_loss']).astype(np.float)
-        best_val_loss = np.min(val_losses)
-        best_val_model_idx = np.argmin(val_losses)
-        curr_epoch = int(stats['curr_epoch'][-1]) + 1
 
-        return best_val_model_idx, best_val_loss, curr_epoch, stats
+        val_losses = np.array(stats['val_loss']).astype(np.float)
+        self.best_val_loss = np.min(val_losses)
+        self.best_val_model_idx = np.argmin(val_losses)
+        val_nrmse_losses = np.array(stats['val_nrmse_loss']).astype(np.float)
+        self.best_val_nrmse_loss = np.min(val_nrmse_losses)
+        self.best_val_nrmse_model_idx = np.argmin(val_nrmse_losses)
+        
+        curr_epoch = int(stats['curr_epoch'][-1]) + 1
+        self.starting_epoch = curr_epoch
+
+        print(f"current epoch: {curr_epoch}")
+        self.metrics = stats
 
     def empty_metrics(self):
         return {"train_loss": [], "val_loss": [], "val_nrmse_loss": [], "curr_epoch": []}
@@ -188,9 +189,15 @@ class ExperimentBuilder(object):
             
             val_mean_loss = np.mean(current_epoch_losses['val_loss'])
             # if lowest validation loss was achieved in this epoch
-            if val_mean_loss < self.best_val_model_loss:
-                self.best_val_model_loss = val_mean_loss
-                self.best_val_model_idx = epoch_idx  
+            if val_mean_loss < self.best_val_loss:
+                self.best_val_loss = val_mean_loss
+                self.best_val_model_idx = epoch_idx
+
+            val_nrmse_mean_loss = np.mean(current_epoch_losses['val_nrmse_loss'])
+            # if lowest nrmse validation loss was achieved in this epoch
+            if val_nrmse_mean_loss < self.best_val_nrmse_loss:
+                self.best_val_nrmse_loss = val_nrmse_mean_loss
+                self.best_val_nrmse_model_idx = epoch_idx
 
             # get mean of all metrics of current epoch metrics dict, 
             # to get them ready for storage and output on the terminal.
@@ -201,6 +208,10 @@ class ExperimentBuilder(object):
             save_statistics(experiment_log_dir=self.experiment_logs, filename='summary.csv',
                             stats_dict=self.metrics, current_epoch=epoch_idx,
                             continue_from_mode=(self.starting_epoch != 0 or i > 0))
+
+            save_best_val_scores(experiment_log_dir=self.experiment_logs, filename='best_val_scores.csv',
+                best_val_loss=self.best_val_loss, best_val_model_idx=self.best_val_model_idx, 
+                best_val_nrmse_loss=self.best_val_nrmse_loss, best_val_nrmse_model_idx=self.best_val_nrmse_model_idx)
 
             out_string = "_".join(
                 ["{}_{:.4f}".format(key, np.mean(value)) for key, value in current_epoch_losses.items()])

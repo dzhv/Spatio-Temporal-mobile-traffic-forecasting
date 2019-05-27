@@ -36,30 +36,27 @@ class ExperimentBuilder(object):
         self.train_data = train_data
         self.val_data = val_data
 
-        # self.optimizer = optim.Adam(self.parameters(), amsgrad=False,
-        #                             weight_decay=weight_decay_coefficient)
-
-        # Generate the directory names
-
+        # Generate the experiment directories
         self.experiment_folder = os.path.join(parent_folder, "results", experiment_name)
         self.experiment_logs = os.path.join(self.experiment_folder, "result_outputs")
         self.summary_file = os.path.join(self.experiment_logs, "summary.csv")
         self.experiment_saved_models = os.path.join(self.experiment_folder, "saved_models")
         print(self.experiment_folder, self.experiment_logs)
+
+        if not os.path.exists(self.experiment_folder):
+            os.mkdir(self.experiment_folder)
+
+        if not os.path.exists(self.experiment_logs):
+            os.mkdir(self.experiment_logs)
+
+        if not os.path.exists(self.experiment_saved_models):
+            os.mkdir(self.experiment_saved_models)
+
         # Set best models to be at 0 since we are just starting
         self.best_val_model_idx = 0
         self.best_val_model_loss = float("inf")
 
-        if not os.path.exists(self.experiment_folder):  # If experiment directory does not exist
-            os.mkdir(self.experiment_folder)  # create the experiment directory
-
-        if not os.path.exists(self.experiment_logs):
-            os.mkdir(self.experiment_logs)  # create the experiment log directory
-
-        if not os.path.exists(self.experiment_saved_models):
-            os.mkdir(self.experiment_saved_models)  # create the experiment saved models directory
-
-        # save args
+        # save experiment arguments for traceability
         with open(os.path.join(self.experiment_folder, "arguments.txt"), "w") as file:
             file.write(str(args) + "\n")
 
@@ -68,21 +65,14 @@ class ExperimentBuilder(object):
 
         self.num_epochs = num_epochs
         self.continue_from_epoch = continue_from_epoch
-        self.state = dict()
 
-        if continue_from_epoch == -2:
-            # try:
+        if continue_from_epoch == -2:  # load the last saved model from the experiment_saved_models directory
             self.best_val_model_idx, self.best_val_model_loss, current_epoch, metrics = self.load_model(
                 model_save_dir=self.experiment_saved_models, model_save_name="train_model",
-                model_idx='latest')  # reload existing model from epoch and return best val model index
-            # and the best val acc of that model
+                model_idx='latest')
             self.starting_epoch = current_epoch
             print(f"current epoch: {current_epoch}")
-            self.metrics = metrics
-            # except:
-            #     print("Model objects cannot be found, initializing a new model and starting from scratch")
-            #     self.starting_epoch = 0
-            #     self.state = dict()
+            self.metrics = metrics      # previously saved losses
 
         elif continue_from_epoch != -1:  # if continue from epoch is not -1 then
             self.best_val_model_idx, self.best_val_model_loss, current_epoch, metrics = self.load_model(
@@ -105,8 +95,7 @@ class ExperimentBuilder(object):
         """
         self.model.train_mode()
 
-        loss = self.model.train(x, y)
-        
+        loss = self.model.train(x, y)        
         return loss
 
     def run_evaluation_iter(self, x, y):
@@ -117,6 +106,7 @@ class ExperimentBuilder(object):
         :return: the loss for this batch
         """
         self.model.eval_mode()  # sets the system to validation mode
+
         out = self.model.forward(x)
         mse_loss = mse(y, out)
         print(f"mse loss: {mse_loss}")
@@ -129,19 +119,18 @@ class ExperimentBuilder(object):
 
         return mse_loss, nrmse_loss
 
-    def save_model(self, model_save_dir, model_save_name, model_idx, state):
+    def save_model(self, model_save_dir, model_save_name, epoch_idx):
         """
-        Save the network parameter state and current best val epoch idx and best val accuracy.
+        Save the model state.
         :param model_save_name: Name to use to save model without the epoch index
         :param model_idx: The index to save the model with.
-        :param best_validation_model_idx: The index of the best validation model to be stored for future use.
-        :param best_validation_model_acc: The best validation accuracy to be stored for use at test time.
         :param model_save_dir: The directory to store the state at.
         :param state: The dictionary containing the system state.
-
         """
-        path = os.path.join(model_save_dir, f"{model_save_name}_{model_idx}")
-        self.model.save(path)
+        epoch_model_path = os.path.join(model_save_dir, f"{model_save_name}_{epoch_idx}")
+        latest_model_path = os.path.join(model_save_dir, f"{model_save_name}_latest")
+        self.model.save(epoch_model_path)
+        self.model.save(latest_model_path)
 
     def load_model(self, model_save_dir, model_save_name, model_idx):
         """
@@ -161,10 +150,10 @@ class ExperimentBuilder(object):
         stats = load_statistics(self.summary_file)
         val_losses = np.array(stats['val_loss']).astype(np.float)
         best_val_loss = np.min(val_losses)
-        best_val_model_id = np.argmin(val_losses)
+        best_val_model_idx = np.argmin(val_losses)
         curr_epoch = int(stats['curr_epoch'][-1]) + 1
 
-        return best_val_model_id, best_val_loss, curr_epoch, stats
+        return best_val_model_idx, best_val_loss, curr_epoch, stats
 
     def empty_metrics(self):
         return {"train_loss": [], "val_loss": [], "val_nrmse_loss": [], "curr_epoch": []}
@@ -198,11 +187,9 @@ class ExperimentBuilder(object):
                     pbar_val.set_description("loss: {:.4f}".format(loss))
             
             val_mean_loss = np.mean(current_epoch_losses['val_loss'])
-            # if current epoch's mean val acc is greater than the saved best val acc then
-            if val_mean_loss < self.best_val_model_loss:  
-                # set the best val model acc to be current epoch's val accuracy
-                self.best_val_model_loss = val_mean_loss  
-                # set the experiment-wise best val idx to be the current epoch's idx
+            # if lowest validation loss was achieved in this epoch
+            if val_mean_loss < self.best_val_model_loss:
+                self.best_val_model_loss = val_mean_loss
                 self.best_val_model_idx = epoch_idx  
 
             # get mean of all metrics of current epoch metrics dict, 
@@ -213,10 +200,7 @@ class ExperimentBuilder(object):
             self.metrics['curr_epoch'].append(epoch_idx)
             save_statistics(experiment_log_dir=self.experiment_logs, filename='summary.csv',
                             stats_dict=self.metrics, current_epoch=epoch_idx,
-                            continue_from_mode=True if (self.starting_epoch != 0 or i > 0) else False)
-
-            # How to load a csv file if you need to
-            # load_statistics(experiment_log_dir=self.experiment_logs, filename='summary.csv') 
+                            continue_from_mode=(self.starting_epoch != 0 or i > 0))
 
             out_string = "_".join(
                 ["{}_{:.4f}".format(key, np.mean(value)) for key, value in current_epoch_losses.items()])
@@ -224,36 +208,8 @@ class ExperimentBuilder(object):
             epoch_elapsed_time = time.time() - epoch_start_time  # calculate time taken for epoch
             epoch_elapsed_time = "{:.4f}".format(epoch_elapsed_time)
             print("Epoch {}:".format(epoch_idx), out_string, "epoch time", epoch_elapsed_time, "seconds")
-            self.state['current_epoch_idx'] = epoch_idx
-            self.state['best_val_model_loss'] = self.best_val_model_loss
-            self.state['best_val_model_idx'] = self.best_val_model_idx
 
-            # save model and best val idx and best val acc, using the model dir, model name and model idx
-            self.save_model(model_save_dir=self.experiment_saved_models,                
-                            model_save_name="train_model", model_idx=epoch_idx, state=self.state)
-            # save model and best val idx and best val acc, using the model dir, model name and model idx
-            self.save_model(model_save_dir=self.experiment_saved_models,
-                            model_save_name="train_model", model_idx='latest', state=self.state)
+            # save the current model
+            self.save_model(model_save_dir=self.experiment_saved_models,     
+                            model_save_name="train_model", epoch_idx=epoch_idx)
 
-        # print("Generating test set evaluation metrics")
-        # self.load_model(model_save_dir=self.experiment_saved_models, model_idx=self.best_val_model_idx,
-        #                 # load best validation model
-        #                 model_save_name="train_model")
-        # current_epoch_losses = {"test_acc": [], "test_loss": []}  # initialize a statistics dict
-        # with tqdm.tqdm(total=len(self.test_data)) as pbar_test:  # ini a progress bar
-        #     for x, y in self.test_data:  # sample batch
-        #         # compute loss and accuracy by running an evaluation step
-        #         loss, accuracy = self.run_evaluation_iter(x=x, y=y)  
-        #         current_epoch_losses["test_loss"].append(loss)  # save test loss
-        #         current_epoch_losses["test_acc"].append(accuracy)  # save test accuracy
-        #         pbar_test.update(1)  # update progress bar status
-        #         pbar_test.set_description(
-        #             "loss: {:.4f}, accuracy: {:.4f}".format(loss, accuracy))  # update progress bar string output
-
-        # test_losses = {key: [np.mean(value)] for key, value in
-        #                current_epoch_losses.items()}  # save test set metrics in dict format
-        # save_statistics(experiment_log_dir=self.experiment_logs, filename='test_summary.csv',
-        #                 # save test set metrics on disk in .csv format
-        #                 stats_dict=test_losses, current_epoch=0, continue_from_mode=False)
-
-        # return total_losses, test_losses

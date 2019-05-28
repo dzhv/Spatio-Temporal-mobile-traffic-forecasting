@@ -1,15 +1,16 @@
 # Code adapted from: https://github.com/LukeTonin/keras-seq-2-seq-signal-prediction
 
 from keras.layers import Input, LSTMCell, RNN, Dense
-from keras.models import Model
+from keras.models import Model, load_model
 from keras.optimizers import Adam
 import numpy as np
 
 from models.keras_model import KerasModel
 from models import model_device_adapter
 
+
 class KerasSeq2Seq(KerasModel):
-	def __init__(self, gpus=0, batch_size=100, segment_size=12, num_features=121, 
+	def __init__(self, gpus=1, batch_size=100, segment_size=12, num_features=121, 
 		num_layers=2, hidden_size=10, learning_rate=0.0001, dropout=0, create_tensorboard=False):
 
 		self.segment_size = segment_size
@@ -76,3 +77,8 @@ class KerasSeq2Seq(KerasModel):
 
 	def form_targets(self, y):
 		return y[:, :, None]
+
+	def load(self, path):
+		full_path = path + ".h5"
+		print(f"Loading model from {full_path}\n")
+		self.model = load_model(full_path)

@@ -20,19 +20,20 @@ import numpy as np
 args = get_args()
 
 def evaluate():
-	model, data = get_essentials()
+	model, data, multi_step_prediction = get_essentials()
 
-	print("Errors for all testing data")
-	print("---------------------------")
-	report_error(data, model)
-	print("\n")
+	reporter = report_multistep_error if multi_step_prediction else report_singlestep_error
 
-	print("Trying 10 random samples:")
-	print("---------------------------")
-	report_error(data.get_random_samples(10), model)
+	write_to_file("Errors for all testing data:")
+	reporter(data, model, multi_step_prediction)
+	write_to_file("\n")
+	print("")
+
+	write_to_file("Trying 10 random samples:")
+	reporter(data.get_random_samples(10), model, multi_step_prediction)
 
 def prediction_analysis():
-	model, data = get_essentials()
+	model, data, multi_step_prediction = get_essentials()
 
 	indexes = [0, 25, 50, 75]	
 	results = []
@@ -53,17 +54,17 @@ def prediction_analysis():
 	np.save("predictions.npy", results)
 
 def get_essentials():
-	model = model_factory(args.model_name, args.model_file, args.batch_size)
+	model, multi_step_prediction = model_factory(args.model_name, args.model_file, args.batch_size)
 	print("model loaded")
 	
-	data_provider = WindowedDataProvider if args.model_name == "lstm" else Seq2SeqDataProvider
+	data_provider = Seq2SeqDataProvider if multi_step_prediction else WindowedDataProvider
 	data = data_provider(data_reader = FullDataReader(data_folder=args.data_path, which_set='test'),
 		window_size=args.window_size, segment_size=args.segment_size, batch_size=args.batch_size,
-		shuffle_order=False)
+		shuffle_order=False, fraction_of_data=args.fraction_of_data)
 
-	return model, data
+	return model, data, multi_step_prediction
 
-def report_error(sample_generator, model):
+def report_singlestep_error(sample_generator, model, num_prediction_steps):
 	losses = []
 	for x, y in sample_generator:
 		predictions = model.forward(x)
@@ -75,6 +76,35 @@ def report_error(sample_generator, model):
 
 	print(f"std: {np.std(losses)}")
 
+	write_to_file(f"mean nrmse loss: {np.mean(losses)}")
+	write_to_file(f"std: {np.std(losses)}")
+
+def report_multistep_error(sample_generator, model, num_prediction_steps):
+	all_step_losses = []
+	ten_step_losses = []
+	for x, y in sample_generator:
+		predictions = model.forward(x)
+		all_step_loss = calculate_loss(predictions, y)
+		all_step_losses.append(all_step_loss)
+
+		ten_step_loss = calculate_loss(predictions[:, :10], y[:, :10])
+		ten_step_losses.append(ten_step_loss)
+
+		print(f"all step loss: {all_step_loss}")
+		print(f"mean: {np.mean(all_step_losses)}")
+		print(f"10 step loss: {ten_step_loss}")
+		print(f"mean: {np.mean(ten_step_losses)}")
+		
+
+	print(f"all step loss std: {np.std(all_step_losses)}")
+	print(f"10 step loss std: {np.std(ten_step_losses)}")
+
+	write_to_file(f"mean all step nrmse loss: {np.mean(all_step_losses)}")
+	write_to_file(f"std: {np.std(all_step_losses)}")
+	write_to_file(f"mean 10 step nrmse loss: {np.mean(ten_step_losses)}")
+	write_to_file(f"std: {np.std(ten_step_losses)}")
+
+
 def calculate_loss(predictions, targets):
 	predictions = predictions * args.train_std + args.train_mean 
 	targets = targets * args.train_std + args.train_mean
@@ -84,10 +114,12 @@ def calculate_loss(predictions, targets):
 def model_factory(model_name, model_file, batch_size):
 	model_name = model_name.lower()
 
-	print(f"loading model: {model_name} from {args.model_file}")
+	print(f"loading model: {model_name} from {model_file}")
 
+	multi_step_prediction = True
 	if model_name == "lstm":
 		model = LSTM(batch_size=args.batch_size, num_layers=args.num_layers, hidden_size=args.hidden_size)
+		multi_step_prediction = False
 	elif model_name == "seq2seq":
 		model = LstmSeq2Seq(batch_size=args.batch_size, segment_size=args.segment_size, 
 		num_features=args.window_size**2, num_layers=args.num_layers, hidden_size=args.hidden_size)
@@ -98,7 +130,14 @@ def model_factory(model_name, model_file, batch_size):
 		raise ValueError(f"unknown model: {model_name}")
 
 	model.load(model_file)
-	return model
+	return model, multi_step_prediction
+
+def write_to_file(message):
+	model_folder = path.dirname(path.dirname(args.model_file))
+	file = path.join(model_folder, "evaluation.txt")
+
+	with open(file, "a") as f:
+		f.write(message + "\n")
 
 evaluate()
 # prediction_analysis()

@@ -34,7 +34,9 @@ class Seq2SeqDataProvider(object):
 
     def next(self):
         indexes = self.rng.permutation(self.num_segments) if self.shuffle_order else np.arange(self.num_segments)
+        return self.enumerate_data(indexes)
 
+    def enumerate_data(self, indexes):
         for count, i in enumerate(indexes):
             segment = self.data[i:i + self.segment_size * 2]  # *2 is to include the target data
 
@@ -54,6 +56,12 @@ class Seq2SeqDataProvider(object):
 
             if count + 1 > len(indexes) * self.fraction_of_data:
                 break
+
+    def get_random_samples(self, n_samples):
+        assert n_samples <= self.num_segments, f"Cannot provide more than {self.num_segments} samples"
+        # returns samples from n_samples different starting time points
+        indexes = self.rng.permutation(self.num_segments)[:n_samples]
+        return self.enumerate_data(indexes)
 
 
     def __iter__(self):

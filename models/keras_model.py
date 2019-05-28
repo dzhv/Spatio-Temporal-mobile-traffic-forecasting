@@ -1,6 +1,12 @@
 from models.model import Model
 import abc
 from keras.callbacks import TensorBoard
+from keras.models import model_from_json
+import keras
+from keras.utils import CustomObjectScope
+from keras.initializers import glorot_uniform
+import json
+import os.path
 
 class KerasModel(Model):
 	# A wrapper class for Keras Models
@@ -65,12 +71,11 @@ class KerasModel(Model):
 		return self.model.evaluate(inputs, targets, batch_size=targets.shape[0])
 
 	def save(self, path):
-		self.model.save_weights(path + ".h5")
+		# save the model weights
+		self.model.save_weights(path + ".h5")		
 
 	def load(self, path):
-		full_path = path + ".h5"
-		print(f"Loading model from {full_path}\n")
-		self.model.load_weights(full_path)
-
-	
+		weight_path = path + ".h5"
+		print(f"Loading weights from {weight_path}\n")
+		self.model.load_weights(weight_path)
 

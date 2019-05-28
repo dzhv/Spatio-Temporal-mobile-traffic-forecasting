@@ -67,7 +67,6 @@ class KerasModel(Model):
 		return self.model.evaluate(inputs, targets, batch_size=targets.shape[0])
 
 	def save(self, path):
-		# save the model weights
 		self.model.save_weights(path + ".h5")		
 
 	def load(self, path):

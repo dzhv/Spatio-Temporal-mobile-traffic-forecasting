@@ -1,10 +1,6 @@
 from models.model import Model
 import abc
 from keras.callbacks import TensorBoard
-from keras.models import model_from_json
-import keras
-from keras.utils import CustomObjectScope
-from keras.initializers import glorot_uniform
 import json
 import os.path
 

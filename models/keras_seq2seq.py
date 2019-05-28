@@ -77,8 +77,3 @@ class KerasSeq2Seq(KerasModel):
 
 	def form_targets(self, y):
 		return y[:, :, None]
-
-	def load(self, path):
-		full_path = path + ".h5"
-		print(f"Loading model from {full_path}\n")
-		self.model = load_model(full_path)

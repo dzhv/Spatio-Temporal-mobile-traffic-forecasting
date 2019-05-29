@@ -26,8 +26,8 @@ class CnnConvLSTM(KerasModel):
 		out = ConvLSTM2D(filters=64, kernel_size=5, return_sequences=True, activation='relu')(out)
 		out = ConvLSTM2D(filters=64, kernel_size=5, activation='relu')(out)
 
-		out = Conv2DTranspose(64, kernel_size=3, activation='relu')(out)
-		out = Conv2DTranspose(64, kernel_size=3, activation='relu')(out)
+		out = Conv2DTranspose(64, kernel_size=5, activation='relu')(out)
+		out = Conv2DTranspose(64, kernel_size=5, activation='relu')(out)
 		out = UpSampling2D()(out)
 		out = Conv2DTranspose(32, kernel_size=3, activation='relu')(out)
 		out = Conv2DTranspose(1, kernel_size=3, activation='relu')(out)

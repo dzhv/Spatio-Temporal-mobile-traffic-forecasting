@@ -11,7 +11,7 @@ from models import model_device_adapter
 class LSTM(KerasModel):
 
 	def __init__(self, gpus=0, batch_size=100, segment_size=12, num_features=121, 
-		num_layers=2, hidden_size=100, learning_rate=0.0001, output_dim=1):
+		num_layers=2, hidden_size=100, learning_rate=0.0001, output_dim=1, create_tensorboard=False):
 		lstm_cell = CuDNNLSTM if is_gpu_available() else CpuLSTM
 
 		with tf.device('/cpu:0'):
@@ -31,7 +31,7 @@ class LSTM(KerasModel):
 
 		print(self.model.summary())
 
-		super(LSTM, self).__init__(batch_size=batch_size)
+		super(LSTM, self).__init__(batch_size=batch_size, create_tensorboard=create_tensorboard)
 
 	def form_model_inputs(self, x):
 		return x.reshape(x.shape[0], x.shape[1], x.shape[2] * x.shape[3])

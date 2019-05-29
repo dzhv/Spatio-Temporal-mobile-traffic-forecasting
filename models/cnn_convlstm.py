@@ -16,17 +16,17 @@ class CnnConvLSTM(KerasModel):
 		# 1 refers to a single channel of the input
 		inputs = Input(shape=(segment_size, grid_size, grid_size, 1))
 		
-		out = TimeDistributed(Conv2D(25, kernel_size=3, activation='relu'))(inputs)
-		out = TimeDistributed(Conv2D(50, kernel_size=3, activation='relu'))(out)
+		out = TimeDistributed(Conv2D(32, kernel_size=3, activation='relu'))(inputs)
+		out = TimeDistributed(Conv2D(64, kernel_size=3, activation='relu'))(out)
 		# 1 filter for the last layer allows the output to have 1 feature map
 		# out = TimeDistributed(Conv2D(1, kernel_size=3, activation='relu'))(out)		
 
-		# out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True)(out)
-		out = ConvLSTM2D(filters=50, kernel_size=3)(out)
+		out = ConvLSTM2D(filters=64, kernel_size=3, return_sequences=True)(out)
+		out = ConvLSTM2D(filters=64, kernel_size=3)(out)
 
-		# out = Conv2DTranspose(50, kernel_size=3, activation='relu')(out)
-		out = Conv2DTranspose(50, kernel_size=3, activation='relu')(out)
-		out = Conv2DTranspose(25, kernel_size=3, activation='relu')(out)
+		out = Conv2DTranspose(64, kernel_size=3, activation='relu')(out)
+		out = Conv2DTranspose(64, kernel_size=3, activation='relu')(out)
+		out = Conv2DTranspose(32, kernel_size=3, activation='relu')(out)
 		out = Conv2DTranspose(1, kernel_size=3, activation='relu')(out)
 
 		self.model = Model(inputs=inputs, outputs=out)

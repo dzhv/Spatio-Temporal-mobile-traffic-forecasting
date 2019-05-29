@@ -23,8 +23,8 @@ class CnnConvLSTM(KerasModel):
 		# 1 filter for the last layer allows the output to have 1 feature map
 		# out = TimeDistributed(Conv2D(1, kernel_size=3, activation='relu'))(out)		
 
-		out = ConvLSTM2D(filters=64, kernel_size=3, return_sequences=True, activation='relu')(out)
-		out = ConvLSTM2D(filters=64, kernel_size=3, activation='relu')(out)
+		out = ConvLSTM2D(filters=64, kernel_size=5, return_sequences=True, activation='relu')(out)
+		out = ConvLSTM2D(filters=64, kernel_size=5, activation='relu')(out)
 
 		out = Conv2DTranspose(64, kernel_size=3, activation='relu')(out)
 		out = Conv2DTranspose(64, kernel_size=3, activation='relu')(out)
@@ -57,6 +57,6 @@ class CnnConvLSTM(KerasModel):
 		assert y.shape[1] == 1, f"expected target segment to be of length 1, got {y.shape[1]}"
 		return y[:, 0, :, :, None]
 
-model = CnnConvLSTM()
-output = model.forward(np.random.randn(1, 12, 100, 100))
-print(output.shape)
+# model = CnnConvLSTM()
+# output = model.forward(np.random.randn(1, 12, 100, 100))
+# print(output.shape)

@@ -20,7 +20,7 @@ class FullGridDataProvider(object):
 
         # number of time points which can be used to form inputs-targets pairs
         # the last segments are discarded as they cannot have a target
-        self.num_segments = self.data.shape[0] - self.segment_size - self.target_segment_size + 1  
+        self.num_segments = self.data.shape[0] - self.segment_size - self.target_segment_size + 1
         
         # used only for progress bars
         self.num_batches = np.ceil(self.num_segments * self.fraction_of_data)

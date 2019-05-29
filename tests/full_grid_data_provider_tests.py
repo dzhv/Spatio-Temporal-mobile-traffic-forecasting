@@ -6,7 +6,6 @@ from data_providers.full_grid_data_provider import FullGridDataProvider
 from data_providers.data_reader import MiniDataReader
 from mock_data_reader import MockDataReader
 
-
 import numpy as np
 
 data = np.array([

@@ -10,8 +10,8 @@ def str2bool(v):
 
 def get_args():
     """
-    Returns a namedtuple with arguments extracted from the command line.
-    :return: A namedtuple with arguments
+    Returns a named tuple with arguments extracted from the command line.
+    :return: A named tuple with arguments
     """
     parser = argparse.ArgumentParser()
 
@@ -21,8 +21,13 @@ def get_args():
                         help='segment size of 1 training/validation sample')
     parser.add_argument('--window_size', nargs="?", type=int, default=11,
                         help='size of the segment elements')
+    parser.add_argument('--grid_size', nargs="?", type=int, default=100,
+                        help='size of the full data grid')
 
     # model params
+    parser.add_argument('--model_name', nargs="?", type=str, default="lstm",
+                        help='Name of the model used for the experiment or evaluation. \
+                            Possible values: [lstm, keras_seq2seq, cnn_convlstm]')
     parser.add_argument('--hidden_size', nargs="?", type=int, default=100, help='Hidden size')
     parser.add_argument('--num_layers', nargs="?", type=int, default=2, help='Number of layers')
 
@@ -56,9 +61,7 @@ def get_args():
     parser.add_argument('--dropout', nargs="?", type=float, default=0, help='Dropout rate for the model')
     
 
-    # Model evaluator specific arguments
-    parser.add_argument('--model_name', nargs="?", type=str, default="lstm",
-                        help='Name of the model being evaluated. Possible values: [lstm, seq2seq]')
+    # Model evaluator specific arguments    
     parser.add_argument('--train_mean', nargs="?", type=float, default=67.61768898039853,
                         help='Mean of the initial training data')
     parser.add_argument('--train_std', nargs="?", type=float, default=132.47248595705986,

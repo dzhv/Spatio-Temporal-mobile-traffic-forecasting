@@ -21,8 +21,8 @@ class CnnConvLSTM(KerasModel):
 		# 1 filter for the last layer allows the output to have 1 feature map
 		# out = TimeDistributed(Conv2D(1, kernel_size=3, activation='relu'))(out)		
 
-		out = ConvLSTM2D(filters=64, kernel_size=3, return_sequences=True)(out)
-		out = ConvLSTM2D(filters=64, kernel_size=3)(out)
+		out = ConvLSTM2D(filters=64, kernel_size=3, return_sequences=True, activation='relu')(out)
+		out = ConvLSTM2D(filters=64, kernel_size=3, activation='relu')(out)
 
 		out = Conv2DTranspose(64, kernel_size=3, activation='relu')(out)
 		out = Conv2DTranspose(64, kernel_size=3, activation='relu')(out)

@@ -24,8 +24,8 @@ export PYTHON_PATH=$PATH
 
 # Activate the relevant virtual environment:
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
-python experiments/simple_seq2seq_experiment.py --data_path /home/${STUDENT_ID}/msc_project/data \
-									  --experiment_name "simple_seq2seq" \
-									  --gpus 1 --batch_size 1000 \
-									  --num_layers 2 --learning_rate 0.0001 --hidden_size 75 \
-									  --num_epochs 50 --fraction_of_data 0.01
+python experiments/experiment_runner.py --data_path /home/${STUDENT_ID}/msc_project/data \
+									  --experiment_name "cnn_convlstm" --model_name "cnn_convlstm" \
+									  --gpus 1 --batch_size 2 \
+									  --learning_rate 0.0001 \
+									  --num_epochs 50 --fraction_of_data 0.25

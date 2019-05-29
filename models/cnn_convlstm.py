@@ -1,4 +1,5 @@
 from keras.layers import Input, ConvLSTM2D, RNN, Dense, Conv2D, TimeDistributed, Conv2DTranspose
+from keras.layers import AveragePooling2D, UpSampling2D
 from keras.models import Model, load_model, Sequential
 from keras.optimizers import Adam
 import numpy as np
@@ -18,6 +19,7 @@ class CnnConvLSTM(KerasModel):
 		
 		out = TimeDistributed(Conv2D(32, kernel_size=3, activation='relu'))(inputs)
 		out = TimeDistributed(Conv2D(64, kernel_size=3, activation='relu'))(out)
+		out = TimeDistributed(AveragePooling2D())(out)
 		# 1 filter for the last layer allows the output to have 1 feature map
 		# out = TimeDistributed(Conv2D(1, kernel_size=3, activation='relu'))(out)		
 
@@ -26,6 +28,7 @@ class CnnConvLSTM(KerasModel):
 
 		out = Conv2DTranspose(64, kernel_size=3, activation='relu')(out)
 		out = Conv2DTranspose(64, kernel_size=3, activation='relu')(out)
+		out = UpSampling2D()(out)
 		out = Conv2DTranspose(32, kernel_size=3, activation='relu')(out)
 		out = Conv2DTranspose(1, kernel_size=3, activation='relu')(out)
 
@@ -54,6 +57,6 @@ class CnnConvLSTM(KerasModel):
 		assert y.shape[1] == 1, f"expected target segment to be of length 1, got {y.shape[1]}"
 		return y[:, 0, :, :, None]
 
-# model = CnnConvLSTM()
-# output = model.forward(np.random.randn(1, 12, 100, 100, 1))
-# print(output.shape)
+model = CnnConvLSTM()
+output = model.forward(np.random.randn(1, 12, 100, 100))
+print(output.shape)

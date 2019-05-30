@@ -23,7 +23,7 @@ class FullGridDataProvider(object):
         self.num_segments = self.data.shape[0] - self.segment_size - self.target_segment_size + 1
         
         # used only for progress bars
-        self.num_batches = np.ceil(self.num_segments * self.fraction_of_data)
+        self.num_batches = max(np.ceil(self.num_segments * self.fraction_of_data) // self.batch_size, 1)
 
     def next(self):
         indexes = self.rng.permutation(self.num_segments) if self.shuffle_order else np.arange(self.num_segments)
@@ -50,7 +50,7 @@ class FullGridDataProvider(object):
                 yield batch
                 batch = None
 
-            if count + 1 > len(indexes) * self.fraction_of_data:
+            if count + 1 >= len(indexes) * self.fraction_of_data:
                 break
 
     def get_random_samples(self, n_samples):

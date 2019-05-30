@@ -21,11 +21,13 @@ class CnnConvLSTM(KerasModel):
 		out = TimeDistributed(Conv2D(64, kernel_size=3, activation='tanh'))(out)
 		out = TimeDistributed(AveragePooling2D())(out)
 
-		out = ConvLSTM2D(filters=64, kernel_size=5, return_sequences=True, activation='tanh')(out)
-		out = ConvLSTM2D(filters=64, kernel_size=5, activation='tanh')(out)
+		out = ConvLSTM2D(filters=64, kernel_size=3, return_sequences=True, activation='tanh')(out)
+		out = ConvLSTM2D(filters=128, kernel_size=3, return_sequences=True, activation='tanh')(out)
+		out = ConvLSTM2D(filters=64, kernel_size=3, activation='tanh')(out)
 
-		out = Conv2DTranspose(64, kernel_size=5, activation='tanh')(out)
-		out = Conv2DTranspose(64, kernel_size=5, activation='tanh')(out)
+		out = Conv2DTranspose(64, kernel_size=3, activation='tanh')(out)
+		out = Conv2DTranspose(64, kernel_size=3, activation='tanh')(out)
+		out = Conv2DTranspose(64, kernel_size=3, activation='tanh')(out)
 		out = UpSampling2D()(out)
 		out = Conv2DTranspose(32, kernel_size=3, activation='tanh')(out)
 		out = Conv2DTranspose(1, kernel_size=3, activation='tanh')(out)
@@ -55,6 +57,6 @@ class CnnConvLSTM(KerasModel):
 		assert y.shape[1] == 1, f"expected target segment to be of length 1, got {y.shape[1]}"
 		return y[:, 0, :, :, None]
 
-# model = CnnConvLSTM()
-# output = model.forward(np.random.randn(1, 12, 100, 100))
-# print(output.shape)
+model = CnnConvLSTM()
+output = model.forward(np.random.randn(1, 12, 100, 100))
+print(output.shape)

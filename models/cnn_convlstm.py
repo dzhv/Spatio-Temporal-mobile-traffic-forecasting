@@ -17,20 +17,18 @@ class CnnConvLSTM(KerasModel):
 		# 1 refers to a single channel of the input
 		inputs = Input(shape=(segment_size, grid_size, grid_size, 1))
 		
-		out = TimeDistributed(Conv2D(32, kernel_size=3, activation='relu'))(inputs)
-		out = TimeDistributed(Conv2D(64, kernel_size=3, activation='relu'))(out)
+		out = TimeDistributed(Conv2D(32, kernel_size=3, activation='tanh'))(inputs)
+		out = TimeDistributed(Conv2D(64, kernel_size=3, activation='tanh'))(out)
 		out = TimeDistributed(AveragePooling2D())(out)
-		# 1 filter for the last layer allows the output to have 1 feature map
-		# out = TimeDistributed(Conv2D(1, kernel_size=3, activation='relu'))(out)		
 
-		out = ConvLSTM2D(filters=64, kernel_size=5, return_sequences=True, activation='relu')(out)
-		out = ConvLSTM2D(filters=64, kernel_size=5, activation='relu')(out)
+		out = ConvLSTM2D(filters=64, kernel_size=5, return_sequences=True, activation='tanh')(out)
+		out = ConvLSTM2D(filters=64, kernel_size=5, activation='tanh')(out)
 
-		out = Conv2DTranspose(64, kernel_size=5, activation='relu')(out)
-		out = Conv2DTranspose(64, kernel_size=5, activation='relu')(out)
+		out = Conv2DTranspose(64, kernel_size=5, activation='tanh')(out)
+		out = Conv2DTranspose(64, kernel_size=5, activation='tanh')(out)
 		out = UpSampling2D()(out)
-		out = Conv2DTranspose(32, kernel_size=3, activation='relu')(out)
-		out = Conv2DTranspose(1, kernel_size=3, activation='relu')(out)
+		out = Conv2DTranspose(32, kernel_size=3, activation='tanh')(out)
+		out = Conv2DTranspose(1, kernel_size=3, activation='tanh')(out)
 
 		self.model = Model(inputs=inputs, outputs=out)
 		self.model = model_device_adapter.get_device_specific_model(self.model, gpus)

@@ -19,18 +19,18 @@ class CnnConvLSTM(KerasModel):
 		
 		out = TimeDistributed(Conv2D(32, kernel_size=3, activation='tanh', padding='same'))(inputs)
 		out = TimeDistributed(AveragePooling2D())(out)
-		out = TimeDistributed(Conv2D(64, kernel_size=3, activation='tanh', padding='same'))(out)
+		out = TimeDistributed(Conv2D(50, kernel_size=3, activation='tanh', padding='same'))(out)
 		out = TimeDistributed(AveragePooling2D())(out)
 
-		out = ConvLSTM2D(filters=64, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
-		out = ConvLSTM2D(filters=128, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
-		out = ConvLSTM2D(filters=64, kernel_size=3, activation='tanh', padding='same')(out)
+		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
+		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
+		out = ConvLSTM2D(filters=50, kernel_size=3, activation='tanh', padding='same')(out)
 
-		out = Conv2DTranspose(64, kernel_size=3, activation='tanh', padding='same')(out)
-		out = Conv2DTranspose(64, kernel_size=3, activation='tanh', padding='same')(out)
-		out = Conv2DTranspose(64, kernel_size=3, activation='tanh', padding='same')(out)
+		out = Conv2DTranspose(50, kernel_size=3, activation='tanh', padding='same')(out)
+		out = Conv2DTranspose(50, kernel_size=3, activation='tanh', padding='same')(out)
+		out = Conv2DTranspose(25, kernel_size=3, activation='tanh', padding='same')(out)
 		out = UpSampling2D()(out)
-		out = Conv2DTranspose(32, kernel_size=3, activation='tanh', padding='same')(out)
+		out = Conv2DTranspose(10, kernel_size=3, activation='tanh', padding='same')(out)
 		out = UpSampling2D()(out)
 		out = Conv2DTranspose(1, kernel_size=3, activation='tanh', padding='same')(out)
 

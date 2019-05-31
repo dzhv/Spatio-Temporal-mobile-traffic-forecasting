@@ -17,20 +17,22 @@ class CnnConvLSTM(KerasModel):
 		# 1 refers to a single channel of the input
 		inputs = Input(shape=(segment_size, grid_size, grid_size, 1))
 		
-		out = TimeDistributed(Conv2D(32, kernel_size=3, activation='tanh'))(inputs)
-		out = TimeDistributed(Conv2D(64, kernel_size=3, activation='tanh'))(out)
+		out = TimeDistributed(Conv2D(32, kernel_size=3, activation='tanh', padding='same'))(inputs)
+		out = TimeDistributed(AveragePooling2D())(out)
+		out = TimeDistributed(Conv2D(64, kernel_size=3, activation='tanh', padding='same'))(out)
 		out = TimeDistributed(AveragePooling2D())(out)
 
-		out = ConvLSTM2D(filters=64, kernel_size=3, return_sequences=True, activation='tanh')(out)
-		out = ConvLSTM2D(filters=128, kernel_size=3, return_sequences=True, activation='tanh')(out)
-		out = ConvLSTM2D(filters=64, kernel_size=3, activation='tanh')(out)
+		out = ConvLSTM2D(filters=64, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
+		out = ConvLSTM2D(filters=128, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
+		out = ConvLSTM2D(filters=64, kernel_size=3, activation='tanh', padding='same')(out)
 
-		out = Conv2DTranspose(64, kernel_size=3, activation='tanh')(out)
-		out = Conv2DTranspose(64, kernel_size=3, activation='tanh')(out)
-		out = Conv2DTranspose(64, kernel_size=3, activation='tanh')(out)
+		out = Conv2DTranspose(64, kernel_size=3, activation='tanh', padding='same')(out)
+		out = Conv2DTranspose(64, kernel_size=3, activation='tanh', padding='same')(out)
+		out = Conv2DTranspose(64, kernel_size=3, activation='tanh', padding='same')(out)
 		out = UpSampling2D()(out)
-		out = Conv2DTranspose(32, kernel_size=3, activation='tanh')(out)
-		out = Conv2DTranspose(1, kernel_size=3, activation='tanh')(out)
+		out = Conv2DTranspose(32, kernel_size=3, activation='tanh', padding='same')(out)
+		out = UpSampling2D()(out)
+		out = Conv2DTranspose(1, kernel_size=3, activation='tanh', padding='same')(out)
 
 		self.model = Model(inputs=inputs, outputs=out)
 		self.model = model_device_adapter.get_device_specific_model(self.model, gpus)
@@ -57,6 +59,7 @@ class CnnConvLSTM(KerasModel):
 		assert y.shape[1] == 1, f"expected target segment to be of length 1, got {y.shape[1]}"
 		return y[:, 0, :, :, None]
 
-model = CnnConvLSTM()
-output = model.forward(np.random.randn(1, 12, 100, 100))
-print(output.shape)
+# model = CnnConvLSTM()
+# output = model.forward(np.random.randn(1, 12, 100, 100))
+# print("output shape:")
+# print(output.shape)

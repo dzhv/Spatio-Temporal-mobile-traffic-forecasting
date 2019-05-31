@@ -1,4 +1,4 @@
-from tensorflow.keras.utils import multi_gpu_model
+from keras.utils import multi_gpu_model
 from tensorflow.test import is_gpu_available
 
 def get_device_specific_model(model, gpus):

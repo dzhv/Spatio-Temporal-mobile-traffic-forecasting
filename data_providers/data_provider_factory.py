@@ -33,7 +33,7 @@ def get_windowed_data_providers(args, rng, data_reader, test_set):
 
 def get_seq2seq_data_providers(args, rng, data_reader, test_set):
 	if test_set:
-		return Seq2SeqDataProvider(data_reader = data_reader(data_folder=args.data_path, which_set='train'), 
+		return Seq2SeqDataProvider(data_reader = data_reader(data_folder=args.data_path, which_set='test'), 
 			window_size=args.window_size, segment_size=args.segment_size, batch_size=args.batch_size,
 			shuffle_order=args.shuffle_order, rng=rng, fraction_of_data=args.fraction_of_data)
 
@@ -48,7 +48,7 @@ def get_seq2seq_data_providers(args, rng, data_reader, test_set):
 
 def get_full_grid_data_providers(args, rng, data_reader, test_set, target_segment_size):
 	if test_set:
-		return FullGridDataProvider(data_reader = data_reader(data_folder=args.data_path, which_set='train'), 
+		return FullGridDataProvider(data_reader = data_reader(data_folder=args.data_path, which_set='test'), 
 			segment_size=args.segment_size, batch_size=args.batch_size, target_segment_size=target_segment_size,
 			shuffle_order=args.shuffle_order, rng=rng, fraction_of_data=args.fraction_of_data)
 

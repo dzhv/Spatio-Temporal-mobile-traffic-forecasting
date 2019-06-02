@@ -30,7 +30,8 @@ class WindowedDataProvider(object):
         self.num_segments = self.data.shape[0] - self.segment_size  
         
         # used only for progress bars
-        self.num_batches = np.ceil(self.num_segments * self.fraction_of_data) * (self.data.shape[-1]**2 // batch_size)
+        self.num_batches = max(1, np.ceil(self.num_segments * self.fraction_of_data)) \
+            * (self.data.shape[-1]**2 // batch_size)
             
 
     def next(self):

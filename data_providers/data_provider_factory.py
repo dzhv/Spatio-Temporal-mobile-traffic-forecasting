@@ -13,6 +13,8 @@ def get_data_providers(args, rng, test_set=False):
 		return get_seq2seq_data_providers(args, rng, data_reader, test_set)
 	elif args.model_name == "cnn_convlstm":
 		return get_full_grid_data_providers(args, rng, data_reader, test_set, target_segment_size=1)
+	elif args.model_name == "windowed_cnn_convlstm":
+		return get_windowed_data_providers(args, rng, data_reader, test_set)
 	else:
 		raise ValueError(f"Unknown model: {args.model_name}")
 

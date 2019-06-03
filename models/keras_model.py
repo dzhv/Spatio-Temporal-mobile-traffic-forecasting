@@ -3,6 +3,7 @@ import abc
 from keras.callbacks import TensorBoard
 import json
 import os.path
+import numpy as np
 
 class KerasModel(Model):
 	# A wrapper class for Keras Models
@@ -14,6 +15,8 @@ class KerasModel(Model):
 		self.batch_size = batch_size
 		self.create_tensorboard = create_tensorboard
 		self.tensorboard_dir = tensorboard_dir
+
+		self.temp_it = 0
 
 	@abc.abstractmethod
 	def form_model_inputs(self, x):
@@ -34,21 +37,22 @@ class KerasModel(Model):
 	def train(self, x, y):
 		""" inputs:
 				x - (batch_size, segment_size, window_width, window_height)
-				y - (batch_size,)
-		"""		
+				y - (batch_size,)   or   (batch_size,window_width, window_height)
+		"""
 
 		inputs = self.form_model_inputs(x)
 		targets = self.form_targets(y)
 
 		callbacks = []
 		if self.create_tensorboard:
-			callbacks.append(TensorBoard(log_dir=self.tensorboard_dir, 
+			callbacks.append(TensorBoard(log_dir=self.tensorboard_dir,
 			write_grads=True, write_graph=False, write_images=True))		
 		
 		history = self.model.fit(inputs, targets, batch_size=self.batch_size, epochs=1,
 			callbacks=callbacks)
 
-		# self.step_num += 1
+		# np.save(f"model_inputs_{self.temp_it}.npy", {'x': inputs, 'y': targets})
+		# self.temp_it += 1
 
 		# gradients = K.gradients(self.model.output, self.model.input)  
 		# sess = K.get_session()

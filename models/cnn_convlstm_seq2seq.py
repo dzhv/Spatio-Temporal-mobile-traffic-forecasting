@@ -40,8 +40,7 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 
 		num_output_features = 1
 		  # TODO: this gets a 5400x1 (12x3x3x50) vector, maybe it's worth reducing the dimensions in lstm layers?
-		decoder_dense = Dense(num_output_features, activation='linear')
-		decoder_outputs = decoder_dense(out)
+		out = Dense(num_output_features, activation='linear')(out)
 
 		self.model = Model(inputs=[encoder_inputs, decoder_inputs], outputs=out)
 		self.model = model_device_adapter.get_device_specific_model(self.model, gpus)
@@ -65,10 +64,13 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 		encoder_input = np.expand_dims(x, axis=-1)
 		# (batch_size, segment_size, latent_dim, latent_dim, channels)
 		decoder_input = np.zeros((encoder_input.shape[0], self.segment_size, 3, 3, 50))
+
+		print(f"encoder_input: {encoder_input.shape}")
+		print(f"decoder_input: {decoder_input.shape}")
 		return [encoder_input, decoder_input]
 
-	def form_targets(self, y):
-		return y[:, :, None]
+	# def form_targets(self, y):
+	# 	return y[:, :, None]
 
 # model = CnnConvLSTMSeq2Seq()
 # output = model.forward(np.random.randn(1, 12, 15, 15))

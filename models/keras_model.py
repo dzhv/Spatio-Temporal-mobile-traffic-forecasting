@@ -46,11 +46,8 @@ class KerasModel(Model):
 		callbacks = []
 		if self.create_tensorboard:
 			callbacks.append(TensorBoard(log_dir=self.tensorboard_dir,
-			write_grads=True, write_graph=False, write_images=True))		
-		
-		print(f"[keras_model] inputs shape: {inputs.shape}")
-		print(f"[keras_model] targets shape: {targets.shape}")
-
+			write_grads=True, write_graph=False, write_images=True))
+			
 		history = self.model.fit(inputs, targets, batch_size=self.batch_size, epochs=1,
 			callbacks=callbacks)
 

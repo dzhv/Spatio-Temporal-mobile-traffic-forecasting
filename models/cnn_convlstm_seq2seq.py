@@ -5,6 +5,7 @@ from keras.layers import AveragePooling2D, UpSampling2D
 from keras.models import Model, load_model, Sequential
 from keras.optimizers import Adam
 import numpy as np
+import tensorflow as tf
 
 from models.keras_model import KerasModel
 from models import model_device_adapter
@@ -16,35 +17,37 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 		self.segment_size = segment_size
 		self.gpus = gpus
 
-		# Define an input sequence.
-		# 1 refers to a single channel of the input
-		encoder_inputs = Input(shape=(segment_size, window_size, window_size, 1))
-		
-		out = TimeDistributed(Conv2D(25, kernel_size=3, activation='tanh', padding='same'))(encoder_inputs)
-		out = TimeDistributed(AveragePooling2D())(out)
-		out = TimeDistributed(Conv2D(50, kernel_size=3, activation='tanh', padding='same'))(out)
-		out = TimeDistributed(AveragePooling2D())(out)
-		out = TimeDistributed(Conv2D(50, kernel_size=3, activation='tanh', padding='same'))(out)
+		with tf.device('/cpu:0'):
+			# Define an input sequence.
+			# 1 refers to a single channel of the input
+			encoder_inputs = Input(shape=(segment_size, window_size, window_size, 1))
+			
+			out = TimeDistributed(Conv2D(25, kernel_size=3, activation='tanh', padding='same'))(encoder_inputs)
+			out = TimeDistributed(AveragePooling2D())(out)
+			out = TimeDistributed(Conv2D(50, kernel_size=3, activation='tanh', padding='same'))(out)
+			out = TimeDistributed(AveragePooling2D())(out)
+			out = TimeDistributed(Conv2D(50, kernel_size=3, activation='tanh', padding='same'))(out)
 
-		# encoder
-		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
-		encoder_outputs, state_h, state_c = ConvLSTM2D(filters=50, kernel_size=3, activation='tanh', 
-			padding='same', return_state=True)(out)
-		
-		# decoder
-		# here (3, 3) is the latent dimension - not kernel size
-		decoder_inputs = Input(shape=(segment_size, 3, 3, 50))
-		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', 
-			padding='same')(decoder_inputs, initial_state=[state_h, state_c])
-		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
+			# encoder
+			out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
+			encoder_outputs, state_h, state_c = ConvLSTM2D(filters=50, kernel_size=3, activation='tanh', 
+				padding='same', return_state=True)(out)
+			
+			# decoder
+			# here (3, 3) is the latent dimension - not kernel size
+			decoder_inputs = Input(shape=(segment_size, 3, 3, 50))
+			out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', 
+				padding='same')(decoder_inputs, initial_state=[state_h, state_c])
+			out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
 
-		out = TimeDistributed(Flatten())(out)
+			out = TimeDistributed(Flatten())(out)
 
-		num_output_features = 1
-		  # TODO: this gets a 5400x1 (12x3x3x50) vector, maybe it's worth reducing the dimensions in lstm layers?
-		out = TimeDistributed(Dense(num_output_features, activation='linear'))(out)
+			num_output_features = 1
+			  # TODO: this gets a 5400x1 (12x3x3x50) vector, maybe it's worth reducing the dimensions in lstm layers?
+			out = TimeDistributed(Dense(num_output_features, activation='linear'))(out)
 
-		self.model = Model(inputs=[encoder_inputs, decoder_inputs], outputs=out)
+			self.model = Model(inputs=[encoder_inputs, decoder_inputs], outputs=out)
+			
 		self.model = model_device_adapter.get_device_specific_model(self.model, gpus)
 		
 		optimizer = Adam(lr=learning_rate)

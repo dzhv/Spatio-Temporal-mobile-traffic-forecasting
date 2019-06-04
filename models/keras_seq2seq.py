@@ -44,7 +44,7 @@ class KerasSeq2Seq(KerasModel):
 		# TODO: try with and without this dense layer
 
 		# Apply a dense layer with linear activation to set output to correct dimension
-		# and scale (tanh is default activation for GRU in Keras, our output sine function can be larger then 1)
+		# and scale
 		num_output_features = 1
 		decoder_dense = Dense(num_output_features, activation='linear')  # TODO: try regularizers
 

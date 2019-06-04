@@ -58,7 +58,7 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 		# adding an empty (channel) dimension to the end
 		encoder_input = np.expand_dims(x, axis=-1)
 		# (batch_size, segment_size, latent_dim, latent_dim, channels)
-		decoder_input = np.zeros((encoder_input.shape[0] // self.gpus, self.segment_size, 3, 3, 50))
+		decoder_input = np.zeros((encoder_input.shape[0], self.segment_size, 3, 3, 50))
 
 		print(f"encoder_input: {encoder_input.shape}")
 		print(f"decoder_input: {decoder_input.shape}")

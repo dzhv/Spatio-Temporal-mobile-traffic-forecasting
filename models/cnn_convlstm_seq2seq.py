@@ -37,7 +37,7 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 			# here (3, 3) is the latent dimension - not kernel size
 			decoder_inputs = Input(shape=(segment_size, 3, 3, 50))
 			out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', 
-				padding='same')(decoder_inputs, initial_state=[state_h, state_c])
+				padding='same')([decoder_inputs, state_h, state_c])
 			out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
 
 			out = TimeDistributed(Flatten())(out)
@@ -47,7 +47,7 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 			out = TimeDistributed(Dense(num_output_features, activation='linear'))(out)
 
 			self.model = Model(inputs=[encoder_inputs, decoder_inputs], outputs=out)
-			
+
 		self.model = model_device_adapter.get_device_specific_model(self.model, gpus)
 		
 		optimizer = Adam(lr=learning_rate)

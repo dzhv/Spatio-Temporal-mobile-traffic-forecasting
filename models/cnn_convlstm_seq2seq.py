@@ -28,9 +28,9 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 		out = TimeDistributed(Conv2D(64, kernel_size=3, activation='tanh', padding='same'))(out)
 
 		# encoder
-		out = ConvLSTM2D(filters=64, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
-		encoder_outputs, state_h, state_c = ConvLSTM2D(filters=64, kernel_size=3, activation='tanh', 
+		encoder_outputs_and_states = ConvLSTM2D(filters=64, kernel_size=3, activation='tanh', 
 			padding='same', return_state=True)(out)
+		encoder_states = encoder_outputs_and_states[1:]
 
 		# decoder
 		
@@ -38,8 +38,7 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 		self.decoder_input_shape = (latent_dim, latent_dim, 50)
 		decoder_inputs = Input(shape=(segment_size,) + self.decoder_input_shape)
 		out = ConvLSTM2D(filters=64, kernel_size=3, return_sequences=True, activation='tanh', 
-			padding='same')(decoder_inputs)
-		out = ConvLSTM2D(filters=64, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
+			padding='same')(decoder_inputs, initial_state=encoder_states)
 
 		out = TimeDistributed(Flatten())(out)
 

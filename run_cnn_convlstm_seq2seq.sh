@@ -1,10 +1,10 @@
 #!/bin/sh
 #SBATCH -N 1	  # nodes requested
 #SBATCH -n 1	  # tasks requested
-#SBATCH --partition=MSC
-#SBATCH --gres=gpu:1
+#SBATCH --partition=Standard
+#SBATCH --gres=gpu:2
 #SBATCH --mem=12000  # memory in Mb
-#SBATCH --time=2-00:00:00
+#SBATCH --time=0-08:00:00
 
 export CUDA_HOME=/opt/cuda-9.0.176.1/
 
@@ -25,7 +25,7 @@ export PYTHON_PATH=$PATH
 # Activate the relevant virtual environment:
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
 python experiments/experiment_runner.py --data_path /home/${STUDENT_ID}/msc_project/data \
-	  --experiment_name "cnn_convlstm_seq2seq_win11_morefilters_2" --model_name "cnn_convlstm_seq2seq" \
-	  --gpus 1 --batch_size 2500 \
+	  --experiment_name "test" --model_name "cnn_convlstm_seq2seq" \
+	  --gpus 2 --batch_size 2500 \
 	  --learning_rate 0.0006 --window_size 11 \
 	  --num_epochs 150 --fraction_of_data 0.2

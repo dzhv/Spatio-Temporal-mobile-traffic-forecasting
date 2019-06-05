@@ -28,9 +28,8 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 		out = TimeDistributed(Conv2D(64, kernel_size=3, activation='tanh', padding='same'))(out)
 
 		# encoder
-		encoder_outputs_and_states = ConvLSTM2D(filters=64, kernel_size=3, activation='tanh', 
+		encoder_outputs, state_h, state_c = ConvLSTM2D(filters=64, kernel_size=3, activation='tanh', 
 			padding='same', return_state=True)(out)
-		encoder_states = encoder_outputs_and_states[1:]
 
 		# decoder
 		
@@ -38,7 +37,7 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 		self.decoder_input_shape = (latent_dim, latent_dim, 50)
 		decoder_inputs = Input(shape=(segment_size,) + self.decoder_input_shape)
 		out = ConvLSTM2D(filters=64, kernel_size=3, return_sequences=True, activation='tanh', 
-			padding='same')(decoder_inputs, initial_state=encoder_states)
+			padding='same')([decoder_inputs, state_h, state_c])
 
 		out = TimeDistributed(Flatten())(out)
 
@@ -68,7 +67,7 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 	def form_targets(self, y):
 		return y[:, :, None]
 
-model = CnnConvLSTMSeq2Seq(window_size=11)
-output = model.forward(np.random.randn(1, 12, 11, 11))
-print("output shape:")
-print(output.shape)
+# model = CnnConvLSTMSeq2Seq(window_size=11)
+# output = model.forward(np.random.randn(1, 12, 11, 11))
+# print("output shape:")
+# print(output.shape)

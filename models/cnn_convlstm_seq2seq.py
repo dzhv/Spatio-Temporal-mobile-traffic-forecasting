@@ -20,7 +20,7 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 		# Define an input sequence.
 		# 1 refers to a single channel of the input
 		encoder_inputs = Input(shape=(segment_size, window_size, window_size, 1))
-		
+				
 		out = TimeDistributed(Conv2D(25, kernel_size=3, activation='tanh', padding='same'))(encoder_inputs)
 		out = TimeDistributed(AveragePooling2D())(out)
 		out = TimeDistributed(Conv2D(50, kernel_size=3, activation='tanh', padding='same'))(out)
@@ -30,7 +30,9 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 		# encoder
 		out, h1, c1 = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, return_state=True, activation='tanh', 
 			padding='same')(out)
-		encoder_outputs, h2, c2 = ConvLSTM2D(filters=50, kernel_size=3, activation='tanh', 
+		out, h2, c2 = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, return_state=True, activation='tanh', 
+			padding='same')(out)
+		encoder_outputs, h3, c3 = ConvLSTM2D(filters=50, kernel_size=3, activation='tanh', 
 			padding='same', return_state=True)(out)
 
 		# decoder
@@ -42,6 +44,8 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 			padding='same')([decoder_inputs, h1, c1])
 		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', 
 			padding='same')([out, h2, c2])
+		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', 
+			padding='same')([out, h3, c3])
 
 		out = TimeDistributed(Flatten())(out)
 

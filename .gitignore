@@ -107,10 +107,10 @@ venv.bak/
 data/*.txt
 data/*.geojson
 data/**/*
-
-
+
 **/__init__.py
-
-
+
 slurm-*.out
-
+
+results/**/*
+

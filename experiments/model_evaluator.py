@@ -5,32 +5,28 @@ import sys
 parent_folder = path.dirname(path.dirname(path.abspath(__file__)))
 sys.path.append(parent_folder)
 
-from tensorflow.keras.models import load_model
 from arg_extractor import get_args
-from data_providers.data_reader import FullDataReader
-from data_providers.windowed_data_provider import WindowedDataProvider
-from data_providers.seq2seq_data_provider import Seq2SeqDataProvider
 from models.losses import nrmse_numpy as nrmse
-from models.lstm import LSTM
-from models.lstm_seq2seq import LstmSeq2Seq
-from models.keras_seq2seq import KerasSeq2Seq
+import model_factory
+from data_providers import data_provider_factory
 
 import numpy as np
 
 args = get_args()
+rng = np.random.RandomState(args.seed)
 
 def evaluate():
-	model, data, multi_step_prediction = get_essentials()
+	model, data = get_essentials()
 
-	reporter = report_multistep_error if multi_step_prediction else report_singlestep_error
+	reporter = report_multistep_error if args.multi_step_prediction else report_singlestep_error
 
 	write_to_file("Errors for all testing data:")
-	reporter(data, model, multi_step_prediction)
+	reporter(data, model)
 	write_to_file("\n")
 	print("")
 
 	write_to_file("Trying 10 random samples:")
-	reporter(data.get_random_samples(10), model, multi_step_prediction)
+	reporter(data.get_random_samples(10), model)
 
 def prediction_analysis():
 	model, data, multi_step_prediction = get_essentials()
@@ -54,17 +50,17 @@ def prediction_analysis():
 	np.save("predictions.npy", results)
 
 def get_essentials():
-	model, multi_step_prediction = model_factory(args.model_name, args.model_file, args.batch_size)
+	model = model_factory.get_model(args)
+	# load weights
+	model.load(args.model_file)
 	print("model loaded")
-	
-	data_provider = Seq2SeqDataProvider if multi_step_prediction else WindowedDataProvider
-	data = data_provider(data_reader = FullDataReader(data_folder=args.data_path, which_set='test'),
-		window_size=args.window_size, segment_size=args.segment_size, batch_size=args.batch_size,
-		shuffle_order=False, fraction_of_data=args.fraction_of_data)
 
-	return model, data, multi_step_prediction
+	test_data = data_provider_factory.get_data_providers(args, rng, test_set=True)
 
-def report_singlestep_error(sample_generator, model, num_prediction_steps):
+
+	return model, test_data
+
+def report_singlestep_error(sample_generator, model):
 	losses = []
 	for x, y in sample_generator:
 		predictions = model.forward(x)
@@ -79,7 +75,7 @@ def report_singlestep_error(sample_generator, model, num_prediction_steps):
 	write_to_file(f"mean nrmse loss: {np.mean(losses)}")
 	write_to_file(f"std: {np.std(losses)}")
 
-def report_multistep_error(sample_generator, model, num_prediction_steps):
+def report_multistep_error(sample_generator, model):
 	all_step_losses = []
 	ten_step_losses = []
 	for x, y in sample_generator:
@@ -110,27 +106,7 @@ def calculate_loss(predictions, targets):
 	targets = targets * args.train_std + args.train_mean
 	
 	return nrmse(targets, predictions)
-
-def model_factory(model_name, model_file, batch_size):
-	model_name = model_name.lower()
-
-	print(f"loading model: {model_name} from {model_file}")
-
-	multi_step_prediction = True
-	if model_name == "lstm":
-		model = LSTM(batch_size=args.batch_size, num_layers=args.num_layers, hidden_size=args.hidden_size)
-		multi_step_prediction = False
-	elif model_name == "seq2seq":
-		model = LstmSeq2Seq(batch_size=args.batch_size, segment_size=args.segment_size, 
-		num_features=args.window_size**2, num_layers=args.num_layers, hidden_size=args.hidden_size)
-	elif model_name == "keras_seq2seq":
-		model = KerasSeq2Seq(batch_size=args.batch_size, segment_size=args.segment_size, 
-		num_features=args.window_size**2, num_layers=args.num_layers, hidden_size=args.hidden_size)
-	else:
-		raise ValueError(f"unknown model: {model_name}")
-
-	model.load(model_file)
-	return model, multi_step_prediction
+	
 
 def write_to_file(message):
 	model_folder = path.dirname(path.dirname(args.model_file))

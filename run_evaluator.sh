@@ -26,5 +26,6 @@ export PYTHON_PATH=$PATH
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
 
 python experiments/model_evaluator.py --data_path /home/${STUDENT_ID}/msc_project/data \
-		  --model_file /home/${STUDENT_ID}/msc_project/results/keras_seq2seq_2lay_00003lr_100hs/saved_models/train_model_latest \
-		  --model_name keras_seq2seq --batch_size 10000 --num_layers 2 --hidden_size 100
+		  --model_file /home/${STUDENT_ID}/msc_project/results/cnn_convlstm_seq2seq_win11_2/saved_models/train_model_44 \
+		  --model_name cnn_convlstm_seq2seq --batch_size 10000 --num_layers 2 \
+		  --multi_step_prediction true

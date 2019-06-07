@@ -66,6 +66,8 @@ def get_args():
                         help='Mean of the initial training data')
     parser.add_argument('--train_std', nargs="?", type=float, default=132.47248595705986,
                         help='Standard deviation of the initial training data')
+    parser.add_argument('--multi_step_prediction', nargs="?", type=str2bool, default=True,
+                        help='A flag indicating whether evaluation should be done for multi steps or single step')
 
     # unused
     parser.add_argument('--use_gpu', nargs="?", type=str2bool, default=False,

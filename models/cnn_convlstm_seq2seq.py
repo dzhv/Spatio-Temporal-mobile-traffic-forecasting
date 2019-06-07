@@ -34,8 +34,8 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 
 		# decoder
 
-		latent_dim = window_size // 2 // 2  # accounting for average pooling operations
-		self.decoder_input_shape = (latent_dim, latent_dim, 50)
+		# here (2, 2) is the latent dimension - not kernel size
+		self.decoder_input_shape = (2, 2, 50)
 		decoder_inputs = Input(shape=(segment_size,) + self.decoder_input_shape)
 		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', 
 			padding='same')([decoder_inputs, state_h, state_c])

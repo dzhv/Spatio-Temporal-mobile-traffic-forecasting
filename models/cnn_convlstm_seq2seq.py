@@ -35,13 +35,15 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 			padding='same', return_state=True)(out)
 
 		# decoder
-
+		
 		latent_dim = window_size // 2 // 2  # accounting for average pooling operations
 		self.decoder_input_shape = (latent_dim, latent_dim, 50)
 		decoder_inputs = Input(shape=(segment_size,) + self.decoder_input_shape)
 		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', 
 			padding='same')([decoder_inputs, state_h, state_c])
-		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
+
+		# IMPORTANT: padding='valid' here
+		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh')(out)
 
 		out = TimeDistributed(Flatten())(out)
 
@@ -71,7 +73,7 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 	def form_targets(self, y):
 		return y[:, :, None]
 
-# model = CnnConvLSTMSeq2Seq(window_size=17)
-# output = model.forward(np.random.randn(1, 12, 17, 17))
-# print("output shape:")
-# print(output.shape)
+model = CnnConvLSTMSeq2Seq(window_size=17)
+output = model.forward(np.random.randn(1, 12, 17, 17))
+print("output shape:")
+print(output.shape)

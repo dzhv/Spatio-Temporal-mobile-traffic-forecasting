@@ -31,13 +31,18 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 
 		# encoder
 		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
+		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
 		encoder_outputs, state_h, state_c = ConvLSTM2D(filters=50, kernel_size=3, activation='tanh', 
-			padding='same', return_state=True, return_sequences=True)(out)
+			padding='same', return_state=True)(out)
 
 		# decoder
 
+		# here (2, 2) is the latent dimension - not kernel size
+		self.decoder_input_shape = (2, 2, 50)
+		decoder_inputs = Input(shape=(segment_size,) + self.decoder_input_shape)
 		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', 
-			padding='same')([encoder_outputs, state_h, state_c])
+			padding='same')([decoder_inputs, state_h, state_c])
+		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
 		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
 
 		out = TimeDistributed(Flatten())(out)
@@ -46,7 +51,7 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 		  # TODO: this gets a 2400x1 (12x2x2x50) vector, maybe it's worth reducing the dimensions in lstm layers?
 		out = TimeDistributed(Dense(num_output_features, activation='linear'))(out)
 
-		self.model = Model(inputs=encoder_inputs, outputs=out)
+		self.model = Model(inputs=[encoder_inputs, decoder_inputs], outputs=out)
 
 		self.model = model_device_adapter.get_device_specific_model(self.model, gpus)
 		

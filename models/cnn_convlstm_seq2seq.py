@@ -66,9 +66,9 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 		# adding an empty (channel) dimension to the end
 		encoder_input = np.expand_dims(x, axis=-1)
 		# (batch_size, segment_size, latent_dim, latent_dim, channels)
-		# decoder_input = np.zeros((encoder_input.shape[0], self.segment_size) + self.decoder_input_shape)
+		decoder_input = np.zeros((encoder_input.shape[0], self.segment_size) + self.decoder_input_shape)
 		
-		return encoder_input
+		return [encoder_input, decoder_input]
 
 	def form_targets(self, y):
 		return y[:, :, None]

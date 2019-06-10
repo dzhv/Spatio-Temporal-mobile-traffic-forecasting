@@ -1,10 +1,10 @@
 #!/bin/sh
 #SBATCH -N 1	  # nodes requested
 #SBATCH -n 1	  # tasks requested
-#SBATCH --partition=Standard
+#SBATCH --partition=Short
 #SBATCH --gres=gpu:1
 #SBATCH --mem=12000  # memory in Mb
-#SBATCH --time=0-08:00:00
+#SBATCH --time=0-04:00:00
 
 export CUDA_HOME=/opt/cuda-9.0.176.1/
 
@@ -26,6 +26,6 @@ export PYTHON_PATH=$PATH
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
 
 python experiments/model_evaluator.py --data_path /home/${STUDENT_ID}/msc_project/data \
-		  --model_file /home/${STUDENT_ID}/msc_project/results/cnn_convlstm_seq2seq_win11_2/saved_models/train_model_44 \
-		  --model_name cnn_convlstm_seq2seq --batch_size 10000 --num_layers 2 \
+		  --model_file /home/${STUDENT_ID}/msc_project/results/cnn_convlstm_seq2seq_win11_3/saved_models/train_model_40 \
+		  --model_name cnn_convlstm_seq2seq --batch_size 10000 \
 		  --multi_step_prediction true

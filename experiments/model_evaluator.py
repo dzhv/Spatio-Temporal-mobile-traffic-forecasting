@@ -29,7 +29,7 @@ def evaluate():
 	reporter(data.get_random_samples(10), model)
 
 def prediction_analysis():
-	model, data, multi_step_prediction = get_essentials()
+	model, data = get_essentials()
 
 	indexes = [0, 25, 50, 75]	
 	results = []
@@ -41,6 +41,7 @@ def prediction_analysis():
 		predictions = model.forward(x)
 
 		result_item = {
+			'input:' x,
 			'targets': y,
 			'predictions': predictions
 		}
@@ -115,6 +116,7 @@ def write_to_file(message):
 	with open(file, "a") as f:
 		f.write(message + "\n")
 
+
 evaluate()
-# prediction_analysis()
+prediction_analysis()
 

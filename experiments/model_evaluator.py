@@ -41,7 +41,7 @@ def prediction_analysis():
 		predictions = model.forward(x)
 
 		result_item = {
-			'input:' x,
+			'input': x,
 			'targets': y,
 			'predictions': predictions
 		}

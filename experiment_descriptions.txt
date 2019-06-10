@@ -167,7 +167,9 @@ self.decoder_input_shape = (latent_dim, latent_dim, 50)
 decoder_inputs = Input(shape=(segment_size,) + self.decoder_input_shape)
 out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', 
 	padding='same')([decoder_inputs, state_h, state_c])
-out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
+
+# IMPORTANT: padding='valid' here
+out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh')(out)
 
 out = TimeDistributed(Flatten())(out)
 

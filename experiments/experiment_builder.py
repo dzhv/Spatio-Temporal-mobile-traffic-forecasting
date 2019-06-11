@@ -103,7 +103,7 @@ class ExperimentBuilder(object):
         self.post_train_time = time.time()
         train_elapsed_time = self.post_train_time - train_start_time
         train_elapsed_time = "{:.4f}".format(train_elapsed_time)
-        print(f"model.train took: {train_elapsed_time} seconds")
+        print(f"\nmodel.train took: {train_elapsed_time} seconds")
 
         return loss
 

@@ -15,8 +15,8 @@ import numpy as np
 args = get_args()
 rng = np.random.RandomState(args.seed)
 
-def evaluate():
-	model, data = get_essentials()
+def evaluate(model, data):
+	print("evaluating the model")	
 
 	reporter = report_multistep_error if args.multi_step_prediction else report_singlestep_error
 
@@ -28,17 +28,14 @@ def evaluate():
 	write_to_file("Trying 10 random samples:")
 	reporter(data.get_random_samples(10), model)
 
-def prediction_analysis():
-	model, data = get_essentials()
-
+def prediction_analysis(model, data):
 	indexes = [0, 25, 50, 75]	
 	results = []
 
 	print(f"\nPredictions for {len(indexes)} samples are going to be saved in preditions.npy\n")
-	for i, batch in enumerate(data.enumerate_data(indexes)):
+	for i, batch in enumarate(iterate_prediction_batches(data.enumerate_data(indexes))):
 		print(f"evaluating sample {i}")
-		x, y = batch
-		predictions = model.forward(x)
+		predictions, y = batch
 
 		result_item = {
 			'input': x,
@@ -51,11 +48,13 @@ def prediction_analysis():
 	np.save("predictions.npy", results)
 
 def get_essentials():
+	print("loading the model")
 	model = model_factory.get_model(args)
 	# load weights
 	model.load(args.model_file)
 	print("model loaded")
 
+	print("getting the data providers")
 	test_data = data_provider_factory.get_data_providers(args, rng, test_set=True)
 
 
@@ -79,8 +78,9 @@ def report_singlestep_error(sample_generator, model):
 def report_multistep_error(sample_generator, model):
 	all_step_losses = []
 	ten_step_losses = []
-	for x, y in sample_generator:
-		predictions = model.forward(x)
+
+	for predictions, y in iterate_prediction_batches(sample_generator, model):
+
 		all_step_loss = calculate_loss(predictions, y)
 		all_step_losses.append(all_step_loss)
 
@@ -90,17 +90,33 @@ def report_multistep_error(sample_generator, model):
 		print(f"all step loss: {all_step_loss}")
 		print(f"mean: {np.mean(all_step_losses)}")
 		print(f"10 step loss: {ten_step_loss}")
-		print(f"mean: {np.mean(ten_step_losses)}")
-		
+		print(f"mean: {np.mean(ten_step_losses)}")		
 
-	print(f"all step loss std: {np.std(all_step_losses)}")
-	print(f"10 step loss std: {np.std(ten_step_losses)}")
+		print(f"all step loss std: {np.std(all_step_losses)}")
+		print(f"10 step loss std: {np.std(ten_step_losses)}")
 
 	write_to_file(f"mean all step nrmse loss: {np.mean(all_step_losses)}")
 	write_to_file(f"std: {np.std(all_step_losses)}")
 	write_to_file(f"mean 10 step nrmse loss: {np.mean(ten_step_losses)}")
 	write_to_file(f"std: {np.std(ten_step_losses)}")
 
+def iterate_prediction_batches(sample_generator, model):
+	batch = None
+	batch_size = 10000
+	for x, y in sample_generator:
+		while batch is None or batch[0].shape[0] < batch_size:
+			predictions = model.forward(x)
+			if batch is None:
+				batch = (predictions, y) 
+			else:
+				batch = (np.concatenate((predictions, batch[0]), axis=0), np.concatenate((y, batch[1]), axis=0))
+
+			# print(f"{batch[0].shape[0]}/{batch_size} batch collected")
+		
+		assert len(batch[0]) == len(batch[1]) == batch_size
+
+		yield batch
+		batch = None
 
 def calculate_loss(predictions, targets):
 	predictions = predictions * args.train_std + args.train_mean 
@@ -117,6 +133,7 @@ def write_to_file(message):
 		f.write(message + "\n")
 
 
-evaluate()
-prediction_analysis()
+model, data = get_essentials()
+evaluate(model, data)
+# prediction_analysis(model, data)
 

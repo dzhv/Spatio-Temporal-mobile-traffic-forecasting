@@ -68,6 +68,8 @@ class ExperimentBuilder(object):
         self.num_epochs = num_epochs
         self.continue_from_epoch = continue_from_epoch
 
+        self.post_train_time = None
+
         if continue_from_epoch == -2:  # load the last saved model from the experiment_saved_models directory
             self.load_model(model_save_dir=self.experiment_saved_models, model_save_name="train_model",
                 model_idx='latest')
@@ -89,7 +91,20 @@ class ExperimentBuilder(object):
         """
         self.model.train_mode()
 
-        loss = self.model.train(x, y)        
+        train_start_time = time.time()
+
+        if not self.post_train_time is None:
+            non_train_time = train_start_time - self.post_train_time
+            non_train_time = "{:.4f}".format(non_train_time)
+            print(f"operations between model.train took: {non_train_time} seconds")
+
+        loss = self.model.train(x, y)
+
+        self.post_train_time = time.time()
+        train_elapsed_time = self.post_train_time - train_start_time
+        train_elapsed_time = "{:.4f}".format(train_elapsed_time)
+        print(f"model.train took: {train_elapsed_time} seconds")
+
         return loss
 
     def run_evaluation_iter(self, x, y):

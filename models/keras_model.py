@@ -56,7 +56,7 @@ class KerasModel(Model):
 		history = self.model.fit(inputs, targets, batch_size=self.batch_size, epochs=1,
 			callbacks=callbacks, shuffle=False)
 
-		fit_elapsed_time = time.time() - train_start_time
+		fit_elapsed_time = time.time() - fit_start_time
 		fit_elapsed_time = "{:.4f}".format(fit_elapsed_time)
 		print(f"\nmodel.fit took: {fit_elapsed_time} seconds")
 

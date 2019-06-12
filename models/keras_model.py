@@ -4,6 +4,7 @@ from keras.callbacks import TensorBoard
 import json
 import os.path
 import numpy as np
+import time
 
 class KerasModel(Model):
 	# A wrapper class for Keras Models
@@ -48,8 +49,16 @@ class KerasModel(Model):
 			callbacks.append(TensorBoard(log_dir=self.tensorboard_dir,
 			write_grads=True, write_graph=False, write_images=True))
 			
+
+		fit_start_time = time.time()
+
+
 		history = self.model.fit(inputs, targets, batch_size=self.batch_size, epochs=1,
-			callbacks=callbacks)
+			callbacks=callbacks, shuffle=False)
+
+        fit_elapsed_time = time.time() - train_start_time
+        fit_elapsed_time = "{:.4f}".format(fit_elapsed_time)
+        print(f"\nmodel.fit took: {fit_elapsed_time} seconds")
 
 		# np.save(f"model_inputs_{self.temp_it}.npy", {'x': inputs, 'y': targets})
 		# self.temp_it += 1

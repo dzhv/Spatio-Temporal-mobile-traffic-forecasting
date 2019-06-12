@@ -24,18 +24,24 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 		# 1 refers to a single channel of the input
 		encoder_inputs = Input(shape=(segment_size, window_size, window_size, 1))
 		
-		out = TimeDistributed(Conv2D(40, kernel_size=3, activation='relu', padding='same'))(encoder_inputs)
+		out = TimeDistributed(Conv2D(25, kernel_size=3, activation='relu', padding='same'))(encoder_inputs)
 		out = TimeDistributed(AveragePooling2D())(out)
-		out = TimeDistributed(Conv2D(80, kernel_size=3, activation='relu', padding='same'))(out)
+		out = TimeDistributed(Conv2D(50, kernel_size=3, activation='relu', padding='same'))(out)
 		out = TimeDistributed(AveragePooling2D())(out)
-		out = TimeDistributed(Conv2D(80, kernel_size=3, activation='relu', padding='same'))(out)
+		out = TimeDistributed(Conv2D(50, kernel_size=3, activation='relu', padding='same'))(out)
+
+		dropout = 0.1
+		recurrent_dropout = 0.1
 
 		# encoder
-		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='relu', padding='same')(out)
-		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='relu', padding='same')(out)
-		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='relu', padding='same')(out)
+		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='relu', padding='same',
+			dropout=dropout, recurrent_dropout=recurrent_dropout)(out)
+		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='relu', padding='same',
+			dropout=dropout, recurrent_dropout=recurrent_dropout)(out)
+		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='relu', padding='same',
+			dropout=dropout, recurrent_dropout=recurrent_dropout)(out)
 		encoder_outputs, state_h, state_c = ConvLSTM2D(filters=50, kernel_size=3, activation='relu', 
-			padding='same', return_state=True)(out)
+			padding='same', return_state=True, dropout=dropout, recurrent_dropout=recurrent_dropout)(out)
 
 		# decoder
 
@@ -43,16 +49,19 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 		self.decoder_input_shape = (2, 2, 50)
 		decoder_inputs = Input(shape=(segment_size,) + self.decoder_input_shape)
 		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='relu', 
-			padding='same')([decoder_inputs, state_h, state_c])
-		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='relu', padding='same')(out)
-		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='relu', padding='same')(out)
-		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='relu', padding='same')(out)
+			padding='same', dropout=dropout, recurrent_dropout=recurrent_dropout)([decoder_inputs, state_h, state_c])
+		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='relu', padding='same', 
+			dropout=dropout, recurrent_dropout=recurrent_dropout)(out)
+		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='relu', padding='same',
+			dropout=dropout, recurrent_dropout=recurrent_dropout)(out)
+		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='relu', padding='same',
+			dropout=dropout, recurrent_dropout=recurrent_dropout)(out)
 
 		out = TimeDistributed(Flatten())(out)
 
 		num_output_features = 1
-		  # TODO: this gets a 2400x1 (12x2x2x50) vector, maybe it's worth reducing the dimensions in lstm layers?
 		out = TimeDistributed(Dense(75, activation='relu', kernel_regularizer=regularizers.l2(0.002)))(out)
+		out = TimeDistributed(Dense(50, activation='relu', kernel_regularizer=regularizers.l2(0.002)))(out)
 		out = TimeDistributed(Dense(num_output_features, activation='linear'))(out)
 
 		self.model = Model(inputs=[encoder_inputs, decoder_inputs], outputs=out)
@@ -76,7 +85,7 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 	def form_targets(self, y):
 		return y[:, :, None]
 
-# model = CnnConvLSTMSeq2Seq(window_size=11)
-# output = model.forward(np.random.randn(1, 12, 11, 11))
-# print("output shape:")
-# print(output.shape)
+model = CnnConvLSTMSeq2Seq(window_size=11)
+output = model.forward(np.random.randn(1, 12, 11, 11))
+print("output shape:")
+print(output.shape)

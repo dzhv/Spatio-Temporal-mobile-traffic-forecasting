@@ -24,11 +24,11 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 		# 1 refers to a single channel of the input
 		encoder_inputs = Input(shape=(segment_size, window_size, window_size, 1))
 		
-		out = TimeDistributed(Conv2D(25, kernel_size=3, activation='tanh', padding='same'))(encoder_inputs)
+		out = TimeDistributed(Conv2D(25, kernel_size=3, activation='relu', padding='same'))(encoder_inputs)
 		out = TimeDistributed(AveragePooling2D())(out)
-		out = TimeDistributed(Conv2D(50, kernel_size=3, activation='tanh', padding='same'))(out)
+		out = TimeDistributed(Conv2D(50, kernel_size=3, activation='relu', padding='same'))(out)
 		out = TimeDistributed(AveragePooling2D())(out)
-		out = TimeDistributed(Conv2D(50, kernel_size=3, activation='tanh', padding='same'))(out)
+		out = TimeDistributed(Conv2D(50, kernel_size=3, activation='relu', padding='same'))(out)
 
 		# encoder
 		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)

@@ -13,7 +13,7 @@ from models import model_device_adapter
 
 class CnnConvLSTMSeq2Seq(KerasModel):
 	def __init__(self, gpus=1, batch_size=50, segment_size=12, window_size=11,
-		learning_rate=0.0001, create_tensorboard=False):
+		learning_rate=0.0001, learning_rate_decay=0, create_tensorboard=False):
 
 		print(f"cnnconvlstmseq2seq, window_size: {window_size}")
 
@@ -33,6 +33,7 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 		# encoder
 		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
 		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
+		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
 		encoder_outputs, state_h, state_c = ConvLSTM2D(filters=50, kernel_size=3, activation='tanh', 
 			padding='same', return_state=True)(out)
 
@@ -45,17 +46,22 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 			padding='same')([decoder_inputs, state_h, state_c])
 		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
 		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
+		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
 
 		out = TimeDistributed(Flatten())(out)
 
 		num_output_features = 1
 		  # TODO: this gets a 2400x1 (12x2x2x50) vector, maybe it's worth reducing the dimensions in lstm layers?
+		out = TimeDistributed(Dense(75, activation='relu', kernel_regularizer=regularizers.l2(0.002)))(out)
+		out = TimeDistributed(Dense(50, activation='relu', kernel_regularizer=regularizers.l2(0.002)))(out)
 		out = TimeDistributed(Dense(num_output_features, activation='linear'))(out)
 
 		self.model = Model(inputs=[encoder_inputs, decoder_inputs], outputs=out)
 		self.model = model_device_adapter.get_device_specific_model(self.model, gpus)
 		
-		optimizer = Adam(lr=learning_rate)
+
+		print(f"\nLR DECAY: {learning_rate_decay}")
+		optimizer = Adam(lr=learning_rate, decay=learning_rate_decay)
 		self.model.compile(loss='mse', optimizer=optimizer)
 
 		print(self.model.summary())

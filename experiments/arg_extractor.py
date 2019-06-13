@@ -56,6 +56,8 @@ def get_args():
                         help='Fraction of validation samples to use for val evaluations')
     parser.add_argument('--learning_rate', nargs="?", type=float, default=1e-4,
                         help='Learning rate passed to the optimizer')
+    parser.add_argument('--learning_rate_decay', nargs="?", type=float, default=0,
+                        help='Learning rate decay (Adam)')
     parser.add_argument('--shuffle_order', nargs="?", type=str2bool, default=True, 
         help="A flag indicating whether to shuffle the data samples [use 'False' only for testing the setup]")
     parser.add_argument('--dropout', nargs="?", type=float, default=0, help='Dropout rate for the model')

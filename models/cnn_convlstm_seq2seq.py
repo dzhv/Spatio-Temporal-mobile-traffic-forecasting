@@ -59,8 +59,6 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 		self.model = Model(inputs=[encoder_inputs, decoder_inputs], outputs=out)
 		self.model = model_device_adapter.get_device_specific_model(self.model, gpus)
 		
-
-		print(f"\nLR DECAY: {learning_rate_decay}")
 		optimizer = Adam(lr=learning_rate, decay=learning_rate_decay)
 		self.model.compile(loss='mse', optimizer=optimizer)
 

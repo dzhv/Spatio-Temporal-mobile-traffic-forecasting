@@ -1,7 +1,7 @@
 #!/bin/sh
 #SBATCH -N 1	  # nodes requested
 #SBATCH -n 1	  # tasks requested
-#SBATCH --partition=LongJobs
+#SBATCH --partition=MSC
 #SBATCH --gres=gpu:1
 #SBATCH --mem=12000  # memory in Mb
 #SBATCH --time=3-00:00:00
@@ -25,7 +25,8 @@ export PYTHON_PATH=$PATH
 # Activate the relevant virtual environment:
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
 python experiments/experiment_runner.py --data_path /home/${STUDENT_ID}/msc_project/data \
---experiment_name "cnn_convlstm_seq2seq_win11_cnn_relu" --model_name "cnn_convlstm_seq2seq" \
+	  --experiment_name "cnn_convlstm_seq2seq_win11_5" --model_name "cnn_convlstm_seq2seq" \
 	  --gpus 1 --batch_size 2500 \
-	  --learning_rate 0.0011 --learning_rate_decay 0.000005 --window_size 11 \
+	  --learning_rate 0.0012 --learning_rate_decay 0.000005 --window_size 11 \
 	  --num_epochs 150 --fraction_of_data 0.25 --continue_from_epoch -2
+

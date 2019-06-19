@@ -53,6 +53,7 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 		out = TimeDistributed(Dense(num_output_features, activation='linear'))(out)
 
 		self.model = Model(inputs=[encoder_inputs, decoder_inputs], outputs=out)
+
 		self.model = model_device_adapter.get_device_specific_model(self.model, gpus)
 		
 		optimizer = Adam(lr=learning_rate, decay=learning_rate_decay)

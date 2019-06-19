@@ -40,15 +40,18 @@ def get_windowed_data_providers(args, rng, data_reader, test_set):
 def get_seq2seq_data_providers(args, rng, data_reader, test_set):
 	if test_set:
 		return Seq2SeqDataProvider(data_reader = data_reader(data_folder=args.data_path, which_set='test'), 
-			window_size=args.window_size, segment_size=args.segment_size, batch_size=args.batch_size,
-			shuffle_order=args.shuffle_order, rng=rng, fraction_of_data=args.fraction_of_data)
+			window_size=args.window_size, segment_size=args.segment_size, output_size=args.output_size,
+			batch_size=args.batch_size, shuffle_order=args.shuffle_order, rng=rng, 
+			fraction_of_data=args.fraction_of_data)
 
 	train_data = Seq2SeqDataProvider(data_reader = data_reader(data_folder=args.data_path, which_set='train'), 
-			window_size=args.window_size, segment_size=args.segment_size, batch_size=args.batch_size,
-			shuffle_order=args.shuffle_order, rng=rng, fraction_of_data=args.fraction_of_data)
+			window_size=args.window_size, segment_size=args.segment_size, output_size=args.output_size,
+			batch_size=args.batch_size, shuffle_order=args.shuffle_order, rng=rng, 
+			fraction_of_data=args.fraction_of_data)
 	val_data = Seq2SeqDataProvider(data_reader = data_reader(data_folder=args.data_path, which_set='valid'), 
-			window_size=args.window_size, segment_size=args.segment_size, batch_size=args.batch_size,
-			shuffle_order=args.shuffle_order, rng=rng, fraction_of_data=args.fraction_of_val)
+			window_size=args.window_size, segment_size=args.segment_size, output_size=args.output_size,
+			batch_size=args.batch_size, shuffle_order=args.shuffle_order, rng=rng, 
+			fraction_of_data=args.fraction_of_val)
 
 	return train_data, val_data
 

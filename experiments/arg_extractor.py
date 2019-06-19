@@ -19,6 +19,8 @@ def get_args():
     parser.add_argument('--batch_size', nargs="?", type=int, default=1000, help='Batch_size for experiment')
     parser.add_argument('--segment_size', nargs="?", type=int, default=12,
                         help='segment size of 1 training/validation sample')
+    parser.add_argument('--output_size', nargs="?", type=int, default=12,
+                        help='output (prediction) length')
     parser.add_argument('--window_size', nargs="?", type=int, default=11,
                         help='size of the segment elements')
     parser.add_argument('--grid_size', nargs="?", type=int, default=100,

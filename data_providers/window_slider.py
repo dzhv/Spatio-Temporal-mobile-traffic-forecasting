@@ -167,8 +167,8 @@ def get_windowed_segmented_data(data, window_size, segment_size):
 
 	return reshaped, targets
 
-def get_sequential_inputs_and_targets(data, window_size, segment_size):
-  assert data.shape[0] == segment_size * 2, "Data should include 2 segments worth of data"
+def get_sequential_inputs_and_targets(data, window_size, segment_size, output_size):
+  assert data.shape[0] == (segment_size + output_size), "Data should include input size + output size of data"
 
   windowed_data = get_windowed_data(data[:segment_size], window_size)
   shape = windowed_data.shape

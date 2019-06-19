@@ -11,11 +11,12 @@ DEFAULT_SEED = 20112018
 
 
 class Seq2SeqDataProvider(object):
-    def __init__(self, data_reader, window_size=11, segment_size=12,
+    def __init__(self, data_reader, window_size=11, segment_size=12, output_size=12,
             batch_size=1000, shuffle_order=True, rng=None, fraction_of_data=1):
                 
         self.window_size = window_size
         self.segment_size = segment_size
+        self.output_size = output_size
         self.batch_size = batch_size
         self.shuffle_order = shuffle_order
         if rng is None:
@@ -27,7 +28,7 @@ class Seq2SeqDataProvider(object):
 
         # number of time points which can be used to form inputs-targets pairs
         # the last segments are discarded as they cannot have a target
-        self.num_segments = self.data.shape[0] - self.segment_size * 2 + 1  
+        self.num_segments = self.data.shape[0] - (self.segment_size + self.output_size) + 1  
         
         # used only for progress bars
         self.num_batches = np.ceil(self.num_segments * self.fraction_of_data) * (self.data.shape[-1]**2 // batch_size)
@@ -38,10 +39,10 @@ class Seq2SeqDataProvider(object):
 
     def enumerate_data(self, indexes):
         for count, i in enumerate(indexes):
-            segment = self.data[i:i + self.segment_size * 2]  # *2 is to include the target data
+            segment = self.data[i:i + self.segment_size + self.output_size]  # *2 is to include the target data
 
             inputs, targets = window_slider.get_sequential_inputs_and_targets(
-                segment, self.window_size, self.segment_size)
+                segment, self.window_size, self.segment_size, self.output_size)
 
             assert inputs.shape[0] % self.batch_size == 0, f"batch_size needs to be a divider of {inputs.shape[0]}"
 

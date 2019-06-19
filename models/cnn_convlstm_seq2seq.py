@@ -12,12 +12,14 @@ from models.keras_model import KerasModel
 from models import model_device_adapter
 
 class CnnConvLSTMSeq2Seq(KerasModel):
-	def __init__(self, gpus=1, batch_size=50, segment_size=12, window_size=11,
+	def __init__(self, gpus=1, batch_size=50, segment_size=12, output_size=12, window_size=11,
 		learning_rate=0.0001, learning_rate_decay=0, create_tensorboard=False):
 
 		print(f"cnnconvlstmseq2seq, window_size: {window_size}")
 
 		self.segment_size = segment_size
+		print(f"output size: {output_size}")
+		self.output_size = output_size
 		self.gpus = gpus
 		
 		# Define an input sequence.
@@ -41,7 +43,7 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 
 		# here (2, 2) is the latent dimension - not kernel size
 		self.decoder_input_shape = (2, 2, 50)
-		decoder_inputs = Input(shape=(segment_size,) + self.decoder_input_shape)
+		decoder_inputs = Input(shape=(output_size,) + self.decoder_input_shape)
 		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', 
 			padding='same')([decoder_inputs, state_h, state_c])
 		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
@@ -71,14 +73,14 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 		# adding an empty (channel) dimension to the end
 		encoder_input = np.expand_dims(x, axis=-1)
 		# (batch_size, segment_size, latent_dim, latent_dim, channels)
-		decoder_input = np.zeros((encoder_input.shape[0], self.segment_size) + self.decoder_input_shape)
+		decoder_input = np.zeros((encoder_input.shape[0], self.output_size) + self.decoder_input_shape)
 		
 		return [encoder_input, decoder_input]
 
 	def form_targets(self, y):
 		return y[:, :, None]
 
-# model = CnnConvLSTMSeq2Seq(window_size=11)
+# model = CnnConvLSTMSeq2Seq(window_size=11, output_size=30)
 # output = model.forward(np.random.randn(1, 12, 11, 11))
 # print("output shape:")
 # print(output.shape)

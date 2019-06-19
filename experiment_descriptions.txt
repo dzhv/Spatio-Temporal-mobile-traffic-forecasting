@@ -220,7 +220,7 @@ out = TimeDistributed(Dense(num_output_features, activation='linear'))(out)
 self.model = Model(inputs=[encoder_inputs, decoder_inputs], outputs=out)
 
 
-cnn_convlstm_seq2seq_win11_6
+cnn_convlstm_seq2seq_win11_6  (more filters)
 ------------------------
 encoder_inputs = Input(shape=(segment_size, window_size, window_size, 1))
 		

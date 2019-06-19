@@ -4,6 +4,7 @@ from models.keras_seq2seq import KerasSeq2Seq
 from models.lstm import LSTM
 from models.windowed_cnn_convlstm import WindowedCnnConvLSTM
 from models.cnn_convlstm_seq2seq import CnnConvLSTMSeq2Seq
+from models.cnn_convlstm_attention import CnnConvLSTMAttention
 
 def get_model(args):
 	if args.model_name == "lstm":
@@ -23,6 +24,10 @@ def get_model(args):
 			window_size=args.window_size, learning_rate=args.learning_rate, create_tensorboard=args.create_tensorboard)
 	elif args.model_name == "cnn_convlstm_seq2seq":
 		return CnnConvLSTMSeq2Seq(gpus=args.gpus, batch_size=args.batch_size, segment_size=args.segment_size,
+			window_size=args.window_size, learning_rate=args.learning_rate, 
+			learning_rate_decay=args.learning_rate_decay, create_tensorboard=args.create_tensorboard)
+	elif args.model_name == "cnn_convlstm_attention":
+		return CnnConvLSTMAttention(gpus=args.gpus, batch_size=args.batch_size, segment_size=args.segment_size,
 			window_size=args.window_size, learning_rate=args.learning_rate, 
 			learning_rate_decay=args.learning_rate_decay, create_tensorboard=args.create_tensorboard)
 	else:

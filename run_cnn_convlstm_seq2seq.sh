@@ -28,5 +28,5 @@ python experiments/experiment_runner.py --data_path /home/${STUDENT_ID}/msc_proj
 	  --experiment_name "cnn_convlstm_seq2seq_win11_cnn_relu" --model_name "cnn_convlstm_seq2seq" \
 	  --gpus 1 --batch_size 2500 \
 	  --learning_rate 0.005 --learning_rate_decay 0.000005 --window_size 11 \
-	  --num_epochs 150 --fraction_of_data 0.25
+	  --num_epochs 150 --fraction_of_data 0.25 --continue_from_epoch -2
 

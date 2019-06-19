@@ -26,28 +26,25 @@ class CnnConvLSTMAttention(KerasModel):
 		encoder_inputs = Input(shape=(segment_size, window_size, window_size, 1))
 		
 		print(f"encoder_inputs: {encoder_inputs}")
-		out = TimeDistributed(Conv2D(10, kernel_size=3, activation='tanh', padding='same'))(encoder_inputs)
+		out = TimeDistributed(Conv2D(20, kernel_size=3, activation='tanh', padding='same'))(encoder_inputs)
 		out = TimeDistributed(AveragePooling2D())(out)
-		out = TimeDistributed(Conv2D(20, kernel_size=3, activation='tanh', padding='same'))(out)
+		out = TimeDistributed(Conv2D(40, kernel_size=3, activation='tanh', padding='same'))(out)
 		out = TimeDistributed(AveragePooling2D())(out)
-		out = TimeDistributed(Conv2D(20, kernel_size=3, activation='tanh', padding='same'))(out)
+		out = TimeDistributed(Conv2D(40, kernel_size=3, activation='tanh', padding='same'))(out)
 
 
 		# encoder				
-		encoder_outputs, state_h, state_c = ConvLSTM2D(filters=20, kernel_size=3, activation='tanh', 
+		encoder_outputs, state_h, state_c = ConvLSTM2D(filters=40, kernel_size=3, activation='tanh', 
 			padding='same', return_state=True, return_sequences=True)(out)
+		# encoder_outputs shape: (batch_size, segment_size, window_size, window_size, num_filters)
 
 		# decoder
-		print(f"\nencoder_outputs: {encoder_outputs}")
-
-		# encoder_outputs shape: (batch_size, segment_size, window_size, window_size, num_filters)
-		out = encoder_outputs
 	
 		attention_layer = ConvRNN2D(ConvLSTMAttentionCell(10, kernel_size=3, padding='same'), return_sequences=True)
 		attention_layer._num_constants = 1
 		out = attention_layer([encoder_outputs, encoder_outputs])
 
-		out = ConvLSTM2D(filters=64, kernel_size=5, return_sequences=True, activation='tanh', padding='same')(out)
+		out = ConvLSTM2D(filters=64, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
 
 		out = TimeDistributed(Flatten())(out)
 
@@ -76,7 +73,7 @@ class CnnConvLSTMAttention(KerasModel):
 	def form_targets(self, y):
 		return y[:, :, None]
 
-model = CnnConvLSTMAttention(window_size=11)
-output = model.forward(np.random.randn(2, 12, 11, 11))
-print("output shape:")
-print(output.shape)
+# model = CnnConvLSTMAttention(window_size=11)
+# output = model.forward(np.random.randn(2, 12, 11, 11))
+# print("output shape:")
+# print(output.shape)

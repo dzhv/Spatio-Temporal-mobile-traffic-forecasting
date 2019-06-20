@@ -15,10 +15,7 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 	def __init__(self, gpus=1, batch_size=50, segment_size=12, output_size=12, window_size=11,
 		learning_rate=0.0001, learning_rate_decay=0, create_tensorboard=False):
 
-		print(f"cnnconvlstmseq2seq, window_size: {window_size}")
-
 		self.segment_size = segment_size
-		print(f"output size: {output_size}")
 		self.output_size = output_size
 		self.gpus = gpus
 		
@@ -26,32 +23,33 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 		# 1 refers to a single channel of the input
 		encoder_inputs = Input(shape=(segment_size, window_size, window_size, 1))
 		
-		out = TimeDistributed(Conv2D(25, kernel_size=3, activation='tanh', padding='same'))(encoder_inputs)
+		out = TimeDistributed(Conv2D(32, kernel_size=3, activation='tanh', padding='same'))(encoder_inputs)
 		out = TimeDistributed(AveragePooling2D())(out)
-		out = TimeDistributed(Conv2D(50, kernel_size=3, activation='tanh', padding='same'))(out)
+		out = TimeDistributed(Conv2D(64, kernel_size=3, activation='tanh', padding='same'))(out)
 		out = TimeDistributed(AveragePooling2D())(out)
-		out = TimeDistributed(Conv2D(50, kernel_size=3, activation='tanh', padding='same'))(out)
+		out = TimeDistributed(Conv2D(100, kernel_size=3, activation='tanh', padding='same'))(out)
 
 		# encoder
-		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
-		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
-		encoder_outputs, state_h, state_c = ConvLSTM2D(filters=50, kernel_size=3, activation='tanh', 
+		out = ConvLSTM2D(filters=64, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
+		out = ConvLSTM2D(filters=64, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
+		encoder_outputs, state_h, state_c = ConvLSTM2D(filters=64, kernel_size=3, activation='tanh', 
 			padding='same', return_state=True)(out)
 
 		# decoder
 
 		# here (2, 2) is the latent dimension - not kernel size
 		self.decoder_input_shape = (2, 2, 50)
-		decoder_inputs = Input(shape=(output_size,) + self.decoder_input_shape)
-		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', 
+		decoder_inputs = Input(shape=(segment_size,) + self.decoder_input_shape)
+		out = ConvLSTM2D(filters=64, kernel_size=3, return_sequences=True, activation='tanh', 
 			padding='same')([decoder_inputs, state_h, state_c])
-		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
-		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
+		out = ConvLSTM2D(filters=64, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
+		out = ConvLSTM2D(filters=64, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
 
 		out = TimeDistributed(Flatten())(out)
 
 		num_output_features = 1
 		  # TODO: this gets a 2400x1 (12x2x2x50) vector, maybe it's worth reducing the dimensions in lstm layers?
+		out = TimeDistributed(Dense(100, activation='relu', kernel_regularizer=regularizers.l2(0.002)))(out)
 		out = TimeDistributed(Dense(num_output_features, activation='linear'))(out)
 
 		self.model = Model(inputs=[encoder_inputs, decoder_inputs], outputs=out)
@@ -76,7 +74,7 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 	def form_targets(self, y):
 		return y[:, :, None]
 
-# model = CnnConvLSTMSeq2Seq(window_size=11, output_size=30)
-# output = model.forward(np.random.randn(1, 12, 11, 11))
-# print("output shape:")
-# print(output.shape)
+model = CnnConvLSTMSeq2Seq(window_size=11)
+output = model.forward(np.random.randn(2, 12, 11, 11))
+print("output shape:")
+print(output.shape)

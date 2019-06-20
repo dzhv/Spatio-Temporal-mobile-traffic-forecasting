@@ -30,25 +30,24 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 		out = TimeDistributed(Conv2D(100, kernel_size=3, activation='tanh', padding='same'))(out)
 
 		# encoder
-		out = ConvLSTM2D(filters=64, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
-		out = ConvLSTM2D(filters=64, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
-		encoder_outputs, state_h, state_c = ConvLSTM2D(filters=64, kernel_size=3, activation='tanh', 
+		out = ConvLSTM2D(filters=64, kernel_size=5, return_sequences=True, activation='tanh', padding='same')(out)
+		out = ConvLSTM2D(filters=64, kernel_size=5, return_sequences=True, activation='tanh', padding='same')(out)
+		encoder_outputs, state_h, state_c = ConvLSTM2D(filters=64, kernel_size=5, activation='tanh', 
 			padding='same', return_state=True)(out)
 
 		# decoder
 
 		# here (2, 2) is the latent dimension - not kernel size
-		self.decoder_input_shape = (2, 2, 50)
+		self.decoder_input_shape = (2, 2, 64)
 		decoder_inputs = Input(shape=(segment_size,) + self.decoder_input_shape)
-		out = ConvLSTM2D(filters=64, kernel_size=3, return_sequences=True, activation='tanh', 
+		out = ConvLSTM2D(filters=64, kernel_size=5, return_sequences=True, activation='tanh', 
 			padding='same')([decoder_inputs, state_h, state_c])
-		out = ConvLSTM2D(filters=64, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
-		out = ConvLSTM2D(filters=64, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
+		out = ConvLSTM2D(filters=64, kernel_size=5, return_sequences=True, activation='tanh', padding='same')(out)
+		out = ConvLSTM2D(filters=64, kernel_size=5, return_sequences=True, activation='tanh', padding='same')(out)
 
 		out = TimeDistributed(Flatten())(out)
 
 		num_output_features = 1
-		  # TODO: this gets a 2400x1 (12x2x2x50) vector, maybe it's worth reducing the dimensions in lstm layers?
 		out = TimeDistributed(Dense(100, activation='relu', kernel_regularizer=regularizers.l2(0.002)))(out)
 		out = TimeDistributed(Dense(num_output_features, activation='linear'))(out)
 
@@ -74,7 +73,7 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 	def form_targets(self, y):
 		return y[:, :, None]
 
-model = CnnConvLSTMSeq2Seq(window_size=11)
-output = model.forward(np.random.randn(2, 12, 11, 11))
-print("output shape:")
-print(output.shape)
+# model = CnnConvLSTMSeq2Seq(window_size=11)
+# output = model.forward(np.random.randn(2, 12, 11, 11))
+# print("output shape:")
+# print(output.shape)

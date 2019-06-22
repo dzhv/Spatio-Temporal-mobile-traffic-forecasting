@@ -2,8 +2,10 @@
 
 import sys
 from os import path
-parent_folder = path.dirname(path.dirname(path.abspath(__file__)))
+this_folder = path.dirname(path.abspath(__file__))
+parent_folder = path.dirname(this_folder)
 grandparent_folder = path.dirname(parent_folder)
+sys.path.append(this_folder)
 sys.path.append(parent_folder)
 sys.path.append(grandparent_folder)
 import numpy as np
@@ -78,6 +80,9 @@ class PredRNN(Model):
         #     self.saver.restore(self.sess, FLAGS.pretrained_model)
 
     def train(self, x, y):
+        print(f"\nx shape: {x.shape}")
+        print(f"y shape: {x.shape}\n")
+
         inputs, mask_true = self.prepare_inputs(x, y)
 
         feed_dict = {self.x: inputs}

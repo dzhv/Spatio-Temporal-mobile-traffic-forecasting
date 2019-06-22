@@ -1,5 +1,10 @@
 # Code taken from: https://github.com/Yunbo426/predrnn-pp
 
+import sys
+from os import path
+this_folder = path.dirname(path.abspath(__file__))
+sys.path.append(this_folder)
+
 import tensorflow as tf
 from tensor_layer_norm import tensor_layer_norm
 

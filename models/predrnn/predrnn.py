@@ -106,6 +106,7 @@ class PredRNN(Model):
         feed_dict = {self.x: inputs}
         feed_dict.update({self.mask_true: mask_true})
         loss = self.sess.run(self.loss_train, feed_dict)
+
         return loss
         
 
@@ -214,6 +215,7 @@ if __name__ == '__main__':
     model.evaluate(x, y)
 
     print("\nLets predict\n")
-    model.forward(x)
+    out = model.forward(x)
+    print(f"out shape: {np.array(out).shape}")
 
     print("Sucess")

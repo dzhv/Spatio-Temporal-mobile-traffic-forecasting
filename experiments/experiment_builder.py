@@ -120,7 +120,7 @@ class ExperimentBuilder(object):
         mse_loss = mse(y, out)
         print(f"mse loss: {mse_loss}")
 
-        predictions = out * self.train_std + self.train_mean 
+        predictions = np.array(out) * self.train_std + self.train_mean 
         targets = y * self.train_std + self.train_mean
 
         nrmse_loss = nrmse(targets, predictions)        

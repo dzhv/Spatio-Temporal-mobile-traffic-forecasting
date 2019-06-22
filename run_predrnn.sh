@@ -29,5 +29,5 @@ python experiments/experiment_runner.py --data_path /home/${STUDENT_ID}/msc_proj
 	  --gpus 1 --batch_size 2500 \
 	  --learning_rate 0.0013 --learning_rate_decay 0.000005 \
 	  --num_epochs 150 --use_mini_data true \
-	  --output_size 1 --hidden_size 75 --num_layers 2
+	  --output_size 1 --hidden_size 50 --num_layers 2
 

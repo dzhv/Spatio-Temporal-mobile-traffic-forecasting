@@ -39,7 +39,7 @@ class Seq2SeqDataProvider(object):
 
     def enumerate_data(self, indexes):
         for count, i in enumerate(indexes):
-            segment = self.data[i:i + self.segment_size + self.output_size]  # *2 is to include the target data
+            segment = self.data[i:i + self.segment_size + self.output_size]
 
             inputs, targets = window_slider.get_sequential_inputs_and_targets(
                 segment, self.window_size, self.segment_size, self.output_size)

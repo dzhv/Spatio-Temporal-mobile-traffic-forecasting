@@ -17,6 +17,9 @@ from models.model import Model
 class PredRNN(Model):
     def __init__(self, batch_size=10, segment_size=12, output_size=1, window_size=11, hidden_size=50, 
         num_layers=2, learning_rate=0.001):
+        print("args:")
+        print(f"bs: {batch_size},  segment_size: {segment_size}")
+
 
         self.learning_rate = learning_rate
         self.batch_size = batch_size

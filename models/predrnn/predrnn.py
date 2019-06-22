@@ -3,7 +3,9 @@
 import sys
 from os import path
 parent_folder = path.dirname(path.dirname(path.abspath(__file__)))
+grandparent_folder = path.dirname(parent_folder)
 sys.path.append(parent_folder)
+sys.path.append(grandparent_folder)
 import numpy as np
 import tensorflow as tf
 from gradient_highway_unit import GHU as ghu

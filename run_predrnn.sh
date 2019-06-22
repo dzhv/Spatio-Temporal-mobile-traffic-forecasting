@@ -1,10 +1,10 @@
 #!/bin/sh
 #SBATCH -N 1	  # nodes requested
 #SBATCH -n 1	  # tasks requested
-#SBATCH --partition=General_Usage
+#SBATCH --partition=LongJobs
 #SBATCH --gres=gpu:1
 #SBATCH --mem=12000  # memory in Mb
-#SBATCH --time=3-00:00:00
+#SBATCH --time=3-08:00:00
 
 export CUDA_HOME=/opt/cuda-9.0.176.1/
 
@@ -25,9 +25,9 @@ export PYTHON_PATH=$PATH
 # Activate the relevant virtual environment:
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
 python experiments/experiment_runner.py --data_path /home/${STUDENT_ID}/msc_project/data \
-	  --experiment_name "predrnn" --model_name "predrnn" \
-	  --gpus 1 --batch_size 2500 \
+	  --experiment_name "predrnn_pred12" --model_name "predrnn" \
+	  --gpus 1 --batch_size 4 \
 	  --learning_rate 0.0013 --learning_rate_decay 0.000005 \
 	  --num_epochs 150 \
-	  --output_size 1 --hidden_size 100 --num_layers 2
+	  --output_size 12 --hidden_size 35 --num_layers 2
 

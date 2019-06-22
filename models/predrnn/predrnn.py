@@ -32,12 +32,8 @@ class PredRNN(Model):
                                  window_size,
                                  1])
 
-        self.mask_true = tf.placeholder(tf.float32,
-                                        [batch_size,
-                                         1,  # output_size - 1,  # output len - 1
-                                         window_size,
-                                         window_size,
-                                         1])
+        self.mask_shape = [batch_size, max(1, output_size - 1), window_size, window_size, 1]
+        self.mask_true = tf.placeholder(tf.float32, self.mask_shape)
 
         grads = []
         loss_train = []
@@ -112,18 +108,16 @@ class PredRNN(Model):
         # y.shape == (batch_size, 1, window_size, window_size)
 
         if y is None:
-            y = np.zeros((x.shape[0], 1, self.window_size, self.window_size))
+            y = np.zeros((self.batch_size, self.output_size, self.window_size, self.window_size))
 
         # concatenate x, y on timewise axis as this is the expected input for predrnn model
-        inputs = x if y is None else np.concatenate((x, y), axis=1)
+        inputs = np.concatenate((x, y), axis=1)
         # add empty channel dimension
         inputs = np.expand_dims(inputs, axis=-1)
-
-        mask_true = np.zeros((self.batch_size,
-            1, #self.output_size -1,
-            self.window_size,
-            self.window_size,
-            1)) # channel
+                
+        # setting mask_true to zeros corresponds to always using model predictions
+        # as inputs for future predictions
+        mask_true = np.zeros(self.mask_shape)
 
         return inputs, mask_true
 
@@ -201,9 +195,9 @@ def rnn(images, mask_true, num_layers, num_hidden, filter_size, stride=1,
 if __name__ == '__main__':
     batch_size = 2
     print("Lets build it")
-    model = PredRNN(batch_size=batch_size)
+    model = PredRNN(batch_size=batch_size, output_size=12)
     x = np.random.randn(batch_size, 12, 11, 11)
-    y = np.random.randn(batch_size, 1, 11, 11)
+    y = np.random.randn(batch_size, 12, 11, 11)
 
     def try_outputs():
         print("\nLets train it\n")
@@ -229,6 +223,6 @@ if __name__ == '__main__':
         model.train(x+1, y+3)
 
 
-    try_loading()
+    try_outputs()
 
     print("Success")

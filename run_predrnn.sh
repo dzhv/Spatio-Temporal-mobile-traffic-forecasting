@@ -25,9 +25,9 @@ export PYTHON_PATH=$PATH
 # Activate the relevant virtual environment:
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
 python experiments/experiment_runner.py --data_path /home/${STUDENT_ID}/msc_project/data \
-	  --experiment_name "predrnn_mini" --model_name "predrnn" \
+	  --experiment_name "predrnn" --model_name "predrnn" \
 	  --gpus 1 --batch_size 2500 \
 	  --learning_rate 0.0013 --learning_rate_decay 0.000005 \
-	  --num_epochs 150 --use_mini_data true \
-	  --output_size 1 --hidden_size 50 --num_layers 2
+	  --num_epochs 150 \
+	  --output_size 1 --hidden_size 100 --num_layers 2
 

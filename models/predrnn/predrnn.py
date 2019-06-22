@@ -17,9 +17,6 @@ from models.model import Model
 class PredRNN(Model):
     def __init__(self, batch_size=10, segment_size=12, output_size=1, window_size=11, hidden_size=50, 
         num_layers=2, learning_rate=0.001):
-        print("args:")
-        print(f"bs: {batch_size},  segment_size: {segment_size}")
-
 
         self.learning_rate = learning_rate
         self.batch_size = batch_size
@@ -108,7 +105,6 @@ class PredRNN(Model):
         loss = self.sess.run(self.loss_train, feed_dict)
 
         return loss
-        
 
     def prepare_inputs(self, x, y=None):
         # if data_provider is setup correctly:
@@ -137,9 +133,9 @@ class PredRNN(Model):
         print('saved to ' + path)
 
     def load(self, path):
-        weight_path = path + ".h5"
+        weight_path = path + '.ckpt'
         print(f"Loading weights from {weight_path}\n")
-        self.model.load_weights(weight_path)
+        self.saver.restore(self.sess, weight_path)
 
 
 def rnn(images, mask_true, num_layers, num_hidden, filter_size, stride=1, 
@@ -209,19 +205,30 @@ if __name__ == '__main__':
     x = np.random.randn(batch_size, 12, 11, 11)
     y = np.random.randn(batch_size, 1, 11, 11)
 
-    print("\nLets train it\n")
-    model.train(x, y)
+    def try_outputs():
+        print("\nLets train it\n")
+        model.train(x, y)
 
-    print("\nLets evaluate it\n")
-    model.evaluate(x, y)
+        print("\nLets predict\n")
+        out = model.forward(x)
+        print(f"out shape: {np.array(out).shape}")
 
-    print("\nLets predict\n")
-    out = model.forward(x)
-    print(f"out shape: {np.array(out).shape}")
+        print(f"model.pred_ims: {model.pred_seq}")
+        out = model.forward(x + 2)
+        out = model.forward(x + 5)
+        print(f"model.pred_ims: {model.pred_seq}")
 
-    print(f"model.pred_ims: {model.pred_seq}")
-    out = model.forward(x + 2)
-    out = model.forward(x + 5)
-    print(f"model.pred_ims: {model.pred_seq}")
+    path = 'temp/test'
+    def try_saving():
+        model.train(x, y)
+        model.save(path)
+
+    def try_loading():
+        model.load(path)
+        model.forward(x+2)
+        model.train(x+1, y+3)
+
+
+    try_loading()
 
     print("Success")

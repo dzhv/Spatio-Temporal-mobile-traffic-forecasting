@@ -80,9 +80,6 @@ class PredRNN(Model):
         #     self.saver.restore(self.sess, FLAGS.pretrained_model)
 
     def train(self, x, y):
-        print(f"\nx shape: {x.shape}")
-        print(f"y shape: {x.shape}\n")
-
         inputs, mask_true = self.prepare_inputs(x, y)
 
         feed_dict = {self.x: inputs}
@@ -197,7 +194,7 @@ def rnn(images, mask_true, num_layers, num_hidden, filter_size, stride=1,
     gen_images = tf.stack(gen_images)
     # [batch_size, seq_length, height, width, channels]
     gen_images = tf.transpose(gen_images, [1,0,2,3,4])
-    loss = tf.nn.l2_loss(gen_images - images[:,1:])
+    loss = tf.losses.mean_squared_error(labels=images[:,1:], predictions=gen_images)
     #loss += tf.reduce_sum(tf.abs(gen_images - images[:,1:]))
     return [gen_images, loss]
 

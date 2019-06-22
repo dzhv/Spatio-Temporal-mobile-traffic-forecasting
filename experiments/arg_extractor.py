@@ -29,7 +29,8 @@ def get_args():
     # model params
     parser.add_argument('--model_name', nargs="?", type=str, default="lstm",
                         help='Name of the model used for the experiment or evaluation. \
-                            Possible values: [lstm, keras_seq2seq, cnn_convlstm]')
+                            Possible values: [lstm, keras_seq2seq, cnn_convlstm, windowed_cnn_convlstm, \
+                            cnn_convlstm_seq2seq, cnn_convlstm_attention, predrnn]')
     parser.add_argument('--hidden_size', nargs="?", type=int, default=100, help='Hidden size')
     parser.add_argument('--num_layers', nargs="?", type=int, default=2, help='Number of layers')
 

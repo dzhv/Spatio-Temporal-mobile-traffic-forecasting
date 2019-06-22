@@ -124,7 +124,7 @@ class CausalLSTMCell():
                 o = tf.tanh(o_h + o_c + o_m)
             else:
                 o = tf.tanh(o_x + o_h + o_c + o_m)
-
+            
             cell = tf.concat([c_new, m_new],-1)
             cell = tf.layers.conv2d(cell, self.num_hidden, 1, 1,
                                     padding='same', name='memory_reduce')

@@ -7,18 +7,12 @@ from data_providers.seq2seq_data_provider import Seq2SeqDataProvider
 def get_data_providers(args, rng, test_set=False):
 	data_reader = MiniDataReader if args.use_mini_data else FullDataReader
 
-	if args.model_name == 'lstm':
+	if args.model_name in ['lstm', 'windowed_cnn_convlstm']:
 		return get_windowed_data_providers(args, rng, data_reader, test_set)
-	elif args.model_name == "keras_seq2seq":
+	elif args.model_name in ['keras_seq2seq', 'cnn_convlstm_seq2seq', 'cnn_convlstm_attention']:
 		return get_seq2seq_data_providers(args, rng, data_reader, test_set)
-	elif args.model_name == "cnn_convlstm":
-		return get_full_grid_data_providers(args, rng, data_reader, test_set, target_segment_size=1)
-	elif args.model_name == "windowed_cnn_convlstm":
-		return get_windowed_data_providers(args, rng, data_reader, test_set)
-	elif args.model_name == "cnn_convlstm_seq2seq":
-		return get_seq2seq_data_providers(args, rng, data_reader, test_set)
-	elif args.model_name == "cnn_convlstm_attention":
-		return get_seq2seq_data_providers(args, rng, data_reader, test_set)
+	elif args.model_name in ['cnn_convlstm', 'predrnn']:
+		return get_full_grid_data_providers(args, rng, data_reader, test_set)
 	else:
 		raise ValueError(f"Unknown model: {args.model_name}")
 
@@ -55,17 +49,17 @@ def get_seq2seq_data_providers(args, rng, data_reader, test_set):
 
 	return train_data, val_data
 
-def get_full_grid_data_providers(args, rng, data_reader, test_set, target_segment_size):
+def get_full_grid_data_providers(args, rng, data_reader, test_set):
 	if test_set:
 		return FullGridDataProvider(data_reader = data_reader(data_folder=args.data_path, which_set='test'), 
-			segment_size=args.segment_size, batch_size=args.batch_size, target_segment_size=target_segment_size,
+			segment_size=args.segment_size, batch_size=args.batch_size, target_segment_size=args.output_size,
 			shuffle_order=args.shuffle_order, rng=rng, fraction_of_data=args.fraction_of_data)
 
 	train_data = FullGridDataProvider(data_reader = data_reader(data_folder=args.data_path, which_set='train'), 
-			segment_size=args.segment_size, batch_size=args.batch_size, target_segment_size=target_segment_size,
+			segment_size=args.segment_size, batch_size=args.batch_size, target_segment_size=args.output_size,
 			shuffle_order=args.shuffle_order, rng=rng, fraction_of_data=args.fraction_of_data)
 	val_data = FullGridDataProvider(data_reader = data_reader(data_folder=args.data_path, which_set='valid'), 
-			segment_size=args.segment_size, batch_size=args.batch_size, target_segment_size=target_segment_size,
+			segment_size=args.segment_size, batch_size=args.batch_size, target_segment_size=args.output_size,
 			shuffle_order=args.shuffle_order, rng=rng, fraction_of_data=args.fraction_of_data)
 
 	return train_data, val_data

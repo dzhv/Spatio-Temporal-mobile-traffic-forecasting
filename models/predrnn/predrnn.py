@@ -78,37 +78,62 @@ class PredRNN(Model):
         #     self.saver.restore(self.sess, FLAGS.pretrained_model)
 
     def train(self, x, y):
+        inputs, mask_true = self.prepare_inputs(x, y)
+
+        feed_dict = {self.x: inputs}
+        feed_dict.update({self.tf_lr: self.learning_rate})
+
+        feed_dict.update({self.mask_true: mask_true})
+        loss, _ = self.sess.run((self.loss_train, self.train_op), feed_dict)
+        return loss
+
+    def forward(self, x):
+        inputs, mask_true = self.prepare_inputs(x)
+
+        feed_dict = {self.x: inputs}
+        feed_dict.update({self.mask_true: mask_true})
+        gen_ims = self.sess.run(self.pred_seq, feed_dict)
+        return gen_ims
+
+    def evaluate(self, x, y):
+        inputs, mask_true = self.prepare_inputs(x, y)
+
+        feed_dict = {self.x: inputs}
+        feed_dict.update({self.mask_true: mask_true})
+        loss = self.sess.run(self.loss_train, feed_dict)
+        return loss
+        
+
+    def prepare_inputs(self, x, y=None):
         # if data_provider is setup correctly:
         # x.shape == (batch_size, segment_size, window_size, window_size)
         # y.shape == (batch_size, 1, window_size, window_size)
 
+        if y is None:
+            y = np.zeros((x.shape[0], 1, self.window_size, self.window_size))
+
         # concatenate x, y on timewise axis as this is the expected input for predrnn model
-        inputs = np.concatenate((x, y), axis=1)
+        inputs = x if y is None else np.concatenate((x, y), axis=1)
         # add empty channel dimension
         inputs = np.expand_dims(inputs, axis=-1)
-
-        feed_dict = {self.x: inputs}
-        feed_dict.update({self.tf_lr: self.learning_rate})
 
         mask_true = np.zeros((self.batch_size,
             1, #self.output_size -1,
             self.window_size,
             self.window_size,
             1)) # channel
-        feed_dict.update({self.mask_true: mask_true})
-        loss, _ = self.sess.run((self.loss_train, self.train_op), feed_dict)
-        return loss
 
-    def test(self, inputs, mask_true):
-        feed_dict = {self.x: inputs}
-        feed_dict.update({self.mask_true: mask_true})
-        gen_ims = self.sess.run(self.pred_seq, feed_dict)
-        return gen_ims
+        return inputs, mask_true
 
     def save(self, path):
         checkpoint_path = path + '.ckpt'
         self.saver.save(self.sess, checkpoint_path)
         print('saved to ' + path)
+
+    def load(self, path):
+        weight_path = path + ".h5"
+        print(f"Loading weights from {weight_path}\n")
+        self.model.load_weights(weight_path)
 
 
 def rnn(images, mask_true, num_layers, num_hidden, filter_size, stride=1, 
@@ -177,7 +202,13 @@ if __name__ == '__main__':
     x = np.random.randn(batch_size, 12, 11, 11)
     y = np.random.randn(batch_size, 1, 11, 11)
 
-    print("Lets train it")
+    print("\nLets train it\n")
     model.train(x, y)
+
+    print("\nLets evaluate it\n")
+    model.evaluate(x, y)
+
+    print("\nLets predict\n")
+    model.forward(x)
 
     print("Sucess")

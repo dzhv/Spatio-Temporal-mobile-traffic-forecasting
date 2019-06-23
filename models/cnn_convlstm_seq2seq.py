@@ -73,7 +73,8 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 	def form_targets(self, y):
 		return y[:, :, None]
 
-model = CnnConvLSTMSeq2Seq(window_size=11)
-output = model.forward(np.random.randn(2, 12, 11, 11))
-print("output shape:")
-print(output.shape)
+if __name__ == '__main__':
+	model = CnnConvLSTMSeq2Seq(window_size=11)
+	output = model.forward(np.random.randn(2, 12, 11, 11))
+	print("output shape:")
+	print(output.shape)

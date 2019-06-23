@@ -8,6 +8,12 @@ def str2bool(v):
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
+def str2int_list(v):
+    try:
+        return [int(i) for i in v.split(',')]
+    except:
+        raise argparse.ArgumentTypeError(f"Failed to parse: {v} into an integer list.")
+
 def get_args():
     """
     Returns a named tuple with arguments extracted from the command line.
@@ -33,6 +39,12 @@ def get_args():
                             cnn_convlstm_seq2seq, cnn_convlstm_attention, predrnn]')
     parser.add_argument('--hidden_size', nargs="?", type=int, default=100, help='Hidden size')
     parser.add_argument('--num_layers', nargs="?", type=int, default=2, help='Number of layers')
+    parser.add_argument('--encoder_filters', nargs="?", type=str2int_list, default="50", 
+        help='Number of filters in each encoder layer. Format:  int,int,int ')
+    parser.add_argument('--decoder_filters', nargs="?", type=str2int_list, default="50",
+        help='Number of filters in each decoder layer. Format:  int,int,int ')
+    parser.add_argument('--cnn_filters', nargs="?", type=str2int_list, default="25,50,50",
+        help='Number of filters in each cnn layer. Format:  int,int,int ')
 
     # experiment details params
     parser.add_argument('--experiment_name', nargs="?", type=str, default="exp_1",

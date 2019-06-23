@@ -86,6 +86,7 @@ def iterate_prediction_batches(sample_generator, model, num_batches, batch_size)
 	for x, y in sample_generator:
 		if batch is None or batch[0].shape[0] < batch_size:
 			predictions = model.forward(x)
+			print(f"PREDICTIONS: {predictions}")
 			if batch is None:
 				batch = (predictions, y) 
 			else:

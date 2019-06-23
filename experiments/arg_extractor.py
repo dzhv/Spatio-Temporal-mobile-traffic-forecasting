@@ -83,8 +83,11 @@ def get_args():
                         help='Mean of the initial training data')
     parser.add_argument('--train_std', nargs="?", type=float, default=132.47248595705986,
                         help='Standard deviation of the initial training data')
-    parser.add_argument('--multi_step_prediction', nargs="?", type=str2bool, default=True,
-                        help='A flag indicating whether evaluation should be done for multi steps or single step')
+    parser.add_argument('--evaluation_steps', nargs="?", type=str2int_list, default="10,12",
+                        help='list of number of steps to evaluate on')
+    parser.add_argument('--prediction_batch_size', nargs="?", type=int, default="10000",
+                        help='how many predictions to gather before computing the nrmse loss. \
+                        10000 for single point predictions, 1 for full grid predictions')
 
     # unused
     parser.add_argument('--use_gpu', nargs="?", type=str2bool, default=False,

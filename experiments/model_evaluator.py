@@ -11,22 +11,22 @@ import model_factory
 from data_providers import data_provider_factory
 
 import numpy as np
+from collections import defaultdict
 
 args = get_args()
 rng = np.random.RandomState(args.seed)
 
 def evaluate(model, data):
-	print("evaluating the model")	
-
-	reporter = report_multistep_error if args.multi_step_prediction else report_singlestep_error
+	print("evaluating the model")
 
 	write_to_file("Errors for all testing data:")
-	reporter(data, model)
+	report_multistep_error(data, model, data.num_batches, args.evaluation_steps, args.prediction_batch_size)
 	write_to_file("\n")
 	print("")
 
 	write_to_file("Trying 10 random samples:")
-	reporter(data.get_random_samples(10), model)
+	report_multistep_error(data.get_random_samples(10), model, "?", 
+		args.evaluation_steps, args.prediction_batch_size)
 
 def prediction_analysis(model, data):
 	indexes = [0, 25, 50, 75]	
@@ -60,62 +60,45 @@ def get_essentials():
 
 	return model, test_data
 
-def report_singlestep_error(sample_generator, model):
-	losses = []
-	for x, y in sample_generator:
-		predictions = model.forward(x)
-		loss = calculate_loss(predictions, y)
-		losses.append(loss)
+def report_multistep_error(sample_generator, model, num_batches, steps, prediction_batch_size):
+	steps = list(set(steps))
+	losses = defaultdict(list)
 
-		print(loss)
-		print(f"mean: {np.mean(losses)}")
+	step_check_performed = False
+	for predictions, y in iterate_prediction_batches(sample_generator, model, num_batches, prediction_batch_size):
+		if not step_check_performed:
+			valid_steps = [st for st in steps if st <= predictions.shape[1]]
+			for num_steps in [st for st in steps if not st in valid_steps]:
+				print(f"predictions are shorter than {num_steps} steps, skipping")
+			step_check_performed = True
 
-	print(f"std: {np.std(losses)}")
+		for num_steps in valid_steps:
+			loss = calculate_loss(predictions[:, :num_steps], y[:, :num_steps])
+			losses[num_steps].append(loss)
 
-	write_to_file(f"mean nrmse loss: {np.mean(losses)}")
-	write_to_file(f"std: {np.std(losses)}")
+	for num_steps in losses:
+		write_to_file(f"mean {num_steps} step nrmse loss: {np.mean(losses[num_steps])}")
+		write_to_file(f"std: {np.std(losses[num_steps])}")
 
-def report_multistep_error(sample_generator, model):
-	all_step_losses = []
-	ten_step_losses = []
-
-	for predictions, y in iterate_prediction_batches(sample_generator, model):
-
-		all_step_loss = calculate_loss(predictions, y)
-		all_step_losses.append(all_step_loss)
-
-		ten_step_loss = calculate_loss(predictions[:, :10], y[:, :10])
-		ten_step_losses.append(ten_step_loss)
-
-		print(f"all step loss: {all_step_loss}")
-		print(f"mean: {np.mean(all_step_losses)}")
-		print(f"10 step loss: {ten_step_loss}")
-		print(f"mean: {np.mean(ten_step_losses)}")		
-
-		print(f"all step loss std: {np.std(all_step_losses)}")
-		print(f"10 step loss std: {np.std(ten_step_losses)}")
-
-	write_to_file(f"mean all step nrmse loss: {np.mean(all_step_losses)}")
-	write_to_file(f"std: {np.std(all_step_losses)}")
-	write_to_file(f"mean 10 step nrmse loss: {np.mean(ten_step_losses)}")
-	write_to_file(f"std: {np.std(ten_step_losses)}")
-
-def iterate_prediction_batches(sample_generator, model):
+def iterate_prediction_batches(sample_generator, model, num_batches, batch_size):
 	batch = None
-	batch_size = 10000
+	batch_count = 0
 	for x, y in sample_generator:
-		while batch is None or batch[0].shape[0] < batch_size:
+		if batch is None or batch[0].shape[0] < batch_size:
 			predictions = model.forward(x)
 			if batch is None:
 				batch = (predictions, y) 
 			else:
 				batch = (np.concatenate((predictions, batch[0]), axis=0), np.concatenate((y, batch[1]), axis=0))
 
-			# print(f"{batch[0].shape[0]}/{batch_size} batch collected")
+			batch_count += 1
+			continue
 		
-		assert len(batch[0]) == len(batch[1]) == batch_size
+		assert len(batch[0]) == len(batch[1]) == batch_size, \
+			"prediction batch size and batch sizes given by data provider do not match"
 
 		yield batch
+		print(f"{batch_count}/{num_batches} processed")
 		batch = None
 
 def calculate_loss(predictions, targets):

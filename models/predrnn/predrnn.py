@@ -91,7 +91,9 @@ class PredRNN(Model):
         feed_dict = {self.x: inputs}
         feed_dict.update({self.mask_true: mask_true})
         gen_ims = self.sess.run(self.pred_seq, feed_dict)
-        return gen_ims
+
+        assert len(gen_ims) == 1, f"this was supposed to be of length 1, was: {len(gen_ims)}"
+        return gen_ims[0]
 
     def evaluate(self, x, y):
         inputs, mask_true = self.prepare_inputs(x, y)

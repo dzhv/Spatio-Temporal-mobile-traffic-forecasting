@@ -1,7 +1,7 @@
 #!/bin/sh
 #SBATCH -N 1	  # nodes requested
 #SBATCH -n 1	  # tasks requested
-#SBATCH --partition=Short
+#SBATCH --partition=Standard
 #SBATCH --gres=gpu:1
 #SBATCH --mem=12000  # memory in Mb
 #SBATCH --time=0-04:00:00
@@ -26,7 +26,6 @@ export PYTHON_PATH=$PATH
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
 
 python experiments/model_evaluator.py --data_path /home/${STUDENT_ID}/msc_project/data \
-		  --model_file /results/keras_seq2seq_2lay_00003lr_100hs/saved_models/train_model_latest \
-		  --model_name keras_seq2seq --batch_size 1000 --num_layers 2 \
-		  --hiden_size 100 \
+		  --model_file /results/cnn_convlstm_seq2seq_win11_3/saved_models/train_model_59 \
+		  --model_name cnn_convlstm_seq2seq --batch_size 1000 \
 		  --shuffle_order false --prediction_batch_size 10000  --evaluation_steps "10,12"

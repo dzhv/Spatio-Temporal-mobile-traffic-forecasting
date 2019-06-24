@@ -26,6 +26,6 @@ export PYTHON_PATH=$PATH
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
 
 python experiments/model_evaluator.py --data_path /home/${STUDENT_ID}/msc_project/data \
-		  --model_file /results/cnn_convlstm_seq2seq_win11_3/saved_models/train_model_59 \
+		  --model_file /home/${STUDENT_ID}/msc_project/results/cnn_convlstm_seq2seq_win11_3/saved_models/train_model_59 \
 		  --model_name cnn_convlstm_seq2seq --batch_size 1000 \
 		  --shuffle_order false --prediction_batch_size 10000  --evaluation_steps "10,12"

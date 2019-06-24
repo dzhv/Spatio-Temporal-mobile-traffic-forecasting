@@ -65,6 +65,7 @@ def report_multistep_error(sample_generator, model, num_batches, steps, predicti
 	losses = defaultdict(list)
 
 	step_check_performed = False
+	batches_processed = 0
 	for predictions, y in iterate_prediction_batches(sample_generator, model, num_batches, prediction_batch_size):
 		if not step_check_performed:
 			valid_steps = [st for st in steps if st <= predictions.shape[1]]
@@ -72,9 +73,15 @@ def report_multistep_error(sample_generator, model, num_batches, steps, predicti
 				print(f"predictions are shorter than {num_steps} steps, skipping")
 			step_check_performed = True
 
+			print(f"predictions.shape[0]: {predictions.shape[0]}")
+
 		for num_steps in valid_steps:
 			loss = calculate_loss(predictions[:, :num_steps], y[:, :num_steps])
 			losses[num_steps].append(loss)
+
+		batches_processed += 1
+
+	print(f"Processed {batches_processed} number of batches")
 
 	for num_steps in losses:
 		write_to_file(f"mean {num_steps} step nrmse loss: {np.mean(losses[num_steps])}")
@@ -84,22 +91,23 @@ def iterate_prediction_batches(sample_generator, model, num_batches, batch_size)
 	batch = None
 	batch_count = 0
 	for x, y in sample_generator:
-		if batch is None or batch[0].shape[0] < batch_size:
-			predictions = model.forward(x)
-			if batch is None:
-				batch = (predictions, y) 
-			else:
-				batch = (np.concatenate((predictions, batch[0]), axis=0), np.concatenate((y, batch[1]), axis=0))
+		predictions = model.forward(x)
 
-			batch_count += 1
+		if batch is None:
+			batch = (predictions, y) 
+		else:
+			batch = (np.concatenate((predictions, batch[0]), axis=0), np.concatenate((y, batch[1]), axis=0))
+
+		print(f"{batch_count}/{num_batches} processed")
+		batch_count += 1
+
+		if batch[0].shape[0] == batch_size:
+			yield batch
+			batch = None
 			continue
 		
-		assert len(batch[0]) == len(batch[1]) == batch_size, \
+		assert len(batch[0]) == len(batch[1]) < batch_size, \
 			"prediction batch size and batch sizes given by data provider do not match"
-
-		yield batch
-		print(f"{batch_count}/{num_batches} processed")
-		batch = None
 
 def calculate_loss(predictions, targets):
 	predictions = predictions * args.train_std + args.train_mean 

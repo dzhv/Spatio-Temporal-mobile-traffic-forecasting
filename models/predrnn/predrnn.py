@@ -65,7 +65,7 @@ class PredRNN(Model):
 
         # session
         variables = tf.global_variables()
-        self.saver = tf.train.Saver(variables)
+        self.saver = tf.train.Saver(variables, max_to_keep=1000)
         init = tf.global_variables_initializer()
         configProt = tf.ConfigProto()
         configProt.gpu_options.allow_growth = True

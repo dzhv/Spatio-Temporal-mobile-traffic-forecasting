@@ -34,7 +34,6 @@ def get_model(args):
 			learning_rate_decay=args.learning_rate_decay, create_tensorboard=args.create_tensorboard)
 	elif args.model_name == "predrnn":
 		return PredRNN(batch_size=args.batch_size, segment_size=args.segment_size, output_size=args.output_size,
-			window_size=args.grid_size, hidden_size=args.hidden_size, num_layers=args.num_layers,
-			learning_rate=args.learning_rate)
+			window_size=args.grid_size, hidden_sizes=args.hidden_sizes, learning_rate=args.learning_rate)
 	else:
 		raise ValueError(f"Unknown model: {args.model_name}")

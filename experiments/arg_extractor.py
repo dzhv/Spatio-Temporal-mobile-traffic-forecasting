@@ -45,6 +45,8 @@ def get_args():
         help='Number of filters in each decoder layer. Format:  int,int,int ')
     parser.add_argument('--cnn_filters', nargs="?", type=str2int_list, default="25,50,50",
         help='Number of filters in each cnn layer. Format:  int,int,int ')
+    parser.add_argument('--hidden_sizes', nargs="?", type=str2int_list, default="25,25",
+        help='Number of filters in predrnn layers')
 
     # experiment details params
     parser.add_argument('--experiment_name', nargs="?", type=str, default="exp_1",

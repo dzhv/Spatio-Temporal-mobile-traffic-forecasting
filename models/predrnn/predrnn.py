@@ -15,8 +15,8 @@ from causal_lstm_cell import CausalLSTMCell as cslstm
 from models.model import Model
 
 class PredRNN(Model):
-    def __init__(self, batch_size=10, segment_size=12, output_size=1, window_size=11, hidden_size=50, 
-        num_layers=2, learning_rate=0.001):
+    def __init__(self, batch_size=10, segment_size=12, output_size=1, window_size=11, hidden_sizes=[50, 50], 
+        learning_rate=0.001):
 
         self.learning_rate = learning_rate
         self.batch_size = batch_size
@@ -39,17 +39,15 @@ class PredRNN(Model):
         loss_train = []
         self.pred_seq = []
         self.tf_lr = tf.placeholder(tf.float32, shape=[])
-        # num_hidden = [int(x) for x in args.hidden_size.split(',')]
-        num_hidden = [hidden_size for _ in range(num_layers)]
-        # print(num_hidden)
-        # num_layers = len(num_hidden)
+        
+        num_layers = len(hidden_sizes)
         num_layers = num_layers
         with tf.variable_scope(tf.get_variable_scope()):
             # define a model
             output_list = rnn(
                 self.x,
                 self.mask_true,
-                num_layers, num_hidden,
+                num_layers, hidden_sizes,
                 5, 1,   # filter size, stride
                 segment_size + output_size, segment_size)
             gen_ims = output_list[0]

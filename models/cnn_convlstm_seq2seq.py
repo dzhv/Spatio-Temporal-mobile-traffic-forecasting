@@ -39,7 +39,7 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 
 		# here (2, 2) is the latent dimension - not kernel size
 		self.decoder_input_shape = (2, 2, 50)
-		decoder_inputs = Input(shape=(segment_size,) + self.decoder_input_shape)
+		decoder_inputs = Input(shape=(output_size,) + self.decoder_input_shape)
 		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', 
 			padding='same')([decoder_inputs, state_h, state_c])
 		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)

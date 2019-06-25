@@ -50,10 +50,9 @@ class PredRNN(Model):
                 num_layers, hidden_sizes,
                 5, 1,   # filter size, stride
                 segment_size + output_size, segment_size)
-            gen_ims = output_list[0]            
+            pred_ims = output_list[0]            
 
             loss = output_list[1]
-            pred_ims = gen_ims[:,segment_size-1:]
 
             self.loss_train = loss / batch_size
             # gradients
@@ -164,8 +163,7 @@ def rnn(images, mask_true, num_layers, num_hidden, filter_size, stride=1,
     z_t = None
 
     for t in range(seq_length-1):
-        reuse = bool(gen_images)
-        with tf.variable_scope('predrnn_pp', reuse=reuse):
+        with tf.variable_scope('predrnn_pp', reuse= not t == 0):
             if t < input_length:
                 inputs = images[:,t]
             else:
@@ -184,12 +182,14 @@ def rnn(images, mask_true, num_layers, num_hidden, filter_size, stride=1,
                                      strides=1,
                                      padding='same',
                                      name="back_to_pixel")
-            gen_images.append(x_gen)
+
+            if t >= input_length - 1:   # if we are already predicting
+                gen_images.append(x_gen)
 
     gen_images = tf.stack(gen_images)
     # [batch_size, seq_length, height, width, channels]
     gen_images = tf.transpose(gen_images, [1,0,2,3,4])
-    loss = tf.reduce_mean(tf.squared_difference(gen_images, images[:,1:]))
+    loss = tf.reduce_mean(tf.squared_difference(gen_images, images[:,input_length:]))
     # loss = tf.losses.mean_squared_error(labels=, predictions=gen_images)
     #loss += tf.reduce_sum(tf.abs(gen_images - images[:,1:]))
     return [gen_images, loss]

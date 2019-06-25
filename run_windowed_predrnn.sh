@@ -25,9 +25,9 @@ export PYTHON_PATH=$PATH
 # Activate the relevant virtual environment:
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
 python experiments/experiment_runner.py --data_path /home/${STUDENT_ID}/msc_project/data \
-	--experiment_name "windowed_predrnn_mini" --model_name "windowed_predrnn" \
-	--batch_size 2500 --use_mini_data true \
+	--experiment_name "windowed_predrnn" --model_name "windowed_predrnn" \
+	--batch_size 50 \
 	--learning_rate 0.0025 --learning_rate_decay 0.000001 \
 	--segment_size 12 --output_size 12 \
-	--hidden_sizes "128,64,64,64" --mlp_hidden_sizes "100,1"
+	--hidden_sizes "64,32,32,32" --mlp_hidden_sizes "100,1"
 

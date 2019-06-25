@@ -4,7 +4,7 @@
 #SBATCH --partition=General_Usage
 #SBATCH --gres=gpu:1
 #SBATCH --mem=12000  # memory in Mb
-#SBATCH --time=3-00:00:00
+#SBATCH --time=3-08:00:00
 
 export CUDA_HOME=/opt/cuda-9.0.176.1/
 
@@ -25,7 +25,9 @@ export PYTHON_PATH=$PATH
 # Activate the relevant virtual environment:
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
 python experiments/experiment_runner.py --data_path /home/${STUDENT_ID}/msc_project/data \
-	  --experiment_name "cnn_convlstm_seq2seq_win11_pred30" --model_name "cnn_convlstm_seq2seq" \
-	  --gpus 1 --batch_size 2500 \
-	  --learning_rate 0.0011 --learning_rate_decay 0.000005 --window_size 11 \
-	  --num_epochs 150 --fraction_of_data 0.25 --continue_from_epoch -2
+	--experiment_name "windowed_predrnn_mini" --model_name "windowed_predrnn" \
+	--batch_size 2500 --use_mini_data true \
+	--learning_rate 0.0025 --learning_rate_decay 0.000001 \
+	--segment_size 12 --output_size 12 \
+	--hidden_sizes "128,64,64,64" --mlp_hidden_sizes "100,1"
+

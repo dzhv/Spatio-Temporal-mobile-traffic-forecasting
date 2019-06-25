@@ -9,7 +9,7 @@ def get_data_providers(args, rng, test_set=False):
 
 	if args.model_name in ['lstm', 'windowed_cnn_convlstm']:
 		return get_windowed_data_providers(args, rng, data_reader, test_set)
-	elif args.model_name in ['keras_seq2seq', 'cnn_convlstm_seq2seq', 'cnn_convlstm_attention']:
+	elif args.model_name in ['keras_seq2seq', 'cnn_convlstm_seq2seq', 'cnn_convlstm_attention', 'windowed_predrnn']:
 		return get_seq2seq_data_providers(args, rng, data_reader, test_set)
 	elif args.model_name in ['cnn_convlstm', 'predrnn']:
 		return get_full_grid_data_providers(args, rng, data_reader, test_set)

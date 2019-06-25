@@ -6,6 +6,7 @@ from models.windowed_cnn_convlstm import WindowedCnnConvLSTM
 from models.cnn_convlstm_seq2seq import CnnConvLSTMSeq2Seq
 from models.cnn_convlstm_attention import CnnConvLSTMAttention
 from models.predrnn.predrnn import PredRNN
+from models.predrnn.predrnn_windowed import PredRnnWindowed
 
 def get_model(args):
 	if args.model_name == "lstm":
@@ -35,5 +36,10 @@ def get_model(args):
 	elif args.model_name == "predrnn":
 		return PredRNN(batch_size=args.batch_size, segment_size=args.segment_size, output_size=args.output_size,
 			window_size=args.grid_size, hidden_sizes=args.hidden_sizes, learning_rate=args.learning_rate)
+	elif args.model_name == "windowed_predrnn":
+		return PredRnnWindowed(batch_size=args.batch_size, segment_size=args.segment_size, 
+			output_size=args.output_size, window_size=args.window_size, hidden_sizes=args.hidden_sizes, 
+			mlp_hidden_sizes=args.mlp_hidden_sizes, learning_rate=args.learning_rate, 
+			learning_rate_decay=args.learning_rate_decay)
 	else:
 		raise ValueError(f"Unknown model: {args.model_name}")

@@ -15,7 +15,7 @@ from causal_lstm_cell import CausalLSTMCell as cslstm
 from models.model import Model
 
 class PredRNN(Model):
-    def __init__(self, batch_size=10, segment_size=12, output_size=1, window_size=11, hidden_sizes=[50, 50], 
+    def __init__(self, batch_size=1, segment_size=12, output_size=1, window_size=100, hidden_sizes=[50, 50], 
         learning_rate=0.001):
 
         self.learning_rate = learning_rate
@@ -50,9 +50,11 @@ class PredRNN(Model):
                 num_layers, hidden_sizes,
                 5, 1,   # filter size, stride
                 segment_size + output_size, segment_size)
-            gen_ims = output_list[0]
+            gen_ims = output_list[0]            
+
             loss = output_list[1]
             pred_ims = gen_ims[:,segment_size-1:]
+
             self.loss_train = loss / batch_size
             # gradients
             all_params = tf.trainable_variables()
@@ -194,10 +196,12 @@ def rnn(images, mask_true, num_layers, num_hidden, filter_size, stride=1,
 
 if __name__ == '__main__':
     batch_size = 2
+    window_size = 6
+    segment_size = 12    
     print("Lets build it")
-    model = PredRNN(batch_size=batch_size, output_size=12)
-    x = np.random.randn(batch_size, 12, 11, 11)
-    y = np.random.randn(batch_size, 12, 11, 11)
+    model = PredRNN(batch_size=batch_size, output_size=12, window_size=window_size)
+    x = np.random.randn(batch_size, segment_size, window_size, window_size)
+    y = np.random.randn(batch_size, segment_size, window_size, window_size)
 
     def try_outputs():
         print("\nLets train it\n")

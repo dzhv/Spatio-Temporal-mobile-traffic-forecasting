@@ -266,12 +266,6 @@ class ConvLSTMAttentionCell(Layer):
         return weighted_sum
 
     def call(self, inputs, states, training=None, constants=None):
-        print("\nConvLSTM attention cell")
-        print(f"inputs: {inputs}")
-        print(f"states: {states}")
-        print(f"constants: {constants}")
-        print("")
-
         h_tm1 = states[0]  # previous memory state
         c_tm1 = states[1]  # previous carry state
 

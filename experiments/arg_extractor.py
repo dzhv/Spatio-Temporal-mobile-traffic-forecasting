@@ -47,6 +47,8 @@ def get_args():
         help='Number of filters in each cnn layer. Format:  int,int,int ')
     parser.add_argument('--hidden_sizes', nargs="?", type=str2int_list, default="25,25",
         help='Number of filters in predrnn layers')
+    parser.add_argument('--mlp_hidden_sizes', nargs="?", type=str2int_list, default="50,1",
+        help='Hidden sizes in the mlp output layers')
 
     # experiment details params
     parser.add_argument('--experiment_name', nargs="?", type=str, default="exp_1",

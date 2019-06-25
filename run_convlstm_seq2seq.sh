@@ -26,9 +26,9 @@ export PYTHON_PATH=$PATH
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
 python experiments/experiment_runner.py --data_path /home/${STUDENT_ID}/msc_project/data \
 	  --experiment_name "convlstm_seq2seq" --model_name "convlstm_seq2seq" \
-	  --gpus 1 --batch_size 2500 \
+	  --gpus 1 --batch_size 250 \
 	  --learning_rate 0.0025 --learning_rate_decay 0.000005 \
 	  --num_epochs 150 \
-	  --output_size 12 --encoder_filters "32,64,128" --decoder_filters "128, 64, 32, 5" \
-	  --fraction_of_data 0.25
+	  --output_size 12 --encoder_filters "32,64,64" --decoder_filters "64, 64, 32, 5" \
+	  --fraction_of_data 0.2
 	  

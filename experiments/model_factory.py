@@ -7,6 +7,7 @@ from models.cnn_convlstm_seq2seq import CnnConvLSTMSeq2Seq
 from models.cnn_convlstm_attention import CnnConvLSTMAttention
 from models.predrnn.predrnn import PredRNN
 from models.predrnn.predrnn_windowed import PredRnnWindowed
+from models.convlstm_seq2seq import ConvLSTMSeq2Seq
 
 def get_model(args):
 	if args.model_name == "lstm":
@@ -32,6 +33,11 @@ def get_model(args):
 		return CnnConvLSTMAttention(gpus=args.gpus, batch_size=args.batch_size, segment_size=args.segment_size,
 			window_size=args.window_size, learning_rate=args.learning_rate, 
 			cnn_filters=args.cnn_filters, encoder_filters=args.encoder_filters, decoder_filters=args.decoder_filters,
+			learning_rate_decay=args.learning_rate_decay, create_tensorboard=args.create_tensorboard)
+	elif args.model_name == "convlstm_seq2seq":
+		return ConvLSTMSeq2Seq(gpus=args.gpus, batch_size=args.batch_size, segment_size=args.segment_size,
+			window_size=args.window_size, learning_rate=args.learning_rate, 
+			encoder_filters=args.encoder_filters, decoder_filters=args.decoder_filters,
 			learning_rate_decay=args.learning_rate_decay, create_tensorboard=args.create_tensorboard)
 	elif args.model_name == "predrnn":
 		return PredRNN(batch_size=args.batch_size, segment_size=args.segment_size, output_size=args.output_size,

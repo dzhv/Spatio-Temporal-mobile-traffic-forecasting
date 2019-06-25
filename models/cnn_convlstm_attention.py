@@ -48,7 +48,7 @@ class CnnConvLSTMAttention(KerasModel):
 		attention_layer._num_constants = 1
 		# the second encoder_outputs is given as 'constants' to the layer,
 		# so that it can be fully transferred to the cell
-		out = attention_layer([encoder_outputs, encoder_outputs])
+		out = attention_layer([encoder_outputs, state_h, state_c, encoder_outputs])
 
 		for filters in decoder_filters[1:]:
 			out = ConvLSTM2D(filters=filters, kernel_size=3, return_sequences=True, activation='tanh', 

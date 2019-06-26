@@ -28,6 +28,8 @@ def get_model(args):
 	elif args.model_name == "cnn_convlstm_seq2seq":
 		return CnnConvLSTMSeq2Seq(gpus=args.gpus, batch_size=args.batch_size, segment_size=args.segment_size,
 			output_size=args.output_size, window_size=args.window_size, learning_rate=args.learning_rate, 
+			cnn_filters=args.cnn_filters, encoder_filters=args.encoder_filters, decoder_filters=args.decoder_filters,
+			mlp_hidden_sizes=args.mlp_hidden_sizes,
 			learning_rate_decay=args.learning_rate_decay, create_tensorboard=args.create_tensorboard)
 	elif args.model_name == "cnn_convlstm_attention":
 		return CnnConvLSTMAttention(gpus=args.gpus, batch_size=args.batch_size, segment_size=args.segment_size,

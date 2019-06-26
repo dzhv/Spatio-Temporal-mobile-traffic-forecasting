@@ -13,6 +13,7 @@ from models import model_device_adapter
 
 class CnnConvLSTMSeq2Seq(KerasModel):
 	def __init__(self, gpus=1, batch_size=50, segment_size=12, output_size=12, window_size=11,
+		cnn_filters=[2,3,4], encoder_filters=[5,6], decoder_filters=[6,7], mlp_hidden_sizes=[50, 1],
 		learning_rate=0.0001, learning_rate_decay=0, create_tensorboard=False):
 
 		self.segment_size = segment_size
@@ -21,35 +22,50 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 		
 		# Define an input sequence.
 		# 1 refers to a single channel of the input
-		encoder_inputs = Input(shape=(segment_size, window_size, window_size, 1))
+		encoder_inputs = Input(shape=(segment_size, window_size, window_size, 1), name="encoder_input")
+
+		# cnns
 		
-		out = TimeDistributed(Conv2D(25, kernel_size=3, activation='tanh', padding='same'))(encoder_inputs)
-		out = TimeDistributed(AveragePooling2D())(out)
-		out = TimeDistributed(Conv2D(50, kernel_size=3, activation='tanh', padding='same'))(out)
-		out = TimeDistributed(AveragePooling2D())(out)
-		out = TimeDistributed(Conv2D(50, kernel_size=3, activation='tanh', padding='same'))(out)
+		out = TimeDistributed(Conv2D(cnn_filters[0], kernel_size=3, activation='tanh', padding='same'), 
+			name="cnn_1")(encoder_inputs)
+		for i, filters in enumerate(cnn_filters[1:]):
+			out = TimeDistributed(AveragePooling2D(), name=f"avg_pool_{i + 1}")(out)
+			out = TimeDistributed(Conv2D(filters, kernel_size=3, activation='tanh', padding='same'),
+				name=f"cnn_{i+2}")(out)
 
 		# encoder
-		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
-		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
-		encoder_outputs, state_h, state_c = ConvLSTM2D(filters=50, kernel_size=3, activation='tanh', 
-			padding='same', return_state=True)(out)
+		for i, filters in enumerate(encoder_filters[:-1]):
+			out = ConvLSTM2D(filters=filters, kernel_size=3, return_sequences=True, activation='tanh', 
+				padding='same', name=f"encoder_convlstm_{i+1}")(out)
+
+		encoder_outputs, state_h, state_c = ConvLSTM2D(filters=encoder_filters[-1], kernel_size=3, 
+			activation='tanh', padding='same', return_state=True, return_sequences=True,
+			name=f"encoder_convlstm_{len(encoder_filters)}")(out)
 
 		# decoder
 
-		# here (2, 2) is the latent dimension - not kernel size
-		self.decoder_input_shape = (2, 2, 50)
-		decoder_inputs = Input(shape=(output_size,) + self.decoder_input_shape)
-		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', 
-			padding='same')([decoder_inputs, state_h, state_c])
-		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
-		out = ConvLSTM2D(filters=50, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
+		latent_dim = window_size // 2**(len(cnn_filters) - 1)
+		self.decoder_input_shape = (latent_dim, latent_dim, encoder_filters[-1])
+		decoder_inputs = Input(shape=(output_size,) + self.decoder_input_shape, name="decoder_input")
+		
+		out = ConvLSTM2D(filters=decoder_filters[0], kernel_size=3, return_sequences=True, activation='tanh', 
+			padding='same', name="decoder_convlstm_1")([decoder_inputs, state_h, state_c])
 
-		out = TimeDistributed(Flatten())(out)
+		for i, filters in enumerate(decoder_filters[1:]):
+			out = ConvLSTM2D(filters=filters, kernel_size=3, return_sequences=True, activation='tanh', 
+				padding='same', name=f"decoder_convlstm_{i+2}")(out)
 
-		num_output_features = 1
-		  # TODO: this gets a 2400x1 (12x2x2x50) vector, maybe it's worth reducing the dimensions in lstm layers?
-		out = TimeDistributed(Dense(num_output_features, activation='linear'))(out)
+		# predictor mlp
+
+		out = TimeDistributed(Flatten(), name="flatten")(out)
+
+		for i, hidden_size in enumerate(mlp_hidden_sizes[:-1]):
+			out = TimeDistributed(Dense(hidden_size, activation='relu', kernel_regularizer=regularizers.l2(0.002)), 
+				name=f"mlp_{i}")(out)
+
+		out = TimeDistributed(Dense(mlp_hidden_sizes[-1], activation='linear', 
+			kernel_regularizer=regularizers.l2(0.002)), name="mlp_final")(out)
+
 
 		self.model = Model(inputs=[encoder_inputs, decoder_inputs], outputs=out)
 

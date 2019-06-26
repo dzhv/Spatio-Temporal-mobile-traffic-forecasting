@@ -1,5 +1,5 @@
 python experiments/experiment_runner.py \
-	  --experiment_name "convlstm_seq2seq_mini" --model_name "convlstm_seq2seq" \
+	  --experiment_name "convlstm_seq2seq_mini_windowed" --model_name "windowed_convlstm_seq2seq" \
 	  --gpus 1 --batch_size 2500 \
 	  --learning_rate 0.0025 --learning_rate_decay 0.000005 \
 	  --num_epochs 150 \

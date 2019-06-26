@@ -11,7 +11,7 @@ import tensorflow as tf
 from models.keras_model import KerasModel
 from models import model_device_adapter
 
-class ConvLSTMSeq2Seq(KerasModel):
+class WindowedConvLSTMSeq2Seq(KerasModel):
 	def __init__(self, gpus=1, batch_size=50, segment_size=12, output_size=12, window_size=11,
 		encoder_filters=[50], decoder_filters=[50],
 		learning_rate=0.0001, learning_rate_decay=0, create_tensorboard=False):
@@ -63,7 +63,7 @@ class ConvLSTMSeq2Seq(KerasModel):
 
 		print(self.model.summary())
 
-		super(ConvLSTMSeq2Seq, self).__init__(batch_size=batch_size, create_tensorboard=create_tensorboard)
+		super(WindowedConvLSTMSeq2Seq, self).__init__(batch_size=batch_size, create_tensorboard=create_tensorboard)
 
 	def form_model_inputs(self, x):
 		# adding an empty (channel) dimension to the end
@@ -77,7 +77,7 @@ class ConvLSTMSeq2Seq(KerasModel):
 		return y[:, :, None]
 
 if __name__ == '__main__':
-	model = ConvLSTMSeq2Seq(window_size=11)
+	model = WindowedConvLSTMSeq2Seq(window_size=11)
 	output = model.forward(np.random.randn(2, 12, 11, 11))
 	print("output shape:")
 	print(output.shape)

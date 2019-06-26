@@ -7,7 +7,7 @@ from models.cnn_convlstm_seq2seq import CnnConvLSTMSeq2Seq
 from models.cnn_convlstm_attention import CnnConvLSTMAttention
 from models.predrnn.predrnn import PredRNN
 from models.predrnn.predrnn_windowed import PredRnnWindowed
-from models.convlstm_seq2seq import WindowedConvLSTMSeq2Seq
+from models.windowed_convlstm_seq2seq import WindowedConvLSTMSeq2Seq
 
 def get_model(args):
 	if args.model_name == "lstm":

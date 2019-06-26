@@ -13,10 +13,15 @@ from data_providers import data_provider_factory
 import numpy as np
 from collections import defaultdict
 
+import tensorflow as tf
+import keras.backend as K
+
 args = get_args()
 rng = np.random.RandomState(args.seed)
 
-def evaluate(model, data):
+def evaluate():
+	model, data = get_essentials()
+
 	print("evaluating the model")
 
 	write_to_file("Errors for all testing data:")
@@ -28,7 +33,9 @@ def evaluate(model, data):
 	report_multistep_error(data.get_random_samples(10), model, "?", 
 		args.evaluation_steps, args.prediction_batch_size)
 
-def prediction_analysis(model, data):
+def prediction_analysis():
+	model, data = get_essentials()
+
 	indexes = [0, 25, 50, 75]	
 	results = []
 
@@ -51,8 +58,9 @@ def get_essentials():
 	print("loading the model")
 	model = model_factory.get_model(args)
 	# load weights
-	model.load(args.model_file)
-	print("model loaded")
+	if args.model_file != 'none':
+		model.load(args.model_file)
+		print("model loaded")
 
 	print("getting the data providers")
 	test_data = data_provider_factory.get_data_providers(args, rng, test_set=True)
@@ -114,6 +122,27 @@ def calculate_loss(predictions, targets):
 	targets = targets * args.train_std + args.train_mean
 	
 	return nrmse(targets, predictions)
+
+
+def evaluate_inference_flops():
+	# make 1 batch prediction
+	# i.e. 1 full grid prediction
+
+	run_meta = tf.RunMetadata()
+	with tf.Session(graph=tf.Graph()) as sess:
+		K.set_session(sess)
+
+		model, data = get_essentials()
+
+		# data, model, num_batches, prediction_batch_size
+		# next(iterate_prediction_batches(data, model, 
+		# 	args.prediction_batch_size // args.batch_size, args.prediction_batch_size))
+
+		opts = tf.profiler.ProfileOptionBuilder.float_operation()    
+		flops = tf.profiler.profile(sess.graph, run_meta=run_meta, cmd='op', options=opts)
+
+		print(f"flops: {flops}")
+		print(f"flops.total_float_ops: {flops.total_float_ops}")
 	
 
 def write_to_file(message):
@@ -124,7 +153,10 @@ def write_to_file(message):
 		f.write(message + "\n")
 
 
-model, data = get_essentials()
-evaluate(model, data)
+
+
+
+# evaluate()
+evaluate_inference_flops()
 # prediction_analysis(model, data)
 

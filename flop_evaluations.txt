@@ -1,0 +1,46 @@
+keras_seq2seq
+-------------
+python experiments/model_evaluator.py --model_name "keras_seq2seq" --batch_size 10000 --num_layers 2 --hidden_size 100
+
+257812
+
+
+
+cnn_convlstm_seq2seq   (as in win11_3)
+--------------------
+python experiments/model_evaluator.py --model_name "cnn_convlstm_seq2seq" --cnn_filters "25,50,50" --encoder_filters "50,50,50" --decoder_filters "50,50,50" --mlp_hidden_sizes "1" --batch_size 10000
+
+1148992
+
+
+
+cnn_convlstm_seq2seq   (as in win11_3)
+--------------------
+
+python experiments/model_evaluator.py --model_name "cnn_convlstm_attention" --cnn_filters "25,50,50" --encoder_filters "50,50,50" --decoder_filters "50,50,50" --mlp_hidden_sizes "1" --batch_size 1
+
+1383200
+
+
+convlstm_seq2seq   (as in win11_3)
+----------------
+python experiments/model_evaluator.py --model_name "convlstm_seq2seq" --encoder_filters "50,50,50" --decoder_filters "50,50,50" --mlp_hidden_sizes "1" --batch_size 1
+
+3928840
+
+
+predrnn  (50,50,50)
+--------------------
+python experiments/model_evaluator.py --model_name "predrnn" --hidden_sizes "50,50,50" --batch_size 1
+
+9140089872703
+
+
+
+windowed_predrnn (50,50,50   50,1)
+-------------------
+python experiments/model_evaluator.py --model_name "predrnn" --hidden_sizes "50,50,50" --batch_size 1 \
+	--mlp_hidden_sizes "50,1"
+
+
+110777323444

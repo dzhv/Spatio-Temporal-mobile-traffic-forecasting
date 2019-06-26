@@ -58,7 +58,6 @@ class KerasModel(Model):
 
 		fit_elapsed_time = time.time() - fit_start_time
 		fit_elapsed_time = "{:.4f}".format(fit_elapsed_time)
-		print(f"\nmodel.fit took: {fit_elapsed_time} seconds")
 
 		# np.save(f"model_inputs_{self.temp_it}.npy", {'x': inputs, 'y': targets})
 		# self.temp_it += 1

@@ -11,6 +11,8 @@ import tensorflow as tf
 from models.keras_model import KerasModel
 from models import model_device_adapter
 
+import keras.backend as K
+
 class ConvLSTMSeq2Seq(KerasModel):
 	def __init__(self, gpus=1, batch_size=50, segment_size=12, output_size=12, grid_size=100,
 		encoder_filters=[50], decoder_filters=[50,1],
@@ -28,25 +30,26 @@ class ConvLSTMSeq2Seq(KerasModel):
 
 		# encoder
 
-		for filters in encoder_filters[:-1]:
+		for i, filters in enumerate(encoder_filters[:-1]):
 			out = ConvLSTM2D(filters=filters, kernel_size=3, return_sequences=True, activation='tanh', 
-				padding='same')(out)
+				padding='same', name=f"encoder_{i+1}")(out)
 
 		encoder_outputs, state_h, state_c = ConvLSTM2D(filters=encoder_filters[-1], kernel_size=3, 
-			activation='tanh', padding='same', return_state=True, return_sequences=True)(out)
+			activation='tanh', padding='same', return_state=True, return_sequences=True, 
+			name=f"encoder_{len(encoder_filters)}")(out)
 
 		# decoder
 		
 		self.decoder_input_shape = (grid_size, grid_size, encoder_filters[-1])
-		decoder_inputs = Input(shape=(output_size,) + self.decoder_input_shape)
+		decoder_inputs = Input(shape=(output_size,) + self.decoder_input_shape, name="decoder_input")
 
 		# first decoder layer gets the encoder states
 		out = ConvLSTM2D(filters=decoder_filters[0], kernel_size=3, return_sequences=True, activation='tanh', 
-			padding='same')([decoder_inputs, state_h, state_c])
+			padding='same', name="decoder_1")([decoder_inputs, state_h, state_c])
 
-		for filters in decoder_filters[1:]:
+		for i, filters in enumerate(decoder_filters[1:]):
 			out = ConvLSTM2D(filters=filters, kernel_size=3, return_sequences=True, activation='tanh', 
-				padding='same')(out)
+				padding='same', name=f"decoder_{i+2}")(out)
 
 		self.model = Model(inputs=[encoder_inputs, decoder_inputs], outputs=out)
 
@@ -68,10 +71,18 @@ class ConvLSTMSeq2Seq(KerasModel):
 		return [encoder_input, decoder_input]
 
 	def form_targets(self, y):
-		return y[:, :, None]
+		# adding an empty (channel) dimension to the end
+		return np.expand_dims(y, axis=-1)
 
 if __name__ == '__main__':
-	model = ConvLSTMSeq2Seq(grid_size=11)
-	output = model.forward(np.random.randn(2, 12, 11, 11))
+	model = ConvLSTMSeq2Seq(grid_size=10)
+	output = model.forward(np.random.randn(2, 12, 10, 10))
 	print("output shape:")
 	print(output.shape)
+
+	model.train(np.random.randn(2, 12, 10, 10), np.random.randn(2, 12, 10, 10))
+	print("train success")
+
+
+
+

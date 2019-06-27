@@ -93,4 +93,16 @@ if __name__ == '__main__':
 	model = CnnConvLSTMSeq2Seq(window_size=11)
 	output = model.forward(np.random.randn(2, 12, 11, 11))
 	print("output shape:")
-	print(output.shape)
+	print(output.shape)	
+
+	model.train(np.random.randn(2, 12, 11, 11), np.random.randn(2, 12))
+	print("train success")
+
+	# model.save('temp')
+
+	# model = CnnConvLSTMSeq2Seq(window_size=11, output_size=30)
+	# model.load('temp')
+
+	# out = model.forward(np.random.randn(2, 12, 11, 11))
+	# print(f"out shape: {out.shape}")
+	

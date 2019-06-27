@@ -51,6 +51,10 @@ class ConvLSTMSeq2Seq(KerasModel):
 			out = ConvLSTM2D(filters=filters, kernel_size=3, return_sequences=True, activation='tanh', 
 				padding='same', name=f"decoder_{i+2}")(out)
 
+		# cnn forming the final outputs, so that predictions can be outside the range of tanh activation
+		out = TimeDistributed(Conv2D(1, kernel_size=1, activation='linear', padding='same'), 
+			name=f"cnn_final")(out)
+
 		self.model = Model(inputs=[encoder_inputs, decoder_inputs], outputs=out)
 
 		self.model = model_device_adapter.get_device_specific_model(self.model, gpus)

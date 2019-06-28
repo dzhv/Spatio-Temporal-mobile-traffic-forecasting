@@ -25,8 +25,8 @@ export PYTHON_PATH=$PATH
 # Activate the relevant virtual environment:
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
 python experiments/experiment_runner.py --data_path /home/${STUDENT_ID}/msc_project/data \
-	  --experiment_name "cnn_convlstm_attention_state" --model_name "cnn_convlstm_attention" \
+	  --experiment_name "cnn_convlstm_attention_state_3" --model_name "cnn_convlstm_attention" \
 	  --gpus 1 --batch_size 2500 \
-	  --cnn_filters "32,64,64" --encoder_filters "64,64,64" --decoder_filters "64,64,64" \
+	  --cnn_filters "25,50,50" --encoder_filters "50,25,10" --decoder_filters "10,25,25" \
 	  --learning_rate 0.0025 --learning_rate_decay 0.00002 --window_size 11 \
 	  --num_epochs 150 --fraction_of_data 0.25

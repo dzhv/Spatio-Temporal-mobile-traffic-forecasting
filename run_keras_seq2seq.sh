@@ -24,8 +24,8 @@ export PYTHON_PATH=$PATH
 
 # Activate the relevant virtual environment:
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
-python experiments/keras_seq2seq_experiment.py --data_path /home/${STUDENT_ID}/msc_project/data \
-									  --experiment_name "keras_seq2seq_pred30" \
-									  --gpus 1 --batch_size 1000 \
-									  --num_layers 2 --learning_rate 0.0005 --hidden_size 100 \
-									  --num_epochs 150 --fraction_of_data 0.25 --output_size 30
+python experiments/experiment_runner.py --data_path /home/${STUDENT_ID}/msc_project/data \
+	  --model_name keras_seq2seq --experiment_name "keras_seq2seq_pred30" \
+	  --gpus 1 --batch_size 1000 \
+	  --num_layers 2 --learning_rate 0.0005 --hidden_size 100 \
+	  --num_epochs 150 --fraction_of_data 0.25 --output_size 30

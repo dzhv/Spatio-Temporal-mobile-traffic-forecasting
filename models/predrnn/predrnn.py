@@ -16,7 +16,7 @@ from models.model import Model
 
 class PredRNN(Model):
     def __init__(self, batch_size=1, segment_size=12, output_size=1, window_size=100, hidden_sizes=[50, 50], 
-        learning_rate=0.001):
+        learning_rate=0.001, dropout=0):
 
         self.learning_rate = learning_rate
         self.batch_size = batch_size
@@ -31,6 +31,8 @@ class PredRNN(Model):
                                  window_size,
                                  window_size,
                                  1])
+
+        self.training = tf.placeholder(tf.bool, shape=())
 
         self.mask_shape = [batch_size, max(1, output_size - 1), window_size, window_size, 1]
         self.mask_true = tf.placeholder(tf.float32, self.mask_shape)
@@ -49,7 +51,8 @@ class PredRNN(Model):
                 self.mask_true,
                 num_layers, hidden_sizes,
                 5, 1,   # filter size, stride
-                segment_size + output_size, segment_size)
+                segment_size + output_size, segment_size,
+                dropout=dropout, training=self.training)
             pred_ims = output_list[0]            
 
             loss = output_list[1]
@@ -71,14 +74,13 @@ class PredRNN(Model):
         configProt.allow_soft_placement = True
         self.sess = tf.Session(config = configProt)
         self.sess.run(init)
-        # if FLAGS.pretrained_model:
-        #     self.saver.restore(self.sess, FLAGS.pretrained_model)
 
     def train(self, x, y):
         inputs, mask_true = self.prepare_inputs(x, y)
 
         feed_dict = {self.x: inputs}
         feed_dict.update({self.tf_lr: self.learning_rate})
+        feed_dict.update({self.training: True})
 
         feed_dict.update({self.mask_true: mask_true})
         loss, _ = self.sess.run((self.loss_train, self.train_op), feed_dict)
@@ -89,6 +91,7 @@ class PredRNN(Model):
 
         feed_dict = {self.x: inputs}
         feed_dict.update({self.mask_true: mask_true})
+        feed_dict.update({self.training: False})
         gen_ims = self.sess.run(self.pred_seq, feed_dict)
 
         assert len(gen_ims) == 1, f"this was supposed to be of length 1, was: {len(gen_ims)}"
@@ -99,6 +102,7 @@ class PredRNN(Model):
 
         feed_dict = {self.x: inputs}
         feed_dict.update({self.mask_true: mask_true})
+        feed_dict.update({self.training: False})
         loss = self.sess.run(self.loss_train, feed_dict)
 
         return loss
@@ -134,7 +138,7 @@ class PredRNN(Model):
 
 
 def rnn(images, mask_true, num_layers, num_hidden, filter_size, stride=1, 
-    seq_length=20, input_length=10, tln=True):
+    seq_length=20, input_length=10, tln=True, dropout=0, training=False):
     gen_images = []
     lstm = []
     cell = []
@@ -169,12 +173,15 @@ def rnn(images, mask_true, num_layers, num_hidden, filter_size, stride=1,
             else:
                 inputs = mask_true[:,t-input_length]*images[:,t] + (1-mask_true[:,t-input_length])*x_gen
 
+            inputs = tf.keras.layers.Dropout(dropout)(inputs, training=training)
             hidden[0], cell[0], mem = lstm[0](inputs, hidden[0], cell[0], mem)
             z_t = gradient_highway(hidden[0], z_t)
+            z_t = tf.keras.layers.Dropout(dropout)(z_t, training=training)
             hidden[1], cell[1], mem = lstm[1](z_t, hidden[1], cell[1], mem)
 
             for i in range(2, num_layers):
-                hidden[i], cell[i], mem = lstm[i](hidden[i-1], hidden[i], cell[i], mem)
+                inputs = tf.keras.layers.Dropout(dropout)(hidden[i-1], training=training)
+                hidden[i], cell[i], mem = lstm[i](inputs, hidden[i], cell[i], mem)
 
             x_gen = tf.layers.conv2d(inputs=hidden[num_layers-1],
                                      filters=output_channels,

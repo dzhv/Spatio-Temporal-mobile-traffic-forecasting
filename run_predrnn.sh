@@ -1,7 +1,7 @@
 #!/bin/sh
 #SBATCH -N 1	  # nodes requested
 #SBATCH -n 1	  # tasks requested
-#SBATCH --partition=LongJobs
+#SBATCH --partition=General_Usage
 #SBATCH --gres=gpu:1
 #SBATCH --mem=12000  # memory in Mb
 #SBATCH --time=3-08:00:00
@@ -25,9 +25,10 @@ export PYTHON_PATH=$PATH
 # Activate the relevant virtual environment:
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
 python experiments/experiment_runner.py --data_path /home/${STUDENT_ID}/msc_project/data \
-	  --experiment_name "predrnn_2" --model_name "predrnn" \
+	  --experiment_name "predrnn_dropout" --model_name "predrnn" \
 	  --gpus 1 --batch_size 1 \
 	  --learning_rate 0.0013 --learning_rate_decay 0.000025 \
 	  --num_epochs 150 \
-	  --output_size 12 --hidden_sizes "64,32,32,32"
+	  --output_size 12 --hidden_sizes "40,20,20" \
+	  --dropout 0.15
 

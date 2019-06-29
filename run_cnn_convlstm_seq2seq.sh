@@ -30,3 +30,4 @@ python experiments/experiment_runner.py --data_path /home/${STUDENT_ID}/msc_proj
 	  --cnn_filters "25,50,50" --encoder_filters "50,50,50" --decoder_filters "50,50,50" --mlp_hidden_sizes "50,1" \
 	  --output_size 30 --learning_rate 0.0025 --learning_rate_decay 0.000005 --window_size 11 \
 	  --num_epochs 150 --fraction_of_data 0.25
+	  # !! careful, output size == 30 !!

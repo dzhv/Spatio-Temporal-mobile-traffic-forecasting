@@ -15,8 +15,10 @@ import keras.backend as K
 
 class ConvLSTMSeq2Seq(KerasModel):
 	def __init__(self, gpus=1, batch_size=50, segment_size=12, output_size=12, grid_size=100,
-		encoder_filters=[50], decoder_filters=[50,1],
+		encoder_filters=[50], decoder_filters=[50,1], dropout=0,
 		learning_rate=0.0001, learning_rate_decay=0, create_tensorboard=False):
+
+		print(f"!!! dropout: {dropout} !!!")
 
 		self.segment_size = segment_size
 		self.output_size = output_size
@@ -32,11 +34,11 @@ class ConvLSTMSeq2Seq(KerasModel):
 
 		for i, filters in enumerate(encoder_filters[:-1]):
 			out = ConvLSTM2D(filters=filters, kernel_size=3, return_sequences=True, activation='tanh', 
-				padding='same', name=f"encoder_{i+1}")(out)
+				padding='same', name=f"encoder_{i+1}", dropout=dropout)(out)
 
 		encoder_outputs, state_h, state_c = ConvLSTM2D(filters=encoder_filters[-1], kernel_size=3, 
 			activation='tanh', padding='same', return_state=True, return_sequences=True, 
-			name=f"encoder_{len(encoder_filters)}")(out)
+			name=f"encoder_{len(encoder_filters)}", dropout=dropout)(out)
 
 		# decoder
 		
@@ -45,11 +47,11 @@ class ConvLSTMSeq2Seq(KerasModel):
 
 		# first decoder layer gets the encoder states
 		out = ConvLSTM2D(filters=decoder_filters[0], kernel_size=3, return_sequences=True, activation='tanh', 
-			padding='same', name="decoder_1")([decoder_inputs, state_h, state_c])
+			padding='same', name="decoder_1", dropout=dropout)([decoder_inputs, state_h, state_c])
 
 		for i, filters in enumerate(decoder_filters[1:]):
 			out = ConvLSTM2D(filters=filters, kernel_size=3, return_sequences=True, activation='tanh', 
-				padding='same', name=f"decoder_{i+2}")(out)
+				padding='same', name=f"decoder_{i+2}", dropout=dropout)(out)
 
 		# cnn forming the final outputs, so that predictions can be outside the range of tanh activation
 		out = TimeDistributed(Conv2D(1, kernel_size=1, activation='linear', padding='same'), 

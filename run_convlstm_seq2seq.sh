@@ -25,9 +25,10 @@ export PYTHON_PATH=$PATH
 # Activate the relevant virtual environment:
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
 python experiments/experiment_runner.py --data_path /home/${STUDENT_ID}/msc_project/data \
-	--experiment_name "convlstm_seq2seq_fullgrid" --model_name "convlstm_seq2seq" \
+	--experiment_name "convlstm_seq2seq_fullgrid_dropout" --model_name "convlstm_seq2seq" \
 	--gpus 1 --batch_size 10 \
 	--learning_rate 0.0025 --learning_rate_decay 0.000005 \
 	--num_epochs 150 \
-	--output_size 12 --encoder_filters "32,64,64" --decoder_filters "64,64,32,1"
+	--output_size 12 --encoder_filters "32,64,64" --decoder_filters "64,64,32" \
+	--dropout 0.3
 	  

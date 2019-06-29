@@ -10,10 +10,12 @@ from models import model_device_adapter
 
 
 class KerasSeq2Seq(KerasModel):
-	def __init__(self, gpus=1, batch_size=100, segment_size=12, num_features=121, 
-		num_layers=2, hidden_size=10, learning_rate=0.0001, dropout=0, create_tensorboard=False):
+	def __init__(self, gpus=1, batch_size=100, segment_size=12, num_features=121,
+		num_layers=2, hidden_size=10, learning_rate=0.0001, dropout=0, 
+		output_size=12, create_tensorboard=False):
 
 		self.segment_size = segment_size
+		self.output_size = output_size
 
 		# create encoder and decoder LSTM towers/stacks
 		encoder = self.create_stacked_lstms(hidden_size=hidden_size, num_layers=num_layers,
@@ -72,8 +74,17 @@ class KerasSeq2Seq(KerasModel):
 	def form_model_inputs(self, x):
 		encoder_input = x.reshape(x.shape[0], x.shape[1], x.shape[2] * x.shape[3])
 		# (batch_size, segment_size, arbitrary input dimension)
-		decoder_input = np.zeros((encoder_input.shape[0], self.segment_size, 1))
+		decoder_input = np.zeros((encoder_input.shape[0], self.output_size, 1))
 		return [encoder_input, decoder_input]
 
 	def form_targets(self, y):
 		return y[:, :, None]
+
+if __name__ == '__main__':
+	model = KerasSeq2Seq(output_size=6)
+	output = model.forward(np.random.randn(2, 12, 11, 11))
+	print("output shape:")
+	print(output.shape)	
+
+	model.train(np.random.randn(2, 12, 11, 11), np.random.randn(2, 6))
+	print("train success")

@@ -257,6 +257,7 @@ class ConvLSTMAttentionCell(Layer):
         normalized_weights = tf.nn.softmax(unnormalized_weights, axis=1)
         print(f"normalized_weights: {unnormalized_weights}")        
 
+        # elemntwise multiplication
         weighted_outputs = tf.multiply(normalized_weights, encoder_outputs)
         print(f"weighted_outputs: {weighted_outputs}")        
 

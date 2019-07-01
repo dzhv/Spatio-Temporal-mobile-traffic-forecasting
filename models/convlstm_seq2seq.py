@@ -1,7 +1,7 @@
 import os
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 from keras.layers import Input, ConvLSTM2D, RNN, Dense, Conv2D, TimeDistributed, Conv2DTranspose, Flatten
-from keras.layers import AveragePooling2D, UpSampling2D
+from keras.layers import AveragePooling2D, UpSampling2D, Dropout
 from keras.models import Model, load_model, Sequential
 from keras.optimizers import Adam
 from keras import regularizers
@@ -33,12 +33,14 @@ class ConvLSTMSeq2Seq(KerasModel):
 		# encoder
 
 		for i, filters in enumerate(encoder_filters[:-1]):
+			out = Dropout(dropout)(out)
 			out = ConvLSTM2D(filters=filters, kernel_size=3, return_sequences=True, activation='tanh', 
-				padding='same', name=f"encoder_{i+1}", dropout=dropout)(out)
+				padding='same', name=f"encoder_{i+1}")(out)
 
+		out = Dropout(dropout)(out)
 		encoder_outputs, state_h, state_c = ConvLSTM2D(filters=encoder_filters[-1], kernel_size=3, 
 			activation='tanh', padding='same', return_state=True, return_sequences=True, 
-			name=f"encoder_{len(encoder_filters)}", dropout=dropout)(out)
+			name=f"encoder_{len(encoder_filters)}")(out)
 
 		# decoder
 		
@@ -47,11 +49,12 @@ class ConvLSTMSeq2Seq(KerasModel):
 
 		# first decoder layer gets the encoder states
 		out = ConvLSTM2D(filters=decoder_filters[0], kernel_size=3, return_sequences=True, activation='tanh', 
-			padding='same', name="decoder_1", dropout=dropout)([decoder_inputs, state_h, state_c])
+			padding='same', name="decoder_1")([decoder_inputs, state_h, state_c])
 
 		for i, filters in enumerate(decoder_filters[1:]):
+			out = Dropout(dropout)(out)
 			out = ConvLSTM2D(filters=filters, kernel_size=3, return_sequences=True, activation='tanh', 
-				padding='same', name=f"decoder_{i+2}", dropout=dropout)(out)
+				padding='same', name=f"decoder_{i+2}")(out)
 
 		# cnn forming the final outputs, so that predictions can be outside the range of tanh activation
 		out = TimeDistributed(Conv2D(1, kernel_size=1, activation='linear', padding='same'), 

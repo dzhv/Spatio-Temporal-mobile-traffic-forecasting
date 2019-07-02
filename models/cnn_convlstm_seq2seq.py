@@ -14,7 +14,7 @@ from models import model_device_adapter
 class CnnConvLSTMSeq2Seq(KerasModel):
 	def __init__(self, gpus=1, batch_size=50, segment_size=12, output_size=12, window_size=11,
 		cnn_filters=[2,3,4], encoder_filters=[5,6], decoder_filters=[6,7], mlp_hidden_sizes=[50, 1],
-		learning_rate=0.0001, learning_rate_decay=0, create_tensorboard=False):
+		decoder_padding='same', learning_rate=0.0001, learning_rate_decay=0, create_tensorboard=False):
 
 		self.segment_size = segment_size
 		self.output_size = output_size
@@ -53,7 +53,7 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 
 		for i, filters in enumerate(decoder_filters[1:]):
 			out = ConvLSTM2D(filters=filters, kernel_size=3, return_sequences=True, activation='tanh', 
-				padding='same', name=f"decoder_convlstm_{i+2}")(out)
+				padding=decoder_padding, name=f"decoder_convlstm_{i+2}")(out)
 
 		# predictor mlp
 
@@ -90,7 +90,8 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 		return y[:, :, None]
 
 if __name__ == '__main__':
-	model = CnnConvLSTMSeq2Seq(window_size=11)
+	model = CnnConvLSTMSeq2Seq(window_size=11, decoder_padding='valid', 
+		cnn_filters=[1,2], encoder_filters=[3,4], decoder_filters=[4,5,6])
 	output = model.forward(np.random.randn(2, 12, 11, 11))
 	print("output shape:")
 	print(output.shape)	

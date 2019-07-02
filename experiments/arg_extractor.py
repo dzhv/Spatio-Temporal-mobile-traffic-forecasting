@@ -50,6 +50,8 @@ def get_args():
         help='Number of filters in predrnn layers')
     parser.add_argument('--mlp_hidden_sizes', nargs="?", type=str2int_list, default="50,1",
         help='Hidden sizes in the mlp output layers')
+    parser.add_argument('--decoder_padding', nargs="?", type=str, default="same",
+        help='Padding type for the decoder (starting from layer 2)')
 
     # experiment details params
     parser.add_argument('--experiment_name', nargs="?", type=str, default="exp_1",

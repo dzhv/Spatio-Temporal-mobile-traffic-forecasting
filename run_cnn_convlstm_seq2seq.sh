@@ -25,9 +25,10 @@ export PYTHON_PATH=$PATH
 # Activate the relevant virtual environment:
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
 python experiments/experiment_runner.py --data_path /home/${STUDENT_ID}/msc_project/data \
-	  --experiment_name "cnn_convlstm_seq2seq_win11_pred30" --model_name "cnn_convlstm_seq2seq" \
+	  --experiment_name "cnn_convlstm_seq2seq_win11_1avg_decoder_valid" --model_name "cnn_convlstm_seq2seq" \
 	  --gpus 1 --batch_size 1000 \
 	  --cnn_filters "25,50,50" --encoder_filters "50,50,50" --decoder_filters "50,50,50" --mlp_hidden_sizes "50,1" \
-	  --output_size 30 --learning_rate 0.0025 --learning_rate_decay 0.000005 --window_size 11 \
+	  --decoder_padding "valid" \
+	  --learning_rate 0.0012 --learning_rate_decay 0.000005 --window_size 11 \
 	  --num_epochs 150 --fraction_of_data 0.25
-	  # !! careful, output size == 30 !!
+	  # !! decoder_padding valid !

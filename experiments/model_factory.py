@@ -9,6 +9,7 @@ from models.predrnn.predrnn import PredRNN
 from models.predrnn.predrnn_windowed import PredRnnWindowed
 from models.windowed_convlstm_seq2seq import WindowedConvLSTMSeq2Seq
 from models.convlstm_seq2seq import ConvLSTMSeq2Seq
+from models.mlp import MLP
 
 def get_model(args):
 	if args.model_name == "lstm":
@@ -56,5 +57,9 @@ def get_model(args):
 			output_size=args.output_size, window_size=args.window_size, hidden_sizes=args.hidden_sizes, 
 			mlp_hidden_sizes=args.mlp_hidden_sizes, learning_rate=args.learning_rate, 
 			learning_rate_decay=args.learning_rate_decay)
+	elif args.model_name == "mlp":
+		return MLP(batch_size=args.batch_size, segment_size=args.segment_size, 
+			window_size=args.window_size, hidden_sizes=args.hidden_sizes, 
+			learning_rate=args.learning_rate, learning_rate_decay=args.learning_rate_decay)
 	else:
 		raise ValueError(f"Unknown model: {args.model_name}")

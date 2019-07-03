@@ -52,6 +52,7 @@ def get_args():
         help='Hidden sizes in the mlp output layers')
     parser.add_argument('--decoder_padding', nargs="?", type=str, default="same",
         help='Padding type for the decoder (starting from layer 2)')
+    parser.add_argument('--kernel_size', nargs="?", type=int, default=3, help='Convolutional kernel size')
 
     # experiment details params
     parser.add_argument('--experiment_name', nargs="?", type=str, default="exp_1",

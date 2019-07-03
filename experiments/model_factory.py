@@ -41,7 +41,8 @@ def get_model(args):
 	elif args.model_name == "convlstm_seq2seq":
 		return ConvLSTMSeq2Seq(gpus=args.gpus, batch_size=args.batch_size, segment_size=args.segment_size,
 			grid_size=args.grid_size, learning_rate=args.learning_rate, dropout=args.dropout,
-			encoder_filters=args.encoder_filters, decoder_filters=args.decoder_filters,
+			encoder_filters=args.encoder_filters, decoder_filters=args.decoder_filters, 
+			kernel_size=args.kernel_size,
 			learning_rate_decay=args.learning_rate_decay, create_tensorboard=args.create_tensorboard)
 	elif args.model_name == "windowed_convlstm_seq2seq":
 		return WindowedConvLSTMSeq2Seq(gpus=args.gpus, batch_size=args.batch_size, segment_size=args.segment_size,

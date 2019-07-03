@@ -15,10 +15,10 @@ import keras.backend as K
 
 class ConvLSTMSeq2Seq(KerasModel):
 	def __init__(self, gpus=1, batch_size=50, segment_size=12, output_size=12, grid_size=100,
-		encoder_filters=[50], decoder_filters=[50,1], dropout=0,
+		encoder_filters=[50], decoder_filters=[50,1], dropout=0, kernel_size=3,
 		learning_rate=0.0001, learning_rate_decay=0, create_tensorboard=False):
 
-		print(f"!!! dropout: {dropout} !!!")
+		print(f"!!!kernel_size: {kernel_size}")
 
 		self.segment_size = segment_size
 		self.output_size = output_size
@@ -34,11 +34,11 @@ class ConvLSTMSeq2Seq(KerasModel):
 
 		for i, filters in enumerate(encoder_filters[:-1]):
 			out = Dropout(dropout)(out)
-			out = ConvLSTM2D(filters=filters, kernel_size=3, return_sequences=True, activation='tanh', 
+			out = ConvLSTM2D(filters=filters, kernel_size=kernel_size, return_sequences=True, activation='tanh', 
 				padding='same', name=f"encoder_{i+1}")(out)
 
 		out = Dropout(dropout)(out)
-		encoder_outputs, state_h, state_c = ConvLSTM2D(filters=encoder_filters[-1], kernel_size=3, 
+		encoder_outputs, state_h, state_c = ConvLSTM2D(filters=encoder_filters[-1], kernel_size=kernel_size, 
 			activation='tanh', padding='same', return_state=True, return_sequences=True, 
 			name=f"encoder_{len(encoder_filters)}")(out)
 
@@ -48,12 +48,12 @@ class ConvLSTMSeq2Seq(KerasModel):
 		decoder_inputs = Input(shape=(output_size,) + self.decoder_input_shape, name="decoder_input")
 
 		# first decoder layer gets the encoder states
-		out = ConvLSTM2D(filters=decoder_filters[0], kernel_size=3, return_sequences=True, activation='tanh', 
-			padding='same', name="decoder_1")([decoder_inputs, state_h, state_c])
+		out = ConvLSTM2D(filters=decoder_filters[0], kernel_size=kernel_size, return_sequences=True, 
+			activation='tanh', padding='same', name="decoder_1")([decoder_inputs, state_h, state_c])
 
 		for i, filters in enumerate(decoder_filters[1:]):
 			out = Dropout(dropout)(out)
-			out = ConvLSTM2D(filters=filters, kernel_size=3, return_sequences=True, activation='tanh', 
+			out = ConvLSTM2D(filters=filters, kernel_size=kernel_size, return_sequences=True, activation='tanh', 
 				padding='same', name=f"decoder_{i+2}")(out)
 
 		# cnn forming the final outputs, so that predictions can be outside the range of tanh activation

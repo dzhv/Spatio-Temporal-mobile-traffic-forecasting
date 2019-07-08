@@ -33,8 +33,13 @@ predrnn  (50,50,50)
 --------------------
 python experiments/model_evaluator.py --model_name "predrnn" --hidden_sizes "50,50,50" --batch_size 1
 
-9140089872703
+9140089872703  (9140 bill)
 
+predrnn  (30,30,30)
+--------------------
+python experiments/model_evaluator.py --model_name "predrnn" --hidden_sizes "30,30,30" --batch_size 1
+
+3302259366343  (3302 bill)
 
 
 windowed_predrnn (50,50,50   50,1)
@@ -42,5 +47,9 @@ windowed_predrnn (50,50,50   50,1)
 python experiments/model_evaluator.py --model_name "predrnn" --hidden_sizes "50,50,50" --batch_size 1 \
 	--mlp_hidden_sizes "50,1"
 
-
 110777323444
+
+
+stn
+-----------------
+293902153 (293 mill)

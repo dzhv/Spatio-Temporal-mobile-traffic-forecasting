@@ -124,26 +124,25 @@ def calculate_loss(predictions, targets):
 	return nrmse(targets, predictions)
 
 
-def evaluate_inference_flops():
-	# make 1 batch prediction
-	# i.e. 1 full grid prediction
-
+def profile(operation):
 	run_meta = tf.RunMetadata()
 	with tf.Session(graph=tf.Graph()) as sess:
 		K.set_session(sess)
 
 		model, data = get_essentials()
+		return tf.profiler.profile(sess.graph, run_meta=run_meta, cmd='op', options=operation)
 
-		# data, model, num_batches, prediction_batch_size
-		# next(iterate_prediction_batches(data, model, 
-		# 	args.prediction_batch_size // args.batch_size, args.prediction_batch_size))
+def evaluate_inference_flops():
+	flops = profile(tf.profiler.ProfileOptionBuilder.float_operation())
 
-		opts = tf.profiler.ProfileOptionBuilder.float_operation()    
-		flops = tf.profiler.profile(sess.graph, run_meta=run_meta, cmd='op', options=opts)
+	print(f"flops: {flops}")
+	print(f"flops.total_float_ops: {flops.total_float_ops}")
 
-		print(f"flops: {flops}")
-		print(f"flops.total_float_ops: {flops.total_float_ops}")
-	
+def evaluate_memory():	
+	something = profile(tf.profiler.ProfileOptionBuilder.time_and_memory())
+
+	print(f"something: {something}")
+	# print(f"flops.total_float_ops: {flops.total_float_ops}")	
 
 def write_to_file(message):
 	model_folder = path.dirname(path.dirname(args.model_file))
@@ -154,9 +153,7 @@ def write_to_file(message):
 
 
 
-
-
-# evaluate()
-evaluate_inference_flops()
+evaluate()
+# evaluate_memory()
 # prediction_analysis(model, data)
 

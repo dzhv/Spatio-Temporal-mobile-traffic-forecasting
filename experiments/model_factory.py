@@ -10,6 +10,7 @@ from models.predrnn.predrnn_windowed import PredRnnWindowed
 from models.windowed_convlstm_seq2seq import WindowedConvLSTMSeq2Seq
 from models.convlstm_seq2seq import ConvLSTMSeq2Seq
 from models.mlp import MLP
+from models.cnn_lstm import CnnLSTM
 
 def get_model(args):
 	if args.model_name == "lstm":
@@ -62,5 +63,11 @@ def get_model(args):
 		return MLP(batch_size=args.batch_size, segment_size=args.segment_size, 
 			window_size=args.window_size, hidden_sizes=args.hidden_sizes, 
 			learning_rate=args.learning_rate, learning_rate_decay=args.learning_rate_decay)
+	elif args.model_name == "cnn_lstm":
+		return CnnLSTM(gpus=args.gpus, batch_size=args.batch_size, segment_size=args.segment_size, 
+			output_size=args.output_size, window_size=args.window_size,
+			cnn_filters=args.cnn_filters, hidden_sizes=args.hidden_sizes,
+			learning_rate=args.learning_rate, learning_rate_decay=args.learning_rate_decay, 
+			create_tensorboard=args.create_tensorboard)
 	else:
 		raise ValueError(f"Unknown model: {args.model_name}")

@@ -23,7 +23,7 @@ class MLP(KerasModel):
 
 		self.model.add(Dense(hidden_sizes[-1]))
 
-		self.model = model_device_adapter.get_device_specific_model(self.model, gpus)
+		# self.model = model_device_adapter.get_device_specific_model(self.model, gpus)
 
 		optimizer = Adam(lr=learning_rate, decay=learning_rate_decay)
 		self.model.compile(loss='mse', optimizer=optimizer)

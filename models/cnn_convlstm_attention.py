@@ -26,39 +26,32 @@ class CnnConvLSTMAttention(KerasModel):
 		# Define an input sequence.
 		# 1 refers to a single channel of the input
 		encoder_inputs = Input(shape=(segment_size, window_size, window_size, 1))
-		
-		print(f"encoder_inputs: {encoder_inputs}")
-		out = TimeDistributed(Conv2D(cnn_filters[0], kernel_size=3, activation='tanh', 
-			padding='same'))(encoder_inputs)
+				
+		out = TimeDistributed(Conv2D(20, kernel_size=3, activation='tanh', padding='same'))(encoder_inputs)
 		out = TimeDistributed(AveragePooling2D())(out)
-		out = TimeDistributed(Conv2D(cnn_filters[1], kernel_size=3, activation='tanh', padding='same'))(out)
+		out = TimeDistributed(Conv2D(40, kernel_size=3, activation='tanh', padding='same'))(out)
 		out = TimeDistributed(AveragePooling2D())(out)
-		out = TimeDistributed(Conv2D(cnn_filters[2], kernel_size=3, activation='tanh', padding='same'))(out)
+		out = TimeDistributed(Conv2D(40, kernel_size=3, activation='tanh', padding='same'))(out)
 
-		# encoder
-		for filters in encoder_filters[:-1]:
-			out = ConvLSTM2D(filters=filters, kernel_size=3, return_sequences=True, activation='tanh', 
-				padding='same')(out)
 
-		encoder_outputs, state_h, state_c = ConvLSTM2D(filters=encoder_filters[-1], kernel_size=3, 
-			activation='tanh', padding='same', return_state=True, return_sequences=True)(out)
+		# encoder				
+		out = ConvLSTM2D(filters=40, kernel_size=3, activation='tanh', 
+			padding='same', return_sequences=True)(out)
+		encoder_outputs, state_h, state_c = ConvLSTM2D(filters=40, kernel_size=3, activation='tanh', 
+			padding='same', return_state=True, return_sequences=True)(out)
 		# encoder_outputs shape: (batch_size, segment_size, window_size, window_size, num_filters)
 
 		# decoder
-
-		latent_dim = window_size // 2**(len(cnn_filters) - 1)
-		self.decoder_input_shape = (latent_dim, latent_dim, encoder_filters[-1])
-		decoder_inputs = Input(shape=(output_size,) + self.decoder_input_shape, name="decoder_input")
 	
-		attention_layer = ConvRNN2D(ConvLSTMAttentionCell(decoder_filters[0], kernel_size=3, padding='same'), return_sequences=True)
-		attention_layer._num_constants = 1
-		# the second encoder_outputs is given as 'constants' to the layer,
-		# so that it can be fully transferred to the cell
-		out = attention_layer([decoder_inputs, encoder_outputs])
+		latent_dim = window_size // 2**(len(cnn_filters) - 1)
+		self.decoder_input_shape = (latent_dim, latent_dim, 40)#encoder_filters[-1])
+		decoder_inputs = Input(shape=(output_size,) + self.decoder_input_shape, name="decoder_input")
 
-		for filters in decoder_filters[1:]:
-			out = ConvLSTM2D(filters=filters, kernel_size=3, return_sequences=True, activation='tanh', 
-				padding='same')(out)		
+		attention_layer = ConvRNN2D(ConvLSTMAttentionCell(40, kernel_size=3, padding='same'), return_sequences=True)
+		attention_layer._num_constants = 1
+		out = attention_layer([decoder_inputs, state_h, state_c, encoder_outputs])
+
+		out = ConvLSTM2D(filters=40, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
 
 		out = TimeDistributed(Flatten())(out)
 

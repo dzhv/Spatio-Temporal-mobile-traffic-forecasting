@@ -1,7 +1,7 @@
 #!/bin/sh
 #SBATCH -N 1	  # nodes requested
 #SBATCH -n 1	  # tasks requested
-#SBATCH --partition=LongJobs
+#SBATCH --partition=General_Usage
 #SBATCH --gres=gpu:1
 #SBATCH --mem=12000  # memory in Mb
 #SBATCH --time=3-08:00:00
@@ -25,8 +25,10 @@ export PYTHON_PATH=$PATH
 # Activate the relevant virtual environment:
 source /home/${STUDENT_ID}/miniconda3/bin/activate msc
 python experiments/experiment_runner.py --data_path /home/${STUDENT_ID}/msc_project/data \
-	  --experiment_name "cnn_convlstm_attention_state_3" --model_name "cnn_convlstm_attention" \
+	  --experiment_name "cnn_convlstm_attention_state_6" --model_name "cnn_convlstm_attention" \
 	  --gpus 1 --batch_size 2500 \
-	  --cnn_filters "25,50,50" --encoder_filters "50,25,10" --decoder_filters "10,25,25" \
-	  --learning_rate 0.0025 --learning_rate_decay 0.00002 --window_size 11 \
-	  --num_epochs 150 --fraction_of_data 0.25
+	  --cnn_filters "20,30,30" --encoder_filters "30,30,30" --decoder_filters "30,30,30" \
+	  --learning_rate 0.001 --learning_rate_decay 0.0000002 --window_size 11 \
+	  --num_epochs 150 --fraction_of_data 0.25 \
+	  --continue_from_epoch -2 --pass_state true
+

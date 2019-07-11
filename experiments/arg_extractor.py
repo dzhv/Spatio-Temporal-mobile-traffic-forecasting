@@ -53,6 +53,8 @@ def get_args():
     parser.add_argument('--decoder_padding', nargs="?", type=str, default="same",
         help='Padding type for the decoder (starting from layer 2)')
     parser.add_argument('--kernel_size', nargs="?", type=int, default=3, help='Convolutional kernel size')
+    parser.add_argument('--pass_state', nargs="?", type=str2bool, default=True, 
+        help='Determines if the decoder should receive the encoders state.')
 
     # experiment details params
     parser.add_argument('--experiment_name', nargs="?", type=str, default="exp_1",

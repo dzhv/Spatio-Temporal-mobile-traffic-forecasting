@@ -12,7 +12,7 @@ DEFAULT_SEED = 20112018
 
 class Seq2SeqDataProvider(object):
     def __init__(self, data_reader, window_size=11, segment_size=12, output_size=12,
-            batch_size=1000, shuffle_order=True, rng=None, fraction_of_data=1):
+            batch_size=1000, shuffle_order=True, rng=None, fraction_of_data=1, missing_data=0):
                 
         self.window_size = window_size
         self.segment_size = segment_size
@@ -23,6 +23,7 @@ class Seq2SeqDataProvider(object):
             rng = np.random.RandomState(DEFAULT_SEED)
         self.rng = rng        
         self.fraction_of_data = fraction_of_data
+        self.missing_data = missing_data
 
         self.data = data_reader.next()
 
@@ -40,6 +41,7 @@ class Seq2SeqDataProvider(object):
     def enumerate_data(self, indexes):
         for count, i in enumerate(indexes):
             segment = self.data[i:i + self.segment_size + self.output_size]
+            segment = self.drop_missing_data(segment)
 
             inputs, targets = window_slider.get_sequential_inputs_and_targets(
                 segment, self.window_size, self.segment_size, self.output_size)
@@ -57,6 +59,25 @@ class Seq2SeqDataProvider(object):
 
             if count + 1 > len(indexes) * self.fraction_of_data:
                 break
+
+    def drop_missing_data(self, segment):
+        # removes self.missing_data fraction of data
+        # used only for evaluation with missing data
+
+        print(f"\n!!!segment shape: {segment.shape}\n")
+        print(f"!!!missing data: {self.missing_data}\n")
+
+        if self.missing_data == 0:
+            return segment
+
+        input_segment = segment[:self.segment_size]
+        output_segment = segment[self.segment_size:]
+
+        bool_mask = np.random.random((segment.shape[1], segment.shape[2])) > self.missing_data
+        mask = np.asarray(bool_mask, float)
+
+        input_segment = input_segment * mask
+        return np.concatenate((input_segment, output_segment))
 
     def get_random_samples(self, n_samples):
         assert n_samples <= self.num_segments, f"Cannot provide more than {self.num_segments} samples"

@@ -98,6 +98,8 @@ def get_args():
     parser.add_argument('--prediction_batch_size', nargs="?", type=int, default="10000",
                         help='how many predictions to gather before computing the nrmse loss. \
                         10000 for single point predictions, 1 for full grid predictions')
+    parser.add_argument('--missing_data', nargs="?", type=float, default=0,
+                        help='Fraction of missing data for model evaluation')
 
     # unused
     parser.add_argument('--use_gpu', nargs="?", type=str2bool, default=False,

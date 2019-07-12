@@ -16,7 +16,15 @@ from collections import defaultdict
 import tensorflow as tf
 import keras.backend as K
 
+def write_to_file(message):
+	model_folder = path.dirname(path.dirname(args.model_file))
+	file = path.join(model_folder, "evaluation.txt")
+
+	with open(file, "a") as f:
+		f.write(message + "\n")
+
 args = get_args()
+write_to_file(str(args) + "\n")
 rng = np.random.RandomState(args.seed)
 
 def evaluate():
@@ -143,13 +151,6 @@ def evaluate_memory():
 
 	print(f"something: {something}")
 	# print(f"flops.total_float_ops: {flops.total_float_ops}")	
-
-def write_to_file(message):
-	model_folder = path.dirname(path.dirname(args.model_file))
-	file = path.join(model_folder, "evaluation.txt")
-
-	with open(file, "a") as f:
-		f.write(message + "\n")
 
 
 

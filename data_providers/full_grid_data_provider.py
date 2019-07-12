@@ -7,7 +7,7 @@ DEFAULT_SEED = 20112018
 
 class FullGridDataProvider(object):
     def __init__(self, data_reader, segment_size=12, target_segment_size=1,
-            batch_size=50, shuffle_order=True, rng=None, fraction_of_data=1):
+            batch_size=50, shuffle_order=True, rng=None, fraction_of_data=1, missing_data=0):
                 
         self.target_segment_size = target_segment_size
         self.segment_size = segment_size

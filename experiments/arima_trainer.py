@@ -50,6 +50,8 @@ def grid_search():
 	for p in range(3):
 		for d in range(3):
 			for q in range(3):
+				if p == d == q == 0:
+					continue
 				train_and_save(p, d, q, train)
 
 grid_search()

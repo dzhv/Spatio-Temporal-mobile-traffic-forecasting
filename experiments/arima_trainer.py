@@ -7,8 +7,10 @@ import time
 def train_and_save():
 	print(f"starting")
 
-	os.mkdir("results/arima")
-	os.mkdir("results/arima/saved_models")
+	if not os.path.exists("results/arima"):
+		os.mkdir("results/arima")
+	if not os.path.exists("results/arima/saved_models"):
+		os.mkdir("results/arima/saved_models")
 
 	p, d, q = 12, 1, 1
 

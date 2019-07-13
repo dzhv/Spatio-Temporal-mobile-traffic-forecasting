@@ -107,6 +107,8 @@ def iterate_prediction_batches(sample_generator, model, num_batches, batch_size)
 	batch = None
 	batch_count = 0
 	for x, y in sample_generator:
+		# how_much_is_missing(x, y)
+
 		predictions = model.forward(x)
 
 		if batch is None:
@@ -124,6 +126,12 @@ def iterate_prediction_batches(sample_generator, model, num_batches, batch_size)
 		
 		assert len(batch[0]) == len(batch[1]) < batch_size, \
 			"prediction batch size and batch sizes given by data provider do not match"
+
+def how_much_is_missing(x, y):
+	x_dropped = len(x[x == 0])
+	y_dropped = len(y[y == 0])
+	print(f"x dropped: {x_dropped}, x len: {len(x)}, dropped fraction: {x_dropped / x.size}")
+	print(f"y dropped: {y_dropped}, y len: {len(y)}, dropped fraction: {y_dropped / y.size}")
 
 def calculate_loss(predictions, targets):
 	predictions = predictions * args.train_std + args.train_mean 

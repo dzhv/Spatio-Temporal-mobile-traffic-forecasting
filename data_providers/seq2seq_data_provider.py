@@ -73,7 +73,13 @@ class Seq2SeqDataProvider(object):
         input_segment = segment[:self.segment_size]
         output_segment = segment[self.segment_size:]
 
-        bool_mask = np.random.random((segment.shape[1], segment.shape[2])) > self.missing_data
+        bool_mask = np.ones((segment.shape[1], segment.shape[2]))
+        choice = np.random.choice(bool_mask.size, size=int(self.missing_data * bool_mask.size), replace=False)
+        indice_list = np.array([(x // segment.shape[2], x % segment.shape[2]) for x in choice])
+        
+        np.put(bool_mask, np.ravel_multi_index(indice_list.T, bool_mask.shape), 0)
+
+        print(f"fraction of ones: {bool_mask.sum() / bool_mask.size}")
         mask = np.asarray(bool_mask, float)
 
         input_segment = input_segment * mask

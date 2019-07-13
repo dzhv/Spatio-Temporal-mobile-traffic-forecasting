@@ -33,11 +33,8 @@ class FullGridDataProvider(object):
     def enumerate_data(self, indexes):
         batch = None
         for count, i in enumerate(indexes):
-            segment = self.data[i:i + self.segment_size + self.target_segment_size]
-            segment = self.drop_missing_data(segment)
-
             start_of_targets = i + self.segment_size
-            inputs = self.data[i: start_of_targets]
+            inputs = self.drop_missing_data(self.data[i: start_of_targets])
             targets = self.data[start_of_targets : start_of_targets + self.target_segment_size]
 
             # add to batch
@@ -55,27 +52,23 @@ class FullGridDataProvider(object):
             if count + 1 >= len(indexes) * self.fraction_of_data:
                 break
 
-    def drop_missing_data(self, segment):
+    def drop_missing_data(self, input_segment):
         # removes self.missing_data fraction of data
         # used only for evaluation with missing data
         if self.missing_data == 0:
-            return segment
+            return input_segment
 
         print(f"!!!missing data: {self.missing_data}!!!")
 
-        input_segment = segment[:self.segment_size]
-        output_segment = segment[self.segment_size:]
-
-        bool_mask = np.ones((segment.shape[1], segment.shape[2]))
+        bool_mask = np.ones((input_segment.shape[1], input_segment.shape[2]))
         choice = np.random.choice(bool_mask.size, size=int(self.missing_data * bool_mask.size), replace=False)
-        indice_list = np.array([(x // segment.shape[2], x % segment.shape[2]) for x in choice])
+        indice_list = np.array([(x // input_segment.shape[2], x % input_segment.shape[2]) for x in choice])
         
         np.put(bool_mask, np.ravel_multi_index(indice_list.T, bool_mask.shape), 0)
 
         mask = np.asarray(bool_mask, float)
 
-        input_segment = input_segment * mask
-        return np.concatenate((input_segment, output_segment))
+        return input_segment * mask
 
     def get_random_samples(self, n_samples):
         assert n_samples <= self.num_segments, f"Cannot provide more than {self.num_segments} samples"

@@ -107,7 +107,7 @@ def iterate_prediction_batches(sample_generator, model, num_batches, batch_size)
 	batch = None
 	batch_count = 0
 	for x, y in sample_generator:
-		# how_much_is_missing(x, y)
+		how_much_is_missing(x, y)
 
 		predictions = model.forward(x)
 

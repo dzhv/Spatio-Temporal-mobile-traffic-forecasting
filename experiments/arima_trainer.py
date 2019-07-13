@@ -34,7 +34,7 @@ def train_and_save(p, d, q, train):
 		model = SARIMAX(train[:, x_coord, y_coord], order=(p, d, q))
 		model_fit = model.fit(disp=0)
 		# fitted_models.append(model_fit)
-		model_fit.save(save_path + f"/{x_coord}_{y_coord}.pickle")
+		model_fit.save(save_path + f"/{x_coord}_{y_coord}.pickle", remove_data=True)
 		
 		elapsed = time.time() - start_time
 		total_time += elapsed

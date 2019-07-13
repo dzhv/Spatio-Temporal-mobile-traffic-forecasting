@@ -63,12 +63,10 @@ class Seq2SeqDataProvider(object):
     def drop_missing_data(self, segment):
         # removes self.missing_data fraction of data
         # used only for evaluation with missing data
-
-        print(f"\n!!!segment shape: {segment.shape}\n")
-        print(f"!!!missing data: {self.missing_data}\n")
-
         if self.missing_data == 0:
             return segment
+
+        print(f"!!!missing data: {self.missing_data}!!!")
 
         input_segment = segment[:self.segment_size]
         output_segment = segment[self.segment_size:]
@@ -79,7 +77,6 @@ class Seq2SeqDataProvider(object):
         
         np.put(bool_mask, np.ravel_multi_index(indice_list.T, bool_mask.shape), 0)
 
-        print(f"fraction of ones: {bool_mask.sum() / bool_mask.size}")
         mask = np.asarray(bool_mask, float)
 
         input_segment = input_segment * mask

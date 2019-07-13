@@ -1,6 +1,7 @@
 import os
 import numpy as np
 from statsmodels.tsa.arima_model import ARIMA
+from statsmodels.tsa.statespace.sarimax import SARIMAX
 import statsmodels.api as sm
 import time
 
@@ -30,7 +31,7 @@ def train_and_save(p, d, q, train):
 		x_coord = i // window_size
 		y_coord = i % window_size
 
-		model = ARIMA(train[:, x_coord, y_coord], order=(p, d, q))
+		model = SARIMAX(train[:, x_coord, y_coord], order=(p, d, q))
 		model_fit = model.fit(disp=0)
 		# fitted_models.append(model_fit)
 		model_fit.save(save_path + f"/{x_coord}_{y_coord}.pickle")
@@ -50,3 +51,5 @@ def grid_search():
 		for d in range(3):
 			for q in range(3):
 				train_and_save(p, d, q, train)
+
+grid_search()

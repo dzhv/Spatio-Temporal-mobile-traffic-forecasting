@@ -43,15 +43,15 @@ def train_and_save(p, d, q, train):
 			print(f"total time elapsed: {total_time}")
 		# print(f"took: {elapsed} seconds")
 
-def grid_search():
-	print(f"loading data")
-	train = np.load("data/train.npy")
-
+def grid_search(data):
 	for p in range(3):
 		for d in range(3):
 			for q in range(3):
 				if p == d == q == 0:
 					continue
-				train_and_save(p, d, q, train)
+				train_and_save(p, d, q, data)
 
-grid_search()
+print(f"loading data")
+train = np.load("data/train.npy")
+# grid_search(train)
+train_and_save(3, 1, 2, train)

@@ -5,6 +5,7 @@ from models.lstm import LSTM
 from models.windowed_cnn_convlstm import WindowedCnnConvLSTM
 from models.cnn_convlstm_seq2seq import CnnConvLSTMSeq2Seq
 from models.cnn_convlstm_attention import CnnConvLSTMAttention
+from models.cnn_convlstm_attention_hardcoded import CnnConvLSTMAttentionHardcoded
 from models.predrnn.predrnn import PredRNN
 from models.predrnn.predrnn_windowed import PredRnnWindowed
 from models.windowed_convlstm_seq2seq import WindowedConvLSTMSeq2Seq
@@ -40,6 +41,11 @@ def get_model(args):
 			cnn_filters=args.cnn_filters, encoder_filters=args.encoder_filters, decoder_filters=args.decoder_filters,
 			pass_state=args.pass_state,
 			learning_rate_decay=args.learning_rate_decay, create_tensorboard=args.create_tensorboard)
+	elif args.model_name == "cnn_convlstm_attention_hardcoded":
+		return CnnConvLSTMAttentionHardcoded(gpus=args.gpus, batch_size=args.batch_size, 
+			segment_size=args.segment_size, window_size=args.window_size, learning_rate=args.learning_rate,
+			output_size=args.output_size, learning_rate_decay=args.learning_rate_decay, 
+			create_tensorboard=args.create_tensorboard)
 	elif args.model_name == "convlstm_seq2seq":
 		return ConvLSTMSeq2Seq(gpus=args.gpus, batch_size=args.batch_size, segment_size=args.segment_size,
 			grid_size=args.grid_size, learning_rate=args.learning_rate, dropout=args.dropout,

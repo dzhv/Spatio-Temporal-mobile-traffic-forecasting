@@ -10,7 +10,8 @@ def get_data_providers(args, rng, test_set=False):
 	if args.model_name in ['lstm', 'windowed_cnn_convlstm']:
 		return get_windowed_data_providers(args, rng, data_reader, test_set)
 	elif args.model_name in ['keras_seq2seq', 'cnn_convlstm_seq2seq', 'cnn_convlstm_attention', 
-		'windowed_predrnn', 'windowed_convlstm_seq2seq', 'mlp', 'cnn_lstm']:
+		'cnn_convlstm_attention_hardcoded', 'windowed_predrnn', 'windowed_convlstm_seq2seq', 
+		'mlp', 'cnn_lstm']:
 		return get_seq2seq_data_providers(args, rng, data_reader, test_set)
 	elif args.model_name in ['cnn_convlstm', 'predrnn', 'convlstm_seq2seq']:
 		return get_full_grid_data_providers(args, rng, data_reader, test_set)

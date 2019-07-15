@@ -40,7 +40,7 @@ def evaluate(save_path, eval_data, order, output_size=12, input_size=12,
              train_mean=67.61768898039853, train_std=132.47248595705986):
 #     input_size = order[0]  # p is input_size
     errors = []
-    for i in range(len(eval_data) - output_size - input_size):
+    for i in range(0, len(eval_data) - output_size - input_size, 20):
         predictions = make_prediction(save_path, eval_data, order, i, input_size, output_size)
         targets = eval_data[i+input_size:i+input_size+output_size]
         

@@ -34,8 +34,8 @@ class CnnConvLSTMAttentionHardcoded(KerasModel):
 
 
 		# encoder				
-		out = ConvLSTM2D(filters=40, kernel_size=3, activation='tanh', 
-			padding='same', return_sequences=True)(out)
+		# out = ConvLSTM2D(filters=40, kernel_size=3, activation='tanh', 
+		# 	padding='same', return_sequences=True)(out)
 		encoder_outputs, state_h, state_c = ConvLSTM2D(filters=40, kernel_size=3, activation='tanh', 
 			padding='same', return_state=True, return_sequences=True)(out)
 		# encoder_outputs shape: (batch_size, segment_size, window_size, window_size, num_filters)
@@ -50,7 +50,7 @@ class CnnConvLSTMAttentionHardcoded(KerasModel):
 		attention_layer._num_constants = 1
 		out = attention_layer([decoder_inputs, state_h, state_c, encoder_outputs])
 
-		out = ConvLSTM2D(filters=40, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
+		out = ConvLSTM2D(filters=64, kernel_size=3, return_sequences=True, activation='tanh', padding='same')(out)
 
 		out = TimeDistributed(Flatten())(out)
 

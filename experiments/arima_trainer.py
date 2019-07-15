@@ -5,7 +5,7 @@ from statsmodels.tsa.statespace.sarimax import SARIMAX
 import statsmodels.api as sm
 import time
 
-def train_and_save(p, d, q, train):
+def train_and_save(p, d, q, train, start_from=0):
 	print(f"starting")
 
 	path = "results/arima"
@@ -24,7 +24,7 @@ def train_and_save(p, d, q, train):
 
 	# fitted_models = []
 	total_time = 0
-	for i in range(window_size**2):
+	for i in range(start_from, window_size**2):
 		start_time = time.time()
 
 		print(f"training model: {i+1}/{window_size**2 + 1}")
@@ -32,6 +32,7 @@ def train_and_save(p, d, q, train):
 		y_coord = i % window_size
 
 		model = SARIMAX(train[:, x_coord, y_coord], order=(p, d, q))
+		model.initialize_approximate_diffuse()
 		model_fit = model.fit(disp=0)
 		# fitted_models.append(model_fit)
 		model_fit.save(save_path + f"/{x_coord}_{y_coord}.pickle", remove_data=True)
@@ -54,4 +55,4 @@ def grid_search(data):
 print(f"loading data")
 train = np.load("data/train.npy")
 # grid_search(train)
-train_and_save(3, 1, 2, train)
+train_and_save(3, 1, 2, train, start_from=6756)

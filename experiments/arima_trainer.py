@@ -55,4 +55,4 @@ def grid_search(data):
 print(f"loading data")
 train = np.load("data/train.npy")
 # grid_search(train)
-train_and_save(3, 1, 2, train, start_from=6756)
+train_and_save(12, 1, 2, train)

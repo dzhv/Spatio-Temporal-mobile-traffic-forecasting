@@ -22,6 +22,7 @@ def predict_sequence(save_path, eval_data, order, input_start, input_size, outpu
     
     prediction_wrapper = model_fit.get_prediction(start=input_start, 
                              end=input_start + input_size + output_size - 1, dynamic=input_size)
+    
     return prediction_wrapper.predicted_mean[-output_size:]
 
 def make_prediction(save_path, eval_data, order, input_start, input_size, output_size):
@@ -72,7 +73,7 @@ def prediction_analysis(save_path, output_path, data, order, output_size, input_
 print("loading data")
 val = np.load("data/val.npy")
 test = np.load("data/test.npy")
-order = (3,1,2)
+order = (1,0,0)
 model_path = f"results/arima/p{order[0]}_d{order[1]}_q{order[2]}" 
 save_path = model_path + "/saved_models"
 

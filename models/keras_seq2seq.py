@@ -24,7 +24,7 @@ class KerasSeq2Seq(KerasModel):
 			return_sequences=True, return_state=True)
 
 		# Define an input sequence.
-		encoder_inputs = Input(shape=(None, num_features))
+		encoder_inputs = Input(batch_shape=(batch_size, segment_size, num_features))
 
 		encoder_outputs_and_states = encoder(encoder_inputs)
 		# Discard encoder outputs and only keep the states.
@@ -35,7 +35,7 @@ class KerasSeq2Seq(KerasModel):
 
 
 		# The decoder input will be set to zero as decoder only relies on the encoder state
-		decoder_inputs = Input(shape=(None, 1))
+		decoder_inputs = Input(batch_shape=(batch_size, output_size, 1))
 		# Set the initial state of the decoder to be the ouput state of the encoder.
 		# This is the fundamental part of the encoder-decoder.
 		decoder_outputs_and_states = decoder(decoder_inputs, initial_state=encoder_states)

@@ -162,7 +162,7 @@ def evaluate_memory():
 
 
 
-evaluate()
+evaluate_inference_flops()
 # evaluate_memory()
 # prediction_analysis(model, data)
 

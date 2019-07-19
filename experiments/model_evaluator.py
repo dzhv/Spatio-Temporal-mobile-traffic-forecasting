@@ -44,8 +44,8 @@ def evaluate():
 def prediction_analysis():
 	model, data = get_essentials()
 
-	indexes = [50, 100, 650]	
-	cells = [(49, 58), (47, 58)]
+	indexes = [49, 100, 190, 650]	
+	cells = [(38, 63), (49, 58), (47, 58), (48, 55)]
 
 	results = {}
 

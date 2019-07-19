@@ -44,7 +44,7 @@ def evaluate():
 def prediction_analysis():
 	model, data = get_essentials()
 
-	indexes = [50, 100]#, 650]	
+	indexes = [50, 100, 650]	
 	cells = [(49, 58), (47, 58)]
 
 	results = {}
@@ -56,17 +56,24 @@ def prediction_analysis():
 		predictions, y = batch
 
 		print(predictions.shape)		
+		print(y.shape)
 		if predictions.shape[0] == 10000:		# hacks..
 			predictions = predictions.reshape(100, 100, 12)
 			predictions = np.transpose(predictions, (2, 0, 1))
+
+			y = y.reshape(100, 100, 12)
+			y = np.transpose(y, (2, 0, 1))			
 		else:
 			predictions = np.squeeze(predictions)
+			y = np.squeeze(y)
 		
 
 		key = lambda indx, cell: f"{indx}_{cell[0]}_{cell[1]}"
+		target_key = lambda indx, cell: f"{indx}_{cell[0]}_{cell[1]}_y"
 		result_item = { key(indexes[i], cell): predictions[:, cell[0], cell[1]] for cell in cells}
+		target_item = { target_key(indexes[i], cell): y[:, cell[0], cell[1]] for cell in cells}
 
-		results.update(result_item)		
+		results.update(result_item)
 
 	np.save("predictions.npy", results)
 

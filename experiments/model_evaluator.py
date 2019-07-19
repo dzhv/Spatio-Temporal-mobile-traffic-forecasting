@@ -142,16 +142,34 @@ def calculate_loss(predictions, targets):
 
 def profile(operation):
 	run_meta = tf.RunMetadata()
-	with tf.Session(graph=tf.Graph()) as sess:
+	graph = tf.Graph()
+	with tf.Session(graph=graph) as sess:
 		K.set_session(sess)
 
+		
 		model, data = get_essentials()
-		return tf.profiler.profile(sess.graph, run_meta=run_meta, cmd='op', options=operation)
+		model.forward(np.random.randn(1, args.segment_size, 11, 11))
+		# 1670059  1671066
+		# 1671279  1669735
+		# print("\nhenlo")
+		# for op in graph.get_operations():
+		# 	print(str(op.name))
+		# print("henlo\n")
+
+		# writer = tf.summary.FileWriter(logdir='logs/test', graph=graph, session=sess)
+		# writer.add_run_metadata(run_meta, "meta_tag?")
+		# writer.flush()
+
+		# hmm = model.forward(np.random.randn(1, 12, 11, 11))
+		# print(hmm)
+
+		# return None
+		return tf.profiler.profile(graph, run_meta=run_meta, cmd='op', options=operation)
 
 def evaluate_inference_flops():
 	flops = profile(tf.profiler.ProfileOptionBuilder.float_operation())
 
-	print(f"flops: {flops}")
+	# print(f"flops: {flops}")
 	print(f"flops.total_float_ops: {flops.total_float_ops}")
 
 def evaluate_memory():	
@@ -160,8 +178,26 @@ def evaluate_memory():
 	print(f"something: {something}")
 	# print(f"flops.total_float_ops: {flops.total_float_ops}")	
 
+def count_parameters():
+    model, data = get_essentials()
+
+    total_parameters = 0
+    for variable in tf.trainable_variables():
+        # shape is an array of tf.Dimension
+        shape = variable.get_shape()
+        # print(shape)
+        # print(len(shape))
+        variable_parameters = 1
+        for dim in shape:
+            # print(dim)
+            variable_parameters *= dim.value
+        # print(variable_parameters)
+        total_parameters += variable_parameters    
+    print(f"number of parameters: {total_parameters}")
+    return total_parameters
 
 
+# count_parameters()
 evaluate_inference_flops()
 # evaluate_memory()
 # prediction_analysis(model, data)

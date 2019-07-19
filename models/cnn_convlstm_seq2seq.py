@@ -22,7 +22,8 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 		
 		# Define an input sequence.
 		# 1 refers to a single channel of the input
-		encoder_inputs = Input(shape=(segment_size, window_size, window_size, 1), name="encoder_input")
+		encoder_inputs = Input(batch_shape=(batch_size, segment_size, window_size, window_size, 1),
+			name="encoder_input")
 
 		# cnns
 		
@@ -34,37 +35,38 @@ class CnnConvLSTMSeq2Seq(KerasModel):
 				name=f"cnn_{i+2}")(out)
 
 		# encoder
-		for i, filters in enumerate(encoder_filters[:-1]):
-			out = ConvLSTM2D(filters=filters, kernel_size=3, return_sequences=True, activation='tanh', 
-				padding='same', name=f"encoder_convlstm_{i+1}")(out)
+		# for i, filters in enumerate(encoder_filters[:-1]):
+		# 	out = ConvLSTM2D(filters=filters, kernel_size=3, return_sequences=True, activation='tanh', 
+		# 		padding='same', name=f"encoder_convlstm_{i+1}")(out)
 
-		encoder_outputs, state_h, state_c = ConvLSTM2D(filters=encoder_filters[-1], kernel_size=3, 
-			activation='tanh', padding='same', return_state=True, return_sequences=True,
-			name=f"encoder_convlstm_{len(encoder_filters)}")(out)
+		# encoder_outputs, state_h, state_c = ConvLSTM2D(filters=encoder_filters[-1], kernel_size=3, 
+		# 	activation='tanh', padding='same', return_state=True, return_sequences=True,
+		# 	name=f"encoder_convlstm_{len(encoder_filters)}")(out)
 
-		# decoder
+		# # decoder
 
 		latent_dim = window_size // 2**(len(cnn_filters) - 1)
 		self.decoder_input_shape = (latent_dim, latent_dim, encoder_filters[-1])
-		decoder_inputs = Input(shape=(output_size,) + self.decoder_input_shape, name="decoder_input")
+		decoder_inputs = Input(batch_shape=(batch_size, output_size,) + self.decoder_input_shape, 
+			name="decoder_input")
 		
-		out = ConvLSTM2D(filters=decoder_filters[0], kernel_size=3, return_sequences=True, activation='tanh', 
-			padding='same', name="decoder_convlstm_1")([decoder_inputs, state_h, state_c])
+		# out = ConvLSTM2D(filters=decoder_filters[0], kernel_size=3, return_sequences=True, activation='tanh', 
+		# 	padding='same', name="decoder_convlstm_1")([decoder_inputs, state_h, state_c])
 
-		for i, filters in enumerate(decoder_filters[1:]):
-			out = ConvLSTM2D(filters=filters, kernel_size=3, return_sequences=True, activation='tanh', 
-				padding=decoder_padding, name=f"decoder_convlstm_{i+2}")(out)
+		# for i, filters in enumerate(decoder_filters[1:]):
+		# 	out = ConvLSTM2D(filters=filters, kernel_size=3, return_sequences=True, activation='tanh', 
+		# 		padding=decoder_padding, name=f"decoder_convlstm_{i+2}")(out)
 
-		# predictor mlp
+		# # predictor mlp
 
-		out = TimeDistributed(Flatten(), name="flatten")(out)
+		# out = TimeDistributed(Flatten(), name="flatten")(out)
 
-		for i, hidden_size in enumerate(mlp_hidden_sizes[:-1]):
-			out = TimeDistributed(Dense(hidden_size, activation='relu', kernel_regularizer=regularizers.l2(0.002)), 
-				name=f"mlp_{i}")(out)
+		# for i, hidden_size in enumerate(mlp_hidden_sizes[:-1]):
+		# 	out = TimeDistributed(Dense(hidden_size, activation='relu', kernel_regularizer=regularizers.l2(0.002)), 
+		# 		name=f"mlp_{i}")(out)
 
-		out = TimeDistributed(Dense(mlp_hidden_sizes[-1], activation='linear', 
-			kernel_regularizer=regularizers.l2(0.002)), name="mlp_final")(out)
+		# out = TimeDistributed(Dense(mlp_hidden_sizes[-1], activation='linear', 
+		# 	kernel_regularizer=regularizers.l2(0.002)), name="mlp_final")(out)
 
 
 		self.model = Model(inputs=[encoder_inputs, decoder_inputs], outputs=out)

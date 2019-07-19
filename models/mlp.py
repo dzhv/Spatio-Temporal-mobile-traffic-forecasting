@@ -16,7 +16,7 @@ class MLP(KerasModel):
 
 		self.model = Sequential()
 
-		self.model.add(Dense(hidden_sizes[0], input_shape=(num_features,), activation='relu'))
+		self.model.add(Dense(hidden_sizes[0], batch_input_shape=(batch_size, num_features), activation='relu'))
 		
 		for hidden_size in hidden_sizes[1:-1]:
 			self.model.add(Dense(hidden_size, activation='relu'))

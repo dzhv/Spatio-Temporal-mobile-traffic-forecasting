@@ -3,6 +3,7 @@
 from keras.layers import Input, LSTMCell, RNN, Dense
 from keras.models import Model, load_model
 from keras.optimizers import Adam
+import keras.backend as K
 import numpy as np
 
 from models.keras_model import KerasModel
@@ -19,28 +20,28 @@ class KerasSeq2Seq(KerasModel):
 
 		# create encoder and decoder LSTM towers/stacks
 		encoder = self.create_stacked_lstms(hidden_size=hidden_size, num_layers=num_layers,
-			return_sequences=False, return_state=True)
+			return_sequences=True, return_state=False)
 		decoder = self.create_stacked_lstms(hidden_size=hidden_size, num_layers=num_layers,
-			return_sequences=True, return_state=True)
+			return_sequences=True, return_state=False)
 
 		# Define an input sequence.
 		encoder_inputs = Input(batch_shape=(batch_size, segment_size, num_features))
 
-		encoder_outputs_and_states = encoder(encoder_inputs)
+		out = encoder(encoder_inputs)
 		# Discard encoder outputs and only keep the states.
 		# The outputs are of no interest to us, the encoder's
 		# job is to create a state describing the input sequence.
 		# encoder_states = [state_h, state_c]
-		encoder_states = encoder_outputs_and_states[1:]
+		# encoder_states = encoder_outputs_and_states[1:]
 
 
 		# The decoder input will be set to zero as decoder only relies on the encoder state
-		decoder_inputs = Input(batch_shape=(batch_size, output_size, 1))
+		# decoder_inputs = Input(batch_shape=(batch_size, output_size, 1))
 		# Set the initial state of the decoder to be the ouput state of the encoder.
 		# This is the fundamental part of the encoder-decoder.
-		decoder_outputs_and_states = decoder(decoder_inputs, initial_state=encoder_states)
+		out = decoder(out)
 		# Only select the output of the decoder (not the states)
-		decoder_outputs = decoder_outputs_and_states[0]
+		# decoder_outputs = decoder_outputs_and_states[0]
 
 		
 		# TODO: try with and without this dense layer
@@ -50,9 +51,9 @@ class KerasSeq2Seq(KerasModel):
 		num_output_features = 1
 		decoder_dense = Dense(num_output_features, activation='linear')  # TODO: try regularizers
 
-		decoder_outputs = decoder_dense(decoder_outputs)
+		out = decoder_dense(out)
 
-		self.model = Model(inputs=[encoder_inputs, decoder_inputs], outputs=decoder_outputs)
+		self.model = Model(inputs=encoder_inputs, outputs=out)
 		self.model = model_device_adapter.get_device_specific_model(self.model, gpus)
 		
 		optimizer = Adam(lr=learning_rate)
@@ -75,16 +76,19 @@ class KerasSeq2Seq(KerasModel):
 		encoder_input = x.reshape(x.shape[0], x.shape[1], x.shape[2] * x.shape[3])
 		# (batch_size, segment_size, arbitrary input dimension)
 		decoder_input = np.zeros((encoder_input.shape[0], self.output_size, 1))
-		return [encoder_input, decoder_input]
+		return encoder_input
 
 	def form_targets(self, y):
 		return y[:, :, None]
 
 if __name__ == '__main__':
-	model = KerasSeq2Seq(output_size=6)
-	output = model.forward(np.random.randn(2, 12, 11, 11))
+	output_size = 6
+	segment_size = 12
+	batch_size = 2
+	model = KerasSeq2Seq(output_size=output_size, batch_size=batch_size, segment_size=segment_size)
+	output = model.forward(np.random.randn(batch_size, segment_size, 11, 11))
 	print("output shape:")
 	print(output.shape)	
 
-	model.train(np.random.randn(2, 12, 11, 11), np.random.randn(2, 6))
+	# model.train(np.random.randn(2, 12, 11, 11), np.random.randn(2, 6))
 	print("train success")

@@ -19,10 +19,11 @@ class CnnLSTM(KerasModel):
 		self.segment_size = segment_size
 		self.output_size = output_size
 		self.gpus = gpus
+		print(f"\nsegment_size: {segment_size}\n")
 		
 		# Define an input sequence.
 		# 1 refers to a single channel of the input
-		inputs = Input(shape=(segment_size, window_size, window_size, 1), name="input")
+		inputs = Input(batch_shape=(batch_size, segment_size, window_size, window_size, 1), name="input")
 
 		# cnns
 		
@@ -38,13 +39,13 @@ class CnnLSTM(KerasModel):
 
 		out = TimeDistributed(Flatten(), name="flatten_before_lstm")(out)
 
-		cells = [LSTMCell(hidden_sizes[0]), LSTMCell(hidden_sizes[1])]
-		out = RNN(cells)(out)
+		# cells = [LSTMCell(hidden_sizes[0]), LSTMCell(hidden_sizes[1])]
+		# out = RNN(cells)(out)
 
 		# out = Flatten(name="flatten_after_lstm")(out)
 
-		out = Dense(100, activation='relu', name=f"mlp_relu")(out)		
-		out = Dense(output_size, activation='linear', name=f"mlp_linear")(out)
+		# out = Dense(100, activation='relu', name=f"mlp_relu")(out)		
+		# out = Dense(output_size, activation='linear', name=f"mlp_linear")(out)
 
 
 		self.model = Model(inputs=inputs, outputs=out)

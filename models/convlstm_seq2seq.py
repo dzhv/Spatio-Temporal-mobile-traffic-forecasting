@@ -26,7 +26,7 @@ class ConvLSTMSeq2Seq(KerasModel):
 		
 		# Define an input sequence.
 		# 1 refers to a single channel of the input
-		encoder_inputs = Input(shape=(segment_size, grid_size, grid_size, 1))		
+		encoder_inputs = Input(batch_shape=(batch_size, segment_size, grid_size, grid_size, 1))		
 
 		out = encoder_inputs
 
@@ -45,7 +45,7 @@ class ConvLSTMSeq2Seq(KerasModel):
 		# decoder
 		
 		self.decoder_input_shape = (grid_size, grid_size, encoder_filters[-1])
-		decoder_inputs = Input(shape=(output_size,) + self.decoder_input_shape, name="decoder_input")
+		decoder_inputs = Input(batch_shape=(batch_size, output_size,) + self.decoder_input_shape, name="decoder_input")
 
 		# first decoder layer gets the encoder states
 		out = ConvLSTM2D(filters=decoder_filters[0], kernel_size=kernel_size, return_sequences=True, 

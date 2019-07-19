@@ -24,7 +24,7 @@ class CnnConvLSTMAttentionHardcoded(KerasModel):
 		
 		# Define an input sequence.
 		# 1 refers to a single channel of the input
-		encoder_inputs = Input(shape=(segment_size, window_size, window_size, 1))
+		encoder_inputs = Input(batch_shape=(batch_size, segment_size, window_size, window_size, 1))
 				
 		out = TimeDistributed(Conv2D(20, kernel_size=3, activation='tanh', padding='same'))(encoder_inputs)
 		out = TimeDistributed(AveragePooling2D())(out)
@@ -44,7 +44,7 @@ class CnnConvLSTMAttentionHardcoded(KerasModel):
 	
 		latent_dim = window_size // 4  # 2 x 2 average pooling operations reduce the dimensionality as // 4
 		self.decoder_input_shape = (latent_dim, latent_dim, 40)#encoder_filters[-1])
-		decoder_inputs = Input(shape=(output_size,) + self.decoder_input_shape, name="decoder_input")
+		decoder_inputs = Input(batch_shape=(batch_size, output_size,) + self.decoder_input_shape, name="decoder_input")
 
 		attention_layer = ConvRNN2D(ConvLSTMAttentionCell(40, kernel_size=3, padding='same'), return_sequences=True)
 		attention_layer._num_constants = 1

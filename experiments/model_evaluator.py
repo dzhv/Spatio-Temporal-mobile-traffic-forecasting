@@ -44,21 +44,29 @@ def evaluate():
 def prediction_analysis():
 	model, data = get_essentials()
 
-	indexes = [0, 25, 50, 75]	
-	results = []
+	indexes = [50, 100]#, 650]	
+	cells = [(49, 58), (47, 58)]
+
+	results = {}
 
 	print(f"\nPredictions for {len(indexes)} samples are going to be saved in preditions.npy\n")
-	for i, batch in enumarate(iterate_prediction_batches(data.enumerate_data(indexes))):
+	for i, batch in enumerate(iterate_prediction_batches(data.enumerate_data(indexes), model, "?", 
+		args.prediction_batch_size)):
 		print(f"evaluating sample {i}")
 		predictions, y = batch
 
-		result_item = {
-			'input': x,
-			'targets': y,
-			'predictions': predictions
-		}
+		print(predictions.shape)		
+		if predictions.shape[0] == 10000:		# hacks..
+			predictions = predictions.reshape(100, 100, 12)
+			predictions = np.transpose(predictions, (2, 0, 1))
+		else:
+			predictions = np.squeeze(predictions)
+		
 
-		results.append(result_item)
+		key = lambda indx, cell: f"{indx}_{cell[0]}_{cell[1]}"
+		result_item = { key(i, cell): predictions[:, cell[0], cell[1]] for cell in cells}
+
+		results.update(result_item)		
 
 	np.save("predictions.npy", results)
 
@@ -162,7 +170,7 @@ def evaluate_memory():
 
 
 
-evaluate()
+# evaluate()
 # evaluate_memory()
-# prediction_analysis(model, data)
+prediction_analysis()
 

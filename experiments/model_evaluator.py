@@ -74,6 +74,7 @@ def prediction_analysis():
 		target_item = { target_key(indexes[i], cell): y[:, cell[0], cell[1]] for cell in cells}
 
 		results.update(result_item)
+		results.update(target_item)
 
 	np.save("predictions.npy", results)
 

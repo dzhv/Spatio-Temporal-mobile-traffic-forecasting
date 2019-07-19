@@ -64,7 +64,7 @@ def prediction_analysis():
 		
 
 		key = lambda indx, cell: f"{indx}_{cell[0]}_{cell[1]}"
-		result_item = { key(i, cell): predictions[:, cell[0], cell[1]] for cell in cells}
+		result_item = { key(indexes[i], cell): predictions[:, cell[0], cell[1]] for cell in cells}
 
 		results.update(result_item)		
 

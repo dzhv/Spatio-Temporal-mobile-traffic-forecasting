@@ -16,8 +16,17 @@ from collections import defaultdict
 import tensorflow as tf
 import keras.backend as K
 
+def get_save_dir():
+	if args.model_file == 'none':
+		return parent_folder
+
+	return path.dirname(path.dirname(args.model_file))
+
+def get_prediction_save_path():
+	return path.join(get_save_dir(), "predictions.npy")
+
 def write_to_file(message):
-	model_folder = path.dirname(path.dirname(args.model_file))
+	model_folder = get_save_dir()
 	file = path.join(model_folder, "evaluation.txt")
 
 	with open(file, "a") as f:
@@ -49,7 +58,9 @@ def prediction_analysis():
 
 	results = {}
 
-	print(f"\nPredictions for {len(indexes)} samples are going to be saved in preditions.npy\n")
+	save_path = get_prediction_save_path()
+
+	print(f"\nPredictions for {len(indexes)} samples are going to be saved in {save_path}\n")
 	for i, batch in enumerate(iterate_prediction_batches(data.enumerate_data(indexes), model, "?", 
 		args.prediction_batch_size)):
 		print(f"evaluating sample {i}")
@@ -76,7 +87,7 @@ def prediction_analysis():
 		results.update(result_item)
 		results.update(target_item)
 
-	np.save("predictions.npy", results)
+	np.save(save_path, results)
 
 def get_essentials():
 	print("loading the model")

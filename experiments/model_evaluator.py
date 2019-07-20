@@ -68,8 +68,10 @@ def prediction_analysis():
 
 		print(predictions.shape)		
 		print(y.shape)
-		if predictions.shape[0] == 10000:		# hacks..
-			predictions = predictions.reshape(100, 100, 12)
+		# hacks..
+		# checks if predictions are full grid or per cell
+		if predictions.shape[0] == args.grid_size ** 2:		
+			predictions = predictions.reshape(args.grid_size, args.grid_size, args.output_size)
 			predictions = np.transpose(predictions, (2, 0, 1))
 
 			y = y.reshape(args.grid_size, args.grid_size, args.output_size)

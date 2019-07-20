@@ -39,27 +39,41 @@ def make_prediction(save_path, eval_data, order, input_start, input_size, output
             
     return prediction
 
+def calculate_error(predictions, targets, train_mean, train_std):
+    predictions = predictions * train_std + train_mean 
+    targets = targets * train_std + train_mean
+
+    return nrmse(targets, predictions)
+
 def evaluate(save_path, eval_data, order, output_size=12, input_size=12,
              train_mean=67.61768898039853, train_std=132.47248595705986):
 #     input_size = order[0]  # p is input_size
-    errors = []
+    errors_10 = []
+    errors_12 = []
+    errors_30 = []
     indexes = range(0, len(eval_data) - output_size - input_size, 20)
     for count, i in enumerate(indexes):
         predictions = make_prediction(save_path, eval_data, order, i, input_size, output_size)
         targets = eval_data[i+input_size:i+input_size+output_size]
+
+        print(f"predictions shape: {predictions.shape}")
         
-        predictions = predictions * train_std + train_mean 
-        targets = targets * train_std + train_mean
+        errors_10.append(calculate_error(predictions[:10], targets[:10], train_mean, train_std))
+        errors_12.append(calculate_error(predictions[:12], targets[:12], train_mean, train_std))
+        errors_30.append(calculate_error(predictions[:30], targets[:30], train_mean, train_std))
         
-        error = nrmse(targets, predictions)
-        errors.append(error)
-        print(f"error: {error}")
-        print(f"mean error: {np.array(errors).mean()}")
+        print(f"mean 10 step error: {np.array(errors_10).mean()}")
+        print(f"mean 12 step error: {np.array(errors_12).mean()}")
+        print(f"mean 30 step error: {np.array(errors_30).mean()}")
         print(f"{count}/{len(indexes)}")
             
-    print(f"mean error: {np.array(errors).mean()}")
-    print(f"error std: {np.array(errors).std()}")
-    return errors
+    print(f"mean 10 step error: {np.array(errors_10).mean()}")
+    print(f"error std: {np.array(errors_10).std()}")
+    print(f"mean 12 step error: {np.array(errors_12).mean()}")
+    print(f"error std: {np.array(errors_12).std()}")
+    print(f"mean 30 step error: {np.array(errors_30).mean()}")
+    print(f"error std: {np.array(errors_30).std()}")
+    return (errors_10, errors_12, errors_30)
 
 def prediction_analysis(save_path, output_path, data, order, output_size, input_size, 
     segment_start, x_coord, y_coord):
@@ -74,10 +88,10 @@ def prediction_analysis(save_path, output_path, data, order, output_size, input_
 print("loading data")
 val = np.load("data/val.npy")
 test = np.load("data/test.npy")
-order = (12,1,4)
+order = (1,0,0)
 model_path = f"results/arima/p{order[0]}_d{order[1]}_q{order[2]}" 
 save_path = model_path + "/saved_models"
 
-evaluate(save_path, val, order=order)
+evaluate(save_path, test, order=order, output_size=30)
 # prediction_analysis(save_path, model_path, test, order, output_size=30, 
 #    input_size=12, segment_start=50, x_coord=49, y_coord=58)

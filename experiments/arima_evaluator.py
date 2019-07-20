@@ -75,23 +75,34 @@ def evaluate(save_path, eval_data, order, output_size=12, input_size=12,
     print(f"error std: {np.array(errors_30).std()}")
     return (errors_10, errors_12, errors_30)
 
-def prediction_analysis(save_path, output_path, data, order, output_size, input_size, 
-    segment_start, x_coord, y_coord):
+def prediction_analysis(save_path, output_path, data, order, locations, output_size, input_size):
     print(f"predicting..")
-    predictions = predict_sequence(save_path, data, order, segment_start, input_size, output_size,
-        x_coord, y_coord)
+
+    result = {}
+    for location in locations:
+        cell = location['cell']  
+        predictions = predict_sequence(save_path, data, order, location['from'], 
+            input_size, output_size,
+            cell[0], cell[1])
+
+        result.update({ f"{location['from']}_{cell[0]}_{cell[1]}": predictions})
 
     path = output_path + "/predictions.npy"
     print(f"saving predictions to: {path}")
-    np.save(path, predictions)
+    np.save(path, result)
 
 print("loading data")
 val = np.load("data/val.npy")
 test = np.load("data/test.npy")
-order = (1,0,0)
+order = (12,1,2)
 model_path = f"results/arima/p{order[0]}_d{order[1]}_q{order[2]}" 
 save_path = model_path + "/saved_models"
 
-evaluate(save_path, test, order=order, output_size=30)
-# prediction_analysis(save_path, model_path, test, order, output_size=30, 
-#    input_size=12, segment_start=50, x_coord=49, y_coord=58)
+# evaluate(save_path, test, order=order, output_size=30)
+
+locations = [
+    {'from': 49, 'cell': (38, 63)},
+    {'from': 100, 'cell': (49, 58)},
+    {'from': 650, 'cell': (47, 58)}
+]
+prediction_analysis(save_path, model_path, test, order, locations, output_size=30, input_size=12)

@@ -96,14 +96,14 @@ class ExperimentBuilder(object):
         if not self.post_train_time is None:
             non_train_time = train_start_time - self.post_train_time
             non_train_time = "{:.4f}".format(non_train_time)
-            print(f"operations between model.train took: {non_train_time} seconds")
+            # print(f"operations between model.train took: {non_train_time} seconds")
 
         loss = self.model.train(x, y)
 
         self.post_train_time = time.time()
         train_elapsed_time = self.post_train_time - train_start_time
         train_elapsed_time = "{:.4f}".format(train_elapsed_time)
-        print(f"model.train took: {train_elapsed_time} seconds")
+        # print(f"model.train took: {train_elapsed_time} seconds")
 
         return loss
 

@@ -72,7 +72,7 @@ def prediction_analysis():
 			predictions = predictions.reshape(100, 100, 12)
 			predictions = np.transpose(predictions, (2, 0, 1))
 
-			y = y.reshape(100, 100, 12)
+			y = y.reshape(args.grid_size, args.grid_size, args.output_size)
 			y = np.transpose(y, (2, 0, 1))			
 		else:
 			predictions = np.squeeze(predictions)

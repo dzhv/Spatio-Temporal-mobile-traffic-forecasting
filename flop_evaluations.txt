@@ -1,39 +1,59 @@
 keras_seq2seq
 -------------
-python experiments/model_evaluator.py --model_name "keras_seq2seq" --batch_size 10000 --num_layers 2 --hidden_size 100
+python experiments/model_evaluator.py --model_name "keras_seq2seq" --batch_size 1 --num_layers 2 --hidden_size 100
 
-257812
+(<what I've got without dense for segm 1> * <12 segments> + <dense add up>)
+(1671066 * 12 + 213) * 10000 = 200530050000  (201 bill)
 
-
-
-cnn_convlstm_seq2seq   (as in win11_3)
---------------------
-python experiments/model_evaluator.py --model_name "cnn_convlstm_seq2seq" --cnn_filters "25,50,50" --encoder_filters "50,50,50" --decoder_filters "50,50,50" --mlp_hidden_sizes "1" --batch_size 10000
-
-1148992
+params: 330,101
 
 
-
-cnn_convlstm_seq2seq   (as in win11_3)
---------------------
-
-python experiments/model_evaluator.py --model_name "cnn_convlstm_attention" --cnn_filters "25,50,50" --encoder_filters "50,50,50" --decoder_filters "50,50,50" --mlp_hidden_sizes "1" --batch_size 1
-
-1383200
-
-
-convlstm_seq2seq   (as in win11_3)
+convlstm_seq2seq
 ----------------
-python experiments/model_evaluator.py --model_name "convlstm_seq2seq" --encoder_filters "50,50,50" --decoder_filters "50,50,50" --mlp_hidden_sizes "1" --batch_size 1
+python experiments/model_evaluator.py --model_name "convlstm_seq2seq" --encoder_filters "50,50" --decoder_filters "50,50" --batch_size 1
 
-3928840
+26279563731 * 12 = 315354764772  (315 bill)
+
+params: 632,651
 
 
-predrnn  (50,50,50)
+
+cnn_convlstm_seq2seq   (as in win11_3)
 --------------------
-python experiments/model_evaluator.py --model_name "predrnn" --hidden_sizes "50,50,50" --batch_size 1
+python experiments/model_evaluator.py --model_name "cnn_convlstm_seq2seq" --cnn_filters "25,50,50" --encoder_filters "50,50,50" --decoder_filters "50,50,50" --mlp_hidden_sizes "1" --batch_size 1
 
-9140089872703  (9140 bill)
+		cnns: 				1677429
+		cnns+seq2seq:  		20995065
+		only seq2seq:  		20995065 - 1677429 = 19317636
+		with everything: 	20996879
+		only dense:			20996879 - 20995065 = 1814
+
+		final:
+		(1677429 + 19317636 * 12 + 1814) * 10000 = 2334908750000 (2335 bill)
+
+20996879 * 12 * 10000 = 2519,625,480,000 (2520 bill)
+
+params: 1,115,501		
+
+cnn_convlstm_seq2seq +attention  (as in win11_3)
+--------------------
+
+python experiments/model_evaluator.py --model_name "cnn_convlstm_attention_hardcoded" --batch_size 1 --segment_size 12
+
+		cnns:				1093549
+		cnns+seq2seq:  		8691660
+		only seq2seq:  		8691660 - 1093549 = 7598111
+		with everything: 	8836480
+		only dense:			8836480 - 8691660 = 144820
+
+		final:
+		(1093549 + 7598111 * 12 + 144820) * 10000 = 924157010000 (924 bill)
+
+8836480 * 12 * 10000 = 1060,377,600,000 (1060 bill)
+
+
+
+params: 542,761
 
 predrnn  (30,30,30)
 --------------------
@@ -41,15 +61,35 @@ python experiments/model_evaluator.py --model_name "predrnn" --hidden_sizes "30,
 
 3302259366343  (3302 bill)
 
-
-windowed_predrnn (50,50,50   50,1)
--------------------
-python experiments/model_evaluator.py --model_name "predrnn" --hidden_sizes "50,50,50" --batch_size 1 \
-	--mlp_hidden_sizes "50,1"
-
-110777323444
-
+params: 1,434,571 ()
 
 stn
 -----------------
 293902153 (293 mill)
+626968022 (626 mill)   with batch specified to 1  (why different?)
+
+for 12 step output:
+	626968022 * 12 = 7523616264
+
+	for 10000 outputs: 75236162640000  (75236 bill)
+
+params: 146956295 (146 mill)
+
+mlp
+----------------
+7836021 * 10000 = 78,360,210,000  (78 bill)
+
+params: 1,960,812
+
+arima
+---------------
+
+
+cnn-rnn
+---------------
+
+cnns: 25393447
+
+29588576 * 12 * 10000  = 3550,629,120,000  (3550 bill)
+
+params: 411,456

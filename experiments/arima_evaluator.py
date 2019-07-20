@@ -43,7 +43,8 @@ def evaluate(save_path, eval_data, order, output_size=12, input_size=12,
              train_mean=67.61768898039853, train_std=132.47248595705986):
 #     input_size = order[0]  # p is input_size
     errors = []
-    for i in range(0, len(eval_data) - output_size - input_size, 20):
+    indexes = range(0, len(eval_data) - output_size - input_size, 20)
+    for count, i in enumerate(indexes):
         predictions = make_prediction(save_path, eval_data, order, i, input_size, output_size)
         targets = eval_data[i+input_size:i+input_size+output_size]
         
@@ -54,7 +55,7 @@ def evaluate(save_path, eval_data, order, output_size=12, input_size=12,
         errors.append(error)
         print(f"error: {error}")
         print(f"mean error: {np.array(errors).mean()}")
-                
+        print(f"{count}/{len(indexes)}")
             
     print(f"mean error: {np.array(errors).mean()}")
     print(f"error std: {np.array(errors).std()}")
@@ -73,14 +74,10 @@ def prediction_analysis(save_path, output_path, data, order, output_size, input_
 print("loading data")
 val = np.load("data/val.npy")
 test = np.load("data/test.npy")
-order = (1,0,0)
+order = (12,1,4)
 model_path = f"results/arima/p{order[0]}_d{order[1]}_q{order[2]}" 
 save_path = model_path + "/saved_models"
 
-# evaluate(save_path, val, order=(3,1,2))
-prediction_analysis(save_path, model_path, test, order, output_size=30, 
-    input_size=12, segment_start=50, x_coord=49, y_coord=58)
-
-    
-
-            
+evaluate(save_path, val, order=order)
+# prediction_analysis(save_path, model_path, test, order, output_size=30, 
+#    input_size=12, segment_start=50, x_coord=49, y_coord=58)

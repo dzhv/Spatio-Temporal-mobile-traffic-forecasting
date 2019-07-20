@@ -74,13 +74,13 @@ def prediction_analysis(save_path, output_path, data, order, output_size, input_
 print("loading data")
 val = np.load("data/val.npy")
 test = np.load("data/test.npy")
-order = (1,0,0)
+order = (12,1,4)
 model_path = f"results/arima/p{order[0]}_d{order[1]}_q{order[2]}" 
 save_path = model_path + "/saved_models"
 
-# evaluate(save_path, val, order=(3,1,2))
-prediction_analysis(save_path, model_path, test, order, output_size=30, 
-    input_size=12, segment_start=50, x_coord=49, y_coord=58)
+evaluate(save_path, val, order=order
+# prediction_analysis(save_path, model_path, test, order, output_size=30, 
+#    input_size=12, segment_start=50, x_coord=49, y_coord=58)
 
     
 

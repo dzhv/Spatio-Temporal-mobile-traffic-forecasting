@@ -66,7 +66,7 @@ def prediction_analysis():
 		print(f"evaluating sample {i}")
 		predictions, y = batch
 
-		print(predictions.shape)		
+		print(predictions.shape)
 		print(y.shape)
 		# hacks..
 		# checks if predictions are full grid or per cell
@@ -75,7 +75,7 @@ def prediction_analysis():
 			predictions = np.transpose(predictions, (2, 0, 1))
 
 			y = y.reshape(args.grid_size, args.grid_size, args.output_size)
-			y = np.transpose(y, (2, 0, 1))			
+			y = np.transpose(y, (2, 0, 1))
 		else:
 			predictions = np.squeeze(predictions)
 			y = np.squeeze(y)
@@ -143,7 +143,7 @@ def iterate_prediction_batches(sample_generator, model, num_batches, batch_size)
 		if batch is None:
 			batch = (predictions, y) 
 		else:
-			batch = (np.concatenate((predictions, batch[0]), axis=0), np.concatenate((y, batch[1]), axis=0))
+			batch = (np.concatenate((batch[0], predictions), axis=0), np.concatenate((batch[1], y), axis=0))
 
 		print(f"{batch_count}/{num_batches} processed")
 		batch_count += 1

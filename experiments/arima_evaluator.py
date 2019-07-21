@@ -16,24 +16,24 @@ def nrmse(targets, predictions):
 
 def predict_sequence(save_path, eval_data, order, input_start, input_size, output_size, 
     x_coord, y_coord):
-    start = time.time()
+    # start = time.time()
     trained_model = sm.load(f"{save_path}/{x_coord}_{y_coord}.pickle")
-    post_load = time.time()
+    # post_load = time.time()
     model = SARIMAX(eval_data[input_start:input_start+input_size, x_coord, y_coord], order=order)
-    post_create = time.time()
+    # post_create = time.time()
     model_fit = model.filter(trained_model.params)
-    post_filter = time.time()
+    # post_filter = time.time()
     
     prediction_wrapper = model_fit.get_prediction(start=0, 
                              end= input_size + output_size - 1, dynamic=input_size)
 
     post_predict = time.time()
 
-    print(f"loading time: {post_load - start}")
-    print(f"create time: {post_create - post_load}")
-    print(f"filter time: {post_filter - post_create}")
-    print(f"predict time: {post_predict - post_filter}")
-    print(f"full time: {post_predict - start}")    
+    # print(f"loading time: {post_load - start}")
+    # print(f"create time: {post_create - post_load}")
+    # print(f"filter time: {post_filter - post_create}")
+    # print(f"predict time: {post_predict - post_filter}")
+    # print(f"full time: {post_predict - start}")    
 
     return prediction_wrapper.predicted_mean[-output_size:]
 

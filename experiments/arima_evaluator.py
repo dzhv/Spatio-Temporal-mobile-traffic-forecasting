@@ -19,13 +19,13 @@ def predict_sequence(save_path, eval_data, order, input_start, input_size, outpu
     start = time.time()
     trained_model = sm.load(f"{save_path}/{x_coord}_{y_coord}.pickle")
     post_load = time.time()
-    model = SARIMAX(eval_data[:, x_coord, y_coord], order=order)
+    model = SARIMAX(eval_data[input_start:input_start+input_size, x_coord, y_coord], order=order)
     post_create = time.time()
     model_fit = model.filter(trained_model.params)
     post_filter = time.time()
     
-    prediction_wrapper = model_fit.get_prediction(start=input_start, 
-                             end=input_start + input_size + output_size - 1, dynamic=input_size)
+    prediction_wrapper = model_fit.get_prediction(start=0, 
+                             end= input_size + output_size - 1, dynamic=input_size)
 
     post_predict = time.time()
 
@@ -110,11 +110,12 @@ order = (12,1,2)
 model_path = f"results/arima/p{order[0]}_d{order[1]}_q{order[2]}" 
 save_path = model_path + "/saved_models"
 
-# evaluate(save_path, test, order=order, output_size=30)
+# noise = np.random.randn(4000, 100, 100) * 10
+evaluate(save_path, test, order=order, output_size=30)
 
 locations = [
     {'from': 49, 'cell': (38, 63)},
     {'from': 100, 'cell': (49, 58)},
     {'from': 650, 'cell': (47, 58)}
 ]
-prediction_analysis(save_path, model_path, test, order, locations, output_size=30, input_size=12)
+# prediction_analysis(save_path, model_path, test, order, locations, output_size=30, input_size=12)

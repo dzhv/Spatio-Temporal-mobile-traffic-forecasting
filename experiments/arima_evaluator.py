@@ -107,17 +107,22 @@ def fullgrid_prediction_analysis(save_path, output_path, data, order, indexes, o
     print(f"predicting..")
 
     result = {}
+
     for i, index in enumerate(indexes):
+        prediction = np.zeros((100, 100))
         print(f"index {i}/{len(indexes)}")
         for x in range(100):
             print(f"x: {x}")
             for y in range(100):
                 predictions = predict_sequence(save_path, data, order, index, 
                     input_size, output_size, x, y)
-                targets = data[index+input_size:index+input_size+output_size]
+                prediction[x, y] = predictions[-1]
 
-                result.update({ str(index): predictions})
-                result.update({ f"{index}_y": targets})
+
+            targets = data[index+input_size:index+input_size+output_size]
+
+            result.update({ str(index): prediction})
+            result.update({ f"{index}_y": targets})
 
     path = output_path + "/predictions.npy"
     print(f"saving predictions to: {path}")
@@ -126,7 +131,7 @@ def fullgrid_prediction_analysis(save_path, output_path, data, order, indexes, o
 print("loading data")
 val = np.load("data/val.npy")
 test = np.load("data/test.npy")
-order = (12,1,2)
+order = (1,0,0)
 model_path = f"results/arima/p{order[0]}_d{order[1]}_q{order[2]}" 
 save_path = model_path + "/saved_models"
 

@@ -89,7 +89,7 @@ def prediction_analysis():
 			target_item = { target_key(indexes[i], cell): y[:, cell[0], cell[1]] for cell in cells}
 		else:
 			result_item = { indexes[i]: predictions[-1]}
-			target_item = { inderxes[i]: y[-1]}
+			target_item = { indexes[i]: y[-1]}
 
 
 		results.update(result_item)

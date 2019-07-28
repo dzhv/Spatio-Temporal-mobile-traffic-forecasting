@@ -53,8 +53,9 @@ def evaluate():
 def prediction_analysis():
 	model, data = get_essentials()
 
-	indexes = [49, 100, 190, 650]	
-	cells = [(38, 63), (49, 58), (47, 58), (48, 55)]
+	indexes = [10, 11, 88, 221]	
+	# cells = [(38, 63), (49, 58), (47, 58), (48, 55)]
+	cells = []
 
 	results = {}
 
@@ -80,11 +81,15 @@ def prediction_analysis():
 			predictions = np.squeeze(predictions)
 			y = np.squeeze(y)
 		
+		if len(cells) > 0:
+			key = lambda indx, cell: f"{indx}_{cell[0]}_{cell[1]}"
+			target_key = lambda indx, cell: f"{indx}_{cell[0]}_{cell[1]}_y"
+			result_item = { key(indexes[i], cell): predictions[:, cell[0], cell[1]] for cell in cells}
+			target_item = { target_key(indexes[i], cell): y[:, cell[0], cell[1]] for cell in cells}
+		else:
+			result_item = { indexes[i]: predictions[-1]}
+			target_item = { inderxes[i]: y[-1]}
 
-		key = lambda indx, cell: f"{indx}_{cell[0]}_{cell[1]}"
-		target_key = lambda indx, cell: f"{indx}_{cell[0]}_{cell[1]}_y"
-		result_item = { key(indexes[i], cell): predictions[:, cell[0], cell[1]] for cell in cells}
-		target_item = { target_key(indexes[i], cell): y[:, cell[0], cell[1]] for cell in cells}
 
 		results.update(result_item)
 		results.update(target_item)

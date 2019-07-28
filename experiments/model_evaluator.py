@@ -22,8 +22,9 @@ def get_save_dir():
 
 	return path.dirname(path.dirname(args.model_file))
 
-def get_prediction_save_path():
-	return path.join(get_save_dir(), "predictions.npy")
+def get_prediction_save_path(cells):
+	name = "predictions.npy" if len(cells) > 0 else "predictions_fullgrid.npy"
+	return path.join(get_save_dir(), name)
 
 def write_to_file(message):
 	model_folder = get_save_dir()
@@ -59,7 +60,7 @@ def prediction_analysis():
 
 	results = {}
 
-	save_path = get_prediction_save_path()
+	save_path = get_prediction_save_path(cells)
 
 	print(f"\nPredictions for {len(indexes)} samples are going to be saved in {save_path}\n")
 	for i, batch in enumerate(iterate_prediction_batches(data.enumerate_data(indexes), model, "?", 

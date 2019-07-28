@@ -124,14 +124,14 @@ def fullgrid_prediction_analysis(save_path, output_path, data, order, indexes, o
             result.update({ str(index): prediction})
             result.update({ f"{index}_y": targets})
 
-    path = output_path + "/predictions.npy"
+    path = output_path + "/predictions_fullgrid.npy"
     print(f"saving predictions to: {path}")
     np.save(path, result)
 
 print("loading data")
 val = np.load("data/val.npy")
 test = np.load("data/test.npy")
-order = (1,0,0)
+order = (12,1,2)
 model_path = f"results/arima/p{order[0]}_d{order[1]}_q{order[2]}" 
 save_path = model_path + "/saved_models"
 

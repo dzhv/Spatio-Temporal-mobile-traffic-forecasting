@@ -1,0 +1,2 @@
+train_loss,val_loss,val_nrmse_loss,curr_epoch
+0.0006605709,0.21809755591781713,0.9790349163795578,0

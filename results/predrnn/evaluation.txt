@@ -1,0 +1,18 @@
+Errors for all testing data:
+Errors for all testing data:
+Errors for all testing data:
+mean 1 step nrmse loss: 0.22287719175117587
+std: 0.03291985701526121
+mean 10 step nrmse loss: 0.4005718776012032
+std: 0.07657437712577105
+mean 12 step nrmse loss: 0.44046242742719294
+std: 0.09075471278939208
+
+
+Trying 10 random samples:
+mean 1 step nrmse loss: 0.21153745998968457
+std: 0.019048731615095103
+mean 10 step nrmse loss: 0.42676593001049856
+std: 0.06325118619429827
+mean 12 step nrmse loss: 0.4762982481053518
+std: 0.07249007561752176

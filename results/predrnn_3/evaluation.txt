@@ -1,0 +1,88 @@
+Namespace(batch_size=1, cnn_filters=[25, 50, 50], continue_from_epoch=-1, create_tensorboard=False, data_path='data', decoder_filters=[50, 50, 50], decoder_padding='same', dropout=0, encoder_filters=[50, 50, 50], evaluation_steps=[1, 10, 12], experiment_name='exp_1', fraction_of_data=1, fraction_of_val=1, gpu_id='None', gpus=0, grid_size=100, hidden_size=100, hidden_sizes=[30, 30, 30], kernel_size=3, learning_rate=0.0001, learning_rate_decay=0, missing_data=0.1, mlp_hidden_sizes=[1], model_file='results/predrnn_3/saved_models/train_model_10', model_name='predrnn_3', num_epochs=100, num_layers=2, output_size=12, pass_state=True, prediction_batch_size=1, seed=7112018, segment_size=12, shuffle_order=False, train_mean=67.61768898039853, train_std=132.47248595705986, use_gpu=False, use_mini_data=False, weight_decay=1e-05, window_size=11)
+
+Namespace(batch_size=1, cnn_filters=[25, 50, 50], continue_from_epoch=-1, create_tensorboard=False, data_path='data', decoder_filters=[50, 50, 50], decoder_padding='same', dropout=0, encoder_filters=[50, 50, 50], evaluation_steps=[1, 10, 12], experiment_name='exp_1', fraction_of_data=1, fraction_of_val=1, gpu_id='None', gpus=0, grid_size=100, hidden_size=100, hidden_sizes=[30, 30, 30], kernel_size=3, learning_rate=0.0001, learning_rate_decay=0, missing_data=0.1, mlp_hidden_sizes=[1], model_file='results/predrnn_3/saved_models/train_model_10', model_name='predrnn', num_epochs=100, num_layers=2, output_size=12, pass_state=True, prediction_batch_size=1, seed=7112018, segment_size=12, shuffle_order=False, train_mean=67.61768898039853, train_std=132.47248595705986, use_gpu=False, use_mini_data=False, weight_decay=1e-05, window_size=11)
+
+Errors for all testing data:
+mean 1 step nrmse loss: 0.2398416482240242
+std: 0.03457874740909867
+mean 10 step nrmse loss: 0.3032337824368896
+std: 0.04771625472294024
+mean 12 step nrmse loss: 0.32121085737446026
+std: 0.05363712312216349
+
+
+Trying 10 random samples:
+mean 1 step nrmse loss: 0.22896998609167704
+std: 0.025855310451436228
+mean 10 step nrmse loss: 0.3139924317248489
+std: 0.04724176952634817
+mean 12 step nrmse loss: 0.3372557945180453
+std: 0.05600234172231803
+Namespace(batch_size=1, cnn_filters=[25, 50, 50], continue_from_epoch=-1, create_tensorboard=False, data_path='data', decoder_filters=[50, 50, 50], decoder_padding='same', dropout=0, encoder_filters=[50, 50, 50], evaluation_steps=[1, 10, 12], experiment_name='exp_1', fraction_of_data=1, fraction_of_val=1, gpu_id='None', gpus=0, grid_size=100, hidden_size=100, hidden_sizes=[30, 30, 30], kernel_size=3, learning_rate=0.0001, learning_rate_decay=0, missing_data=0.1, mlp_hidden_sizes=[1], model_file='results/predrnn_3/saved_models/train_model_10', model_name='predrnn', num_epochs=100, num_layers=2, output_size=12, pass_state=True, prediction_batch_size=1, seed=7112018, segment_size=12, shuffle_order=False, train_mean=67.61768898039853, train_std=132.47248595705986, use_gpu=False, use_mini_data=False, weight_decay=1e-05, window_size=11)
+
+Errors for all testing data:
+mean 1 step nrmse loss: 0.2398416482240242
+std: 0.03457874740909867
+mean 10 step nrmse loss: 0.3032337824368896
+std: 0.04771625472294024
+mean 12 step nrmse loss: 0.32121085737446026
+std: 0.05363712312216349
+
+
+Trying 10 random samples:
+mean 1 step nrmse loss: 0.22896998609167704
+std: 0.025855310451436228
+mean 10 step nrmse loss: 0.3139924317248489
+std: 0.04724176952634817
+mean 12 step nrmse loss: 0.3372557945180453
+std: 0.05600234172231803
+Namespace(batch_size=1, cnn_filters=[25, 50, 50], continue_from_epoch=-1, create_tensorboard=False, data_path='data', decoder_filters=[50, 50, 50], decoder_padding='same', dropout=0, encoder_filters=[50, 50, 50], evaluation_steps=[1, 10, 12], experiment_name='exp_1', fraction_of_data=1, fraction_of_val=1, gpu_id='None', gpus=0, grid_size=100, hidden_size=100, hidden_sizes=[30, 30, 30], kernel_size=3, learning_rate=0.0001, learning_rate_decay=0, missing_data=0.1, mlp_hidden_sizes=[1], model_file='results/predrnn_3/saved_models/train_model_10', model_name='predrnn', num_epochs=100, num_layers=2, output_size=12, pass_state=True, prediction_batch_size=1, seed=7112018, segment_size=12, shuffle_order=False, train_mean=67.61768898039853, train_std=132.47248595705986, use_gpu=False, use_mini_data=False, weight_decay=1e-05, window_size=11)
+
+Errors for all testing data:
+mean 1 step nrmse loss: 0.5705778605656965
+std: 0.14332341492697048
+mean 10 step nrmse loss: 0.5800470536387462
+std: 0.1036324040674309
+mean 12 step nrmse loss: 0.5888119380883119
+std: 0.10312688797184473
+
+
+Trying 10 random samples:
+mean 1 step nrmse loss: 0.5962192599872244
+std: 0.17098688379354787
+mean 10 step nrmse loss: 0.6034422793181924
+std: 0.11862416319234835
+mean 12 step nrmse loss: 0.6135821208273248
+std: 0.11539877039067928
+Namespace(batch_size=1, cnn_filters=[25, 50, 50], continue_from_epoch=-1, create_tensorboard=False, data_path='data', decoder_filters=[50, 50, 50], decoder_padding='same', dropout=0, encoder_filters=[50, 50, 50], evaluation_steps=[1, 10, 12], experiment_name='exp_1', fraction_of_data=1, fraction_of_val=1, gpu_id='None', gpus=0, grid_size=100, hidden_size=100, hidden_sizes=[30, 30, 30], kernel_size=3, learning_rate=0.0001, learning_rate_decay=0, missing_data=0.05, mlp_hidden_sizes=[1], model_file='results/predrnn_3/saved_models/train_model_10', model_name='predrnn', num_epochs=100, num_layers=2, output_size=12, pass_state=True, prediction_batch_size=1, seed=7112018, segment_size=12, shuffle_order=False, train_mean=67.61768898039853, train_std=132.47248595705986, use_gpu=False, use_mini_data=False, weight_decay=1e-05, window_size=11)
+
+Errors for all testing data:
+mean 1 step nrmse loss: 0.4356114025579326
+std: 0.09796607745161431
+mean 10 step nrmse loss: 0.45891227058139833
+std: 0.07247114788143573
+mean 12 step nrmse loss: 0.46995725186041276
+std: 0.0729263327073298
+
+
+Trying 10 random samples:
+mean 1 step nrmse loss: 0.44685978036326224
+std: 0.11694839433666727
+mean 10 step nrmse loss: 0.47017579850129004
+std: 0.0774418741004029
+mean 12 step nrmse loss: 0.483201538461688
+std: 0.07441485879480687
+Namespace(batch_size=1, cnn_filters=[25, 50, 50], continue_from_epoch=-1, create_tensorboard=False, data_path='data', decoder_filters=[50, 50, 50], decoder_padding='same', dropout=0, encoder_filters=[50, 50, 50], evaluation_steps=[1, 10, 12], experiment_name='exp_1', fraction_of_data=1, fraction_of_val=1, gpu_id='None', gpus=0, grid_size=100, hidden_size=100, hidden_sizes=[30, 30, 30], kernel_size=3, learning_rate=0.0001, learning_rate_decay=0, missing_data=0.0, mlp_hidden_sizes=[1], model_file='results/predrnn_3/saved_models/train_model_10', model_name='predrnn', num_epochs=100, num_layers=2, output_size=30, pass_state=True, prediction_batch_size=1, seed=7112018, segment_size=12, shuffle_order=False, train_mean=67.61768898039853, train_std=132.47248595705986, use_gpu=False, use_mini_data=False, weight_decay=1e-05, window_size=11)
+
+Namespace(batch_size=1, cnn_filters=[25, 50, 50], continue_from_epoch=-1, create_tensorboard=False, data_path='data', decoder_filters=[50, 50, 50], decoder_padding='same', dropout=0, encoder_filters=[50, 50, 50], evaluation_steps=[1, 10, 12], experiment_name='exp_1', fraction_of_data=1, fraction_of_val=1, gpu_id='None', gpus=0, grid_size=100, hidden_size=100, hidden_sizes=[30, 30, 30], kernel_size=3, learning_rate=0.0001, learning_rate_decay=0, missing_data=0.0, mlp_hidden_sizes=[1], model_file='results/predrnn_3/saved_models/train_model_10', model_name='predrnn', num_epochs=100, num_layers=2, output_size=30, pass_state=True, prediction_batch_size=1, seed=7112018, segment_size=12, shuffle_order=False, train_mean=67.61768898039853, train_std=132.47248595705986, use_gpu=False, use_mini_data=False, weight_decay=1e-05, window_size=11)
+
+Namespace(batch_size=1, cnn_filters=[25, 50, 50], continue_from_epoch=-1, create_tensorboard=False, data_path='data', decoder_filters=[50, 50, 50], decoder_padding='same', dropout=0, encoder_filters=[50, 50, 50], evaluation_steps=[1, 10, 12], experiment_name='exp_1', fraction_of_data=1, fraction_of_val=1, gpu_id='None', gpus=0, grid_size=100, hidden_size=100, hidden_sizes=[30, 30, 30], kernel_size=3, learning_rate=0.0001, learning_rate_decay=0, missing_data=0.0, mlp_hidden_sizes=[1], model_file='results/predrnn_3/saved_models/train_model_10', model_name='predrnn', num_epochs=100, num_layers=2, output_size=30, pass_state=True, prediction_batch_size=1, seed=7112018, segment_size=12, shuffle_order=False, train_mean=67.61768898039853, train_std=132.47248595705986, use_gpu=False, use_mini_data=False, weight_decay=1e-05, window_size=11)
+
+Namespace(batch_size=1, cnn_filters=[25, 50, 50], continue_from_epoch=-1, create_tensorboard=False, data_path='data', decoder_filters=[50, 50, 50], decoder_padding='same', dropout=0, encoder_filters=[50, 50, 50], evaluation_steps=[1, 10, 12], experiment_name='exp_1', fraction_of_data=1, fraction_of_val=1, gpu_id='None', gpus=0, grid_size=100, hidden_size=100, hidden_sizes=[30, 30, 30], kernel_size=3, learning_rate=0.0001, learning_rate_decay=0, missing_data=0.0, mlp_hidden_sizes=[1], model_file='results/predrnn_3/saved_models/train_model_10', model_name='predrnn', num_epochs=100, num_layers=2, output_size=30, pass_state=True, prediction_batch_size=1, seed=7112018, segment_size=12, shuffle_order=False, train_mean=67.61768898039853, train_std=132.47248595705986, use_gpu=False, use_mini_data=False, weight_decay=1e-05, window_size=11)
+
+Namespace(batch_size=1, cnn_filters=[64, 128, 64], continue_from_epoch=-1, create_tensorboard=False, data_path='data', decoder_filters=[50, 50], decoder_padding='same', dropout=0.0, encoder_filters=[50, 50], evaluation_steps=[1, 10, 12, 30], experiment_name='exp_1', fraction_of_data=1, fraction_of_val=1, gpu_id='None', gpus=0, grid_size=100, hidden_size=100, hidden_sizes=[30, 30, 30], kernel_size=3, learning_rate=0.0001, learning_rate_decay=0, missing_data=0.0, mlp_hidden_sizes=[50, 1], model_file='results/predrnn_3/saved_models/train_model_10', model_name='predrnn', num_epochs=100, num_layers=2, output_size=30, pass_state=True, prediction_batch_size=1, seed=7112018, segment_size=12, shuffle_order=False, train_mean=67.61768898039853, train_std=132.47248595705986, use_gpu=False, use_mini_data=False, weight_decay=1e-05, window_size=11)
+
+Namespace(batch_size=1, cnn_filters=[64, 128, 64], continue_from_epoch=-1, create_tensorboard=False, data_path='data', decoder_filters=[50, 50], decoder_padding='same', dropout=0.0, encoder_filters=[50, 50], evaluation_steps=[1, 10, 12, 30], experiment_name='exp_1', fraction_of_data=1, fraction_of_val=1, gpu_id='None', gpus=0, grid_size=100, hidden_size=100, hidden_sizes=[30, 30, 30], kernel_size=3, learning_rate=0.0001, learning_rate_decay=0, missing_data=0.0, mlp_hidden_sizes=[50, 1], model_file='results/predrnn_3/saved_models/train_model_10', model_name='predrnn', num_epochs=100, num_layers=2, output_size=30, pass_state=True, prediction_batch_size=1, seed=7112018, segment_size=12, shuffle_order=False, train_mean=67.61768898039853, train_std=132.47248595705986, use_gpu=False, use_mini_data=False, weight_decay=1e-05, window_size=11)
+
+Namespace(batch_size=1, cnn_filters=[64, 128, 64], continue_from_epoch=-1, create_tensorboard=False, data_path='data', decoder_filters=[50, 50], decoder_padding='same', dropout=0.0, encoder_filters=[50, 50], evaluation_steps=[1, 10, 12, 30], experiment_name='exp_1', fraction_of_data=1, fraction_of_val=1, gpu_id='None', gpus=0, grid_size=100, hidden_size=100, hidden_sizes=[30, 30, 30], kernel_size=3, learning_rate=0.0001, learning_rate_decay=0, missing_data=0.0, mlp_hidden_sizes=[50, 1], model_file='results/predrnn_3/saved_models/train_model_10', model_name='predrnn', num_epochs=100, num_layers=2, output_size=30, pass_state=True, prediction_batch_size=1, seed=7112018, segment_size=12, shuffle_order=False, train_mean=67.61768898039853, train_std=132.47248595705986, use_gpu=False, use_mini_data=False, weight_decay=1e-05, window_size=11)
+

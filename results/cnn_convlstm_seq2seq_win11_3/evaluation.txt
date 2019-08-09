@@ -35,3 +35,99 @@ mean 10 step nrmse loss: 0.3554264690786211
 std: 0.05185351002806542
 mean 12 step nrmse loss: 0.38174760078204184
 std: 0.05645177211458278
+Errors for all testing data:
+
+
+
+Errors for all testing data:
+mean 10 step nrmse loss: 0.3369436668437936
+std: 0.05352571602895369
+mean 12 step nrmse loss: 0.3598972365381826
+std: 0.060891802181745454
+mean 30 step nrmse loss: 0.7938014775276386
+std: 0.1987158353105898
+
+
+Trying 10 random samples:
+mean 10 step nrmse loss: 0.34760722255411786
+std: 0.04290514047982845
+mean 12 step nrmse loss: 0.3709547202784741
+std: 0.05212035297394191
+mean 30 step nrmse loss: 0.6889145890461642
+std: 0.18218505206301067
+Errors for all testing data:
+mean 1 step nrmse loss: 0.23995887823270087
+std: 0.02859079903344865
+mean 10 step nrmse loss: 0.3421302788268856
+std: 0.055772971850654274
+mean 12 step nrmse loss: 0.36703511013611395
+std: 0.0637284769481948
+
+
+Trying 10 random samples:
+mean 1 step nrmse loss: 0.240807223300523
+std: 0.03267687572205833
+mean 10 step nrmse loss: 0.3554264690786211
+std: 0.051853510028065444
+mean 12 step nrmse loss: 0.38174760078204184
+std: 0.056451772114582806
+Namespace(batch_size=2000, cnn_filters=[25, 50, 50], continue_from_epoch=-1, create_tensorboard=False, data_path='data', decoder_filters=[50, 50, 50], decoder_padding='same', dropout=0, encoder_filters=[50, 50, 50], evaluation_steps=[1, 10, 12], experiment_name='exp_1', fraction_of_data=1, fraction_of_val=1, gpu_id='None', gpus=0, grid_size=100, hidden_size=100, hidden_sizes=[25, 25], kernel_size=3, learning_rate=0.0001, learning_rate_decay=0, missing_data=0.1, mlp_hidden_sizes=[1], model_file='results/cnn_convlstm_seq2seq_win11_3/saved_models/train_model_59', model_name='cnn_convlstm_seq2seq', num_epochs=100, num_layers=2, output_size=12, pass_state=True, prediction_batch_size=10000, seed=7112018, segment_size=12, shuffle_order=False, train_mean=67.61768898039853, train_std=132.47248595705986, use_gpu=False, use_mini_data=False, weight_decay=1e-05, window_size=11)
+
+Errors for all testing data:
+mean 1 step nrmse loss: 0.5191134845089392
+std: 0.09337155392350625
+mean 10 step nrmse loss: 0.5691484180700972
+std: 0.08651138957186696
+mean 12 step nrmse loss: 0.5857907728204674
+std: 0.08730763758242792
+
+
+Trying 10 random samples:
+mean 1 step nrmse loss: 0.5452419460080663
+std: 0.10457202915097644
+mean 10 step nrmse loss: 0.6088639898410142
+std: 0.08536504722460335
+mean 12 step nrmse loss: 0.6284515194030786
+std: 0.08053651263413965
+Namespace(batch_size=2000, cnn_filters=[25, 50, 50], continue_from_epoch=-1, create_tensorboard=False, data_path='data', decoder_filters=[50, 50, 50], decoder_padding='same', dropout=0, encoder_filters=[50, 50, 50], evaluation_steps=[1, 10, 12], experiment_name='exp_1', fraction_of_data=1, fraction_of_val=1, gpu_id='None', gpus=0, grid_size=100, hidden_size=100, hidden_sizes=[25, 25], kernel_size=3, learning_rate=0.0001, learning_rate_decay=0, missing_data=0.01, mlp_hidden_sizes=[1], model_file='results/cnn_convlstm_seq2seq_win11_3/saved_models/train_model_59', model_name='cnn_convlstm_seq2seq', num_epochs=100, num_layers=2, output_size=12, pass_state=True, prediction_batch_size=10000, seed=7112018, segment_size=12, shuffle_order=False, train_mean=67.61768898039853, train_std=132.47248595705986, use_gpu=False, use_mini_data=False, weight_decay=1e-05, window_size=11)
+
+Errors for all testing data:
+mean 1 step nrmse loss: 0.2782175978371613
+std: 0.03257957144962345
+mean 10 step nrmse loss: 0.3701948689932015
+std: 0.052716305090557525
+mean 12 step nrmse loss: 0.3939096909205332
+std: 0.06022744812409035
+
+
+Trying 10 random samples:
+mean 1 step nrmse loss: 0.2827664624190933
+std: 0.027592570468120903
+mean 10 step nrmse loss: 0.3841450924094789
+std: 0.0372079634834835
+mean 12 step nrmse loss: 0.40903918397016764
+std: 0.04127803876391211
+Namespace(batch_size=2000, cnn_filters=[25, 50, 50], continue_from_epoch=-1, create_tensorboard=False, data_path='data', decoder_filters=[50, 50, 50], decoder_padding='same', dropout=0, encoder_filters=[50, 50, 50], evaluation_steps=[1, 10, 12], experiment_name='exp_1', fraction_of_data=1, fraction_of_val=1, gpu_id='None', gpus=0, grid_size=100, hidden_size=100, hidden_sizes=[25, 25], kernel_size=3, learning_rate=0.0001, learning_rate_decay=0, missing_data=0.0001, mlp_hidden_sizes=[1], model_file='results/cnn_convlstm_seq2seq_win11_3/saved_models/train_model_59', model_name='cnn_convlstm_seq2seq', num_epochs=100, num_layers=2, output_size=12, pass_state=True, prediction_batch_size=10000, seed=7112018, segment_size=12, shuffle_order=False, train_mean=67.61768898039853, train_std=132.47248595705986, use_gpu=False, use_mini_data=False, weight_decay=1e-05, window_size=11)
+
+Errors for all testing data:
+mean 1 step nrmse loss: 0.24034704827276254
+std: 0.02855355626717754
+mean 10 step nrmse loss: 0.34240749285710737
+std: 0.055683249832991985
+mean 12 step nrmse loss: 0.36730000687953246
+std: 0.06363732694241475
+
+
+Trying 10 random samples:
+mean 1 step nrmse loss: 0.24115525326496984
+std: 0.0326536166961867
+mean 10 step nrmse loss: 0.3557434548285795
+std: 0.05175213651747326
+mean 12 step nrmse loss: 0.3820650711663339
+std: 0.05633317019522574
+Namespace(batch_size=1, cnn_filters=[25, 50, 50], continue_from_epoch=-1, create_tensorboard=False, data_path='data', decoder_filters=[50, 50, 50], decoder_padding='same', dropout=0, encoder_filters=[50, 50, 50], evaluation_steps=[10, 12], experiment_name='exp_1', fraction_of_data=1, fraction_of_val=1, gpu_id='None', gpus=0, grid_size=100, hidden_size=100, hidden_sizes=[30, 30, 30], kernel_size=3, learning_rate=0.0001, learning_rate_decay=0, missing_data=0.0, mlp_hidden_sizes=[1], model_file='results/cnn_convlstm_seq2seq_win11_3/saved_models/train_model_59', model_name='convlstm_seq2seq', num_epochs=100, num_layers=2, output_size=30, pass_state=True, prediction_batch_size=1, seed=7112018, segment_size=12, shuffle_order=False, train_mean=67.61768898039853, train_std=132.47248595705986, use_gpu=False, use_mini_data=False, weight_decay=1e-05, window_size=11)
+
+Namespace(batch_size=1, cnn_filters=[25, 50, 50], continue_from_epoch=-1, create_tensorboard=False, data_path='data', decoder_filters=[50, 50, 50], decoder_padding='same', dropout=0, encoder_filters=[50, 50, 50], evaluation_steps=[10, 12], experiment_name='exp_1', fraction_of_data=1, fraction_of_val=1, gpu_id='None', gpus=0, grid_size=100, hidden_size=100, hidden_sizes=[30, 30, 30], kernel_size=3, learning_rate=0.0001, learning_rate_decay=0, missing_data=0.0, mlp_hidden_sizes=[1], model_file='results/cnn_convlstm_seq2seq_win11_3/saved_models/train_model_59', model_name='cnn_convlstm_seq2seq', num_epochs=100, num_layers=2, output_size=30, pass_state=True, prediction_batch_size=1, seed=7112018, segment_size=12, shuffle_order=False, train_mean=67.61768898039853, train_std=132.47248595705986, use_gpu=False, use_mini_data=False, weight_decay=1e-05, window_size=11)
+
+Namespace(batch_size=1000, cnn_filters=[25, 50, 50], continue_from_epoch=-1, create_tensorboard=False, data_path='data', decoder_filters=[50, 50, 50], decoder_padding='same', dropout=0, encoder_filters=[50, 50, 50], evaluation_steps=[10, 12], experiment_name='exp_1', fraction_of_data=1, fraction_of_val=1, gpu_id='None', gpus=0, grid_size=100, hidden_size=100, hidden_sizes=[30, 30, 30], kernel_size=3, learning_rate=0.0001, learning_rate_decay=0, missing_data=0.0, mlp_hidden_sizes=[1], model_file='results/cnn_convlstm_seq2seq_win11_3/saved_models/train_model_59', model_name='cnn_convlstm_seq2seq', num_epochs=100, num_layers=2, output_size=30, pass_state=True, prediction_batch_size=10000, seed=7112018, segment_size=12, shuffle_order=False, train_mean=67.61768898039853, train_std=132.47248595705986, use_gpu=False, use_mini_data=False, weight_decay=1e-05, window_size=11)
+
